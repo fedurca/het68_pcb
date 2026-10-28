@@ -1,2 +1,2 @@
-Gerbery jsou export dvouvrstvého layoutu v1.6.0.
+Gerbery jsou export dvouvrstvého layoutu v1.7.0.
 Satelit v DRC prošel (žádné chyby, žádné nepřipojené pady).

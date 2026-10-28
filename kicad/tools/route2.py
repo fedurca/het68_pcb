@@ -18,7 +18,7 @@ TRACK_W = 0.25
 CLEAR = 0.2
 # Extra beyond the nominal clearance so a segment between two legal cells
 # cannot clip a pad corner.
-MARGIN = 0.2
+MARGIN = 0.08
 BODY = CLEAR + TRACK_W / 2 + MARGIN
 VIA_R = 0.3
 VIA_DRILL = 0.3
@@ -180,7 +180,7 @@ def route_board(board) -> list:
                 if not outline.PointInside(pcbnew.VECTOR2I(pcbnew.FromMM(x), pcbnew.FromMM(y))):
                     continue
                 hits.append((ix, iy))
-        track_r = TRACK_W / 2 + 0.08
+        track_r = TRACK_W / 2 + 0.22
         via_r = VIA_R + CLEAR
         for ix, iy in hits:
             span = int(math.ceil(max(track_r, via_r) / G)) + 1
@@ -308,7 +308,7 @@ def route_board(board) -> list:
 
     def via_ok(ix, iy, myid, lattice=True):
         # Signal vias sit on a 0.4 mm lattice. Dedicated GND vias may use any cell.
-        if lattice and (ix & 3 or iy & 3):
+        if lattice and (ix & 1 or iy & 1):
             return False
         x, y = mm(ix, iy)
         if not (0.9 < x < board.w - 0.9 and 0.9 < y < board.h - 0.9):
@@ -317,11 +317,24 @@ def route_board(board) -> list:
         if via_keep[i]:
             return False
         for layer in (0, 1):
-            if not walkable(layer, ix, iy, myid):
+            for oy in range(-2, 3):
+                for ox in range(-2, 3):
+                    if ox * ox + oy * oy > 5:
+                        continue
+                    if not walkable(layer, ix + ox, iy + oy, myid):
+                        return False
+        # A 0.6 mm via needs more room than a 0.25 mm track. The track halo
+        # is not enough next to a 0.65 mm TSSOP pad.
+        need = VIA_R + CLEAR + 0.06
+        for q in pads:
+            if q["id"] == myid:
+                continue
+            if abs(q["x"] - x) > q["hw"] + need + 0.2:
+                continue
+            if abs(q["y"] - y) > q["hh"] + need + 0.2:
+                continue
+            if dist_rect(x, y, q) < need:
                 return False
-            for ox, oy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
-                if not walkable(layer, ix + ox, iy + oy, myid):
-                    return False
         return True
 
     def paint_disc(x, y, myid, radius):
@@ -390,6 +403,8 @@ def route_board(board) -> list:
                         block[layer][j] = EDGE
 
     def copper_cells(p):
+        if p.get("tip"):
+            return [p["tip"]]
         found = []
         for layer in p["layers"]:
             grid = copper[layer]
@@ -436,6 +451,93 @@ def route_board(board) -> list:
                 return False
         return True
 
+    def segment_clear(x1, y1, x2, y2, myid):
+        need = CLEAR + TRACK_W / 2 + 0.02
+        steps = int(math.hypot(x2 - x1, y2 - y1) / 0.05) + 1
+        for s in range(steps + 1):
+            t = s / max(steps, 1)
+            x = x1 + (x2 - x1) * t
+            y = y1 + (y2 - y1) * t
+            for q in pads:
+                if q["id"] == myid:
+                    continue
+                if dist_rect(x, y, q) < need:
+                    return False
+            for ox, oy, hw, hh in obstacles:
+                dx = max(abs(x - ox) - hw, 0.0)
+                dy = max(abs(y - oy) - hh, 0.0)
+                if dx * dx + dy * dy < need * need:
+                    return False
+        return True
+
+    # Fine-pitch fingers (TSSOP, USB-C) are too close for a track to wander
+    # off their centreline. Draw that centreline out past the pin field first.
+    for p in pads:
+        short = min(p["hw"], p["hh"])
+        long = max(p["hw"], p["hh"])
+        if not p["smd"] or short > 0.36 or long < short * 2.2:
+            continue
+        long_x = p["hw"] >= p["hh"]
+        away = (p["x"] - p["fx"]) if long_x else (p["y"] - p["fy"])
+        primary = 1 if away >= 0 else -1
+        placed_escape = False
+        for sign in (primary, -primary):
+            if placed_escape:
+                break
+            for extra in (1.7, 0.9):
+                if long_x:
+                    ex = p["x"] + sign * (p["hw"] + extra)
+                    ey = p["y"]
+                else:
+                    ex = p["x"]
+                    ey = p["y"] + sign * (p["hh"] + extra)
+                if not (1.2 < ex < board.w - 1.2 and 1.2 < ey < board.h - 1.2):
+                    continue
+                if not segment_clear(p["x"], p["y"], ex, ey, p["id"]):
+                    continue
+                ix, iy = cell(ex, ey)
+                i = idx(ix, iy)
+                if copper[0][i] not in (0, p["id"]) or block[0][i] == EDGE:
+                    continue
+                add_track(p["x"], p["y"], ex, ey, 0, p["net"])
+                steps = int(math.hypot(ex - p["x"], ey - p["y"]) / G) + 1
+                cells = []
+                for s in range(steps + 1):
+                    tt = s / max(steps, 1)
+                    cells.append((*cell(p["x"] + (ex - p["x"]) * tt, p["y"] + (ey - p["y"]) * tt), 0))
+                paint_path_cells(cells, p["id"])
+                copper[0][i] = p["id"]
+                block[0][i] = p["id"]
+                p["tip"] = (ix, iy, 0)
+                p["tip_mm"] = (ex, ey)
+                placed_escape = True
+                break
+
+    # Join tips of one net that landed on the same Y, when the corridor is free.
+    tips_by_net = {}
+    for p in pads:
+        if p.get("tip_mm"):
+            tips_by_net.setdefault(p["net"], []).append(p)
+    for net, group in tips_by_net.items():
+        rows = {}
+        for p in group:
+            rows.setdefault(round(p["tip_mm"][1], 2), []).append(p)
+        for _y, row in rows.items():
+            row.sort(key=lambda p: p["tip_mm"][0])
+            for a, b in zip(row, row[1:]):
+                x1, y1 = a["tip_mm"]
+                x2, y2 = b["tip_mm"]
+                if abs(x2 - x1) < 0.2:
+                    continue
+                if not segment_clear(x1, y1, x2, y2, a["id"]):
+                    continue
+                if not line_cells_ok(x1, y1, x2, y2, 0, a["id"]):
+                    continue
+                add_track(x1, y1, x2, y2, 0, net)
+                steps = int(abs(x2 - x1) / G) + 1
+                cells = [(*cell(x1 + (x2 - x1) * (s / max(steps, 1)), y1), 0) for s in range(steps + 1)]
+                paint_path_cells(cells, a["id"])
+
     # One via per SMD GND pad, outward from the part, onto the bottom pour.
     gnd_id = ids.get("GND")
     failed_gnd = []
@@ -443,6 +545,7 @@ def route_board(board) -> list:
         for p in pads:
             if p["net"] != "GND" or not p["smd"]:
                 continue
+            sx, sy = p.get("tip_mm", (p["x"], p["y"]))
             dx, dy = p["x"] - p["fx"], p["y"] - p["fy"]
             nrm = math.hypot(dx, dy)
             if nrm < 0.4:
@@ -463,25 +566,25 @@ def route_board(board) -> list:
             for dist in (1.5, 2.0, 2.6, 3.2):
                 for ux, uy in dirs:
                     scale = math.hypot(ux, uy) or 1
-                    vx = p["x"] + ux / scale * dist
-                    vy = p["y"] + uy / scale * dist
+                    vx = sx + ux / scale * dist
+                    vy = sy + uy / scale * dist
                     ix, iy = cell(vx, vy)
                     if not via_ok(ix, iy, gnd_id, lattice=False):
                         continue
                     x, y = mm(ix, iy)
-                    if not line_cells_ok(p["x"], p["y"], x, y, 0, gnd_id):
+                    if not line_cells_ok(sx, sy, x, y, 0, gnd_id):
                         continue
-                    add_track(p["x"], p["y"], x, y, 0, "GND")
+                    add_track(sx, sy, x, y, 0, "GND")
                     add_via(x, y, "GND")
-                    copper[0][idx(*cell(p["x"], p["y"]))] = gnd_id
+                    copper[0][idx(*cell(sx, sy))] = gnd_id
                     copper[0][idx(ix, iy)] = gnd_id
                     copper[1][idx(ix, iy)] = gnd_id
                     paint_disc(x, y, gnd_id, VIA_R + CLEAR + TRACK_W / 2 + MARGIN)
-                    steps = int(math.hypot(x - p["x"], y - p["y"]) / G) + 1
+                    steps = int(math.hypot(x - sx, y - sy) / G) + 1
                     stub = []
                     for s in range(steps + 1):
                         tt = s / max(steps, 1)
-                        stub.append((*cell(p["x"] + (x - p["x"]) * tt, p["y"] + (y - p["y"]) * tt), 0))
+                        stub.append((*cell(sx + (x - sx) * tt, sy + (y - sy) * tt), 0))
                     paint_path_cells(stub, gnd_id)
                     placed = True
                     break
@@ -608,14 +711,18 @@ def route_board(board) -> list:
         return (max(xs) - min(xs)) + (max(ys) - min(ys))
 
     def stitch(p, ix, iy, layer, netname):
+        if p.get("tip"):
+            return
         x, y = mm(ix, iy)
-        # Keep the extra segment on the pad. A cell just outside the copper
-        # would otherwise stick a 0.25 mm track into the neighbour.
-        maxx = max(p["hw"] - 0.04, 0.0)
-        maxy = max(p["hh"] - 0.04, 0.0)
+        # Stay on the pad centreline. A diagonal off a 0.4 mm pad clips the next pin.
+        maxx = max(p["hw"] - TRACK_W / 2 - 0.03, 0.0)
+        maxy = max(p["hh"] - TRACK_W / 2 - 0.03, 0.0)
         dx = min(max(x - p["x"], -maxx), maxx)
         dy = min(max(y - p["y"], -maxy), maxy)
-        add_track(p["x"], p["y"], p["x"] + dx, p["y"] + dy, layer, netname)
+        if abs(dx) >= abs(dy):
+            add_track(p["x"], p["y"], p["x"] + dx, p["y"], layer, netname)
+        else:
+            add_track(p["x"], p["y"], p["x"], p["y"] + dy, layer, netname)
 
     nets.sort(key=span)
 

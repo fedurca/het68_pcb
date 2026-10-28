@@ -2,7 +2,19 @@
 
 Formát podle [Keep a Changelog](https://keepachangelog.com/cs/1.1.0/), verze podle [SemVer](https://semver.org/lang/cs/).
 
-Historie gitu je přepsaná; veřejné tagy `v1.1.1`, `v1.2.0`, `v1.3.0`, `v1.4.0`, `v1.5.0`, `v1.6.0`.
+Historie gitu je přepsaná; veřejné tagy `v1.1.1` až `v1.7.0`.
+
+## [1.7.0] — 2026-10-28
+
+### Fixed
+
+- HAT už nemá zkraty, vůle ani spoje v zakázané zóně. Zůstává 29 nepřipojených padů (napájení, část I²S a LED).
+- Power: CC1 a CC2 na USB-C jsou spojené. Zbývá jedna mezera na VBUS.
+- Satelit zůstává bez chyb DRC.
+
+### Changed
+
+- Kusovník má sloupec LCSC u ověřených dílů. Souhrn objednávky je [`kicad/BOM.csv`](kicad/BOM.csv), včetně zdrojů (SCT-013-000, CN3791, BQ25895, 21700, PAC1934), které na nakreslené desce ještě nejsou.
 
 ## [1.6.0] — 2026-10-28
 
@@ -68,6 +80,7 @@ Historie gitu je přepsaná; veřejné tagy `v1.1.1`, `v1.2.0`, `v1.3.0`, `v1.4.
 - Předpoklady objednatele k posouzení: UTP k mikrofonům, nové MEMS a převodníky úrovní, compute A = Pimoroni Pico Plus 2, compute B = vlastní deska s IPEX a SX1262.
 - GPIO tabulka [`docs/PINOUT.csv`](docs/PINOUT.csv) a checklist [`docs/CHECKLIST_NAVRHAR.md`](docs/CHECKLIST_NAVRHAR.md).
 
+[1.7.0]: https://github.com/fedurca/het68_pcb/releases/tag/v1.7.0
 [1.6.0]: https://github.com/fedurca/het68_pcb/releases/tag/v1.6.0
 [1.5.0]: https://github.com/fedurca/het68_pcb/releases/tag/v1.5.0
 [1.4.0]: https://github.com/fedurca/het68_pcb/releases/tag/v1.4.0

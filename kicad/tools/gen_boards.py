@@ -7,6 +7,7 @@ I²C environmental sensor (DPS310 + SHT40) and INA3221 power monitor.
 """
 from __future__ import annotations
 
+import csv
 import heapq
 import re
 import uuid
@@ -1572,11 +1573,61 @@ def finish(board: Board, sch: Sch, out: Path, power_nets=None):
     return missing
 
 
+# LCSC codes checked against the catalog. Empty means not confirmed for this exact MPN.
+LCSC = {
+    "SN74LVC8T245PWR": "C27643",
+    "AP2112K-1.8TRG1": "C176944",
+    "DRV8837CDSGR": "C191000",
+    "INA3221AIRGVR": "C181255",
+    "DPS310": "C130156",
+    "SHT40-AD1B-R2": "C2909890",
+    "MMICT5848-00-012": "C20344623",
+    "RC0402FR-0733RL": "C138002",
+    "RC0402FR-07100RL": "C106232",
+    "TYPE-C-31-M-12": "C165948",
+    "SMBJ15A": "C49435193",
+}
+
+
 def bom(sch: Sch, path: Path):
-    rows = ["Ref,Value,Footprint,MPN"]
-    for p in sch.parts:
-        rows.append(f"{p['ref']},{p['value']},{p['footprint']},{p['mpn']}")
-    path.write_text("\n".join(rows) + "\n")
+    with path.open("w", newline="") as f:
+        w = csv.writer(f)
+        w.writerow(["Ref", "Value", "Footprint", "MPN", "LCSC"])
+        for p in sch.parts:
+            w.writerow([p["ref"], p["value"], p["footprint"], p["mpn"], LCSC.get(p["mpn"], "")])
+
+
+def order_bom(path: Path, sheets):
+    """One line per MPN. Satellite quantity is already multiplied."""
+    with path.open("w", newline="") as f:
+        w = csv.writer(f)
+        w.writerow(["Board", "Qty", "Value", "MPN", "LCSC", "Refs", "Note"])
+        for board, sch, mult in sheets:
+            groups = {}
+            for p in sch.parts:
+                key = (p["value"], p["mpn"], p["footprint"])
+                g = groups.setdefault(key, [])
+                g.append(p["ref"])
+            for (value, mpn, _fp), refs in groups.items():
+                note = ""
+                if not LCSC.get(mpn, "") and mpn:
+                    note = "LCSC kod pro toto presne MPN neni overeny"
+                if mpn.startswith("Pimoroni"):
+                    note = "koupit u Pimoroni, neni na LCSC"
+                w.writerow([board, len(refs) * mult, value, mpn, LCSC.get(mpn, ""), " ".join(refs), note])
+        # Specified sources. Not placed on the drawn power sheet yet.
+        extras = [
+            ("zdroj", 1, "SCT-013-000", "YHDC SCT-013-000", "", "CT1", "kleště na 1 izolovaný vodič, není na nakreslené desce"),
+            ("zdroj", 1, "CN3791", "CN3791", "C154992", "U_MPPT", "MPPT do 1S, není na nakreslené desce"),
+            ("zdroj", 1, "BQ25895", "BQ25895RTWR", "C80200", "U_CHG", "I2C power-path a 5 V, není na nakreslené desce"),
+            ("zdroj", 1, "21700 holder", "BH-21700-B1BJ001", "C20606791", "BT1", "SMT držák, článek musí mít ochranu"),
+            ("zdroj", 1, "21700", "21700 s PCM", "", "BAT1", "chráněný článek, ne holý"),
+            ("zdroj", 1, "PAC1934", "PAC1934T-I/JQ", "C623960", "U_MON", "4× V a I, není na nakreslené desce"),
+            ("zdroj", 1, "ADS1115", "ADS1115IDGSR", "", "U_ADC", "teploty NTC, LCSC kod dohledat"),
+            ("zdroj", 4, "NTC 10k", "NTC 10k", "", "TH1-4", "LCSC kod dohledat"),
+        ]
+        for row in extras:
+            w.writerow(row)
 
 
 def main():
@@ -1627,6 +1678,7 @@ def main():
     miss = finish(pb, pwr, out, {"GND", "VSYS", "VSYS_RAW", "VBUS", "DC"})
     bom(pwr, out / "bom.csv")
     print("PWR unrouted", len(miss), miss)
+    order_bom(ROOT / "BOM.csv", [("hat", hat, 1), ("sat", sat, 6), ("pwr", pwr, 1)])
     print("done")
 
 

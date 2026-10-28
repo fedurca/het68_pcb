@@ -1,21 +1,21 @@
-Ref,Value,Footprint,MPN
-J1,AC_IN,Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical,sekundar split-core, NE sit 230 V
-F1,0.5A,Fuse:Fuse_1812_4532Metric,polyfuse 1812 0.5 A
-R4,100,Resistor_SMD:R_1206_3216Metric,RC1206FR-07100RL
-D1,SS14,Diode_SMD:D_SMA,SS14
-D2,SS14,Diode_SMD:D_SMA,SS14
-D3,SS14,Diode_SMD:D_SMA,SS14
-D4,SS14,Diode_SMD:D_SMA,SS14
-C1,470u/25V,Capacitor_THT:CP_Radial_D10.0mm_P5.00mm,electrolytic 470u 25V
-D5,SMBJ15A,Diode_SMD:D_SMB,SMBJ15A
-D6,SS34,Diode_SMD:D_SMC,SS34
-J2,USB_C,Connector_USB:USB_C_Receptacle_HRO_TYPE-C-31-M-12,TYPE-C-31-M-12
-R1,5.1k,Resistor_SMD:R_0402_1005Metric,RC0402FR-075K1L
-R2,5.1k,Resistor_SMD:R_0402_1005Metric,RC0402FR-075K1L
-D7,SS34,Diode_SMD:D_SMC,SS34
-FB1,600R,Inductor_SMD:L_0805_2012Metric,BLM21PG601SN1D
-C2,100u/16V,Capacitor_THT:CP_Radial_D6.3mm_P2.50mm,electrolytic 100u 16V
-C3,10u,Capacitor_SMD:C_0805_2012Metric,CL21A106KOQNNNE
-R3,2.2k,Resistor_SMD:R_0402_1005Metric,RC0402FR-072K2L
-D8,LED,LED_SMD:LED_0805_2012Metric,LED 0805
-J3,VSYS_OUT,Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical,PinHeader 1x2
+Ref,Value,Footprint,MPN,LCSC
+J1,AC_IN,Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical,"sekundar split-core, NE sit 230 V",
+F1,0.5A,Fuse:Fuse_1812_4532Metric,polyfuse 1812 0.5 A,
+R4,100,Resistor_SMD:R_1206_3216Metric,RC1206FR-07100RL,
+D1,SS14,Diode_SMD:D_SMA,SS14,
+D2,SS14,Diode_SMD:D_SMA,SS14,
+D3,SS14,Diode_SMD:D_SMA,SS14,
+D4,SS14,Diode_SMD:D_SMA,SS14,
+C1,470u/25V,Capacitor_THT:CP_Radial_D10.0mm_P5.00mm,electrolytic 470u 25V,
+D5,SMBJ15A,Diode_SMD:D_SMB,SMBJ15A,C49435193
+D6,SS34,Diode_SMD:D_SMC,SS34,
+J2,USB_C,Connector_USB:USB_C_Receptacle_HRO_TYPE-C-31-M-12,TYPE-C-31-M-12,C165948
+R1,5.1k,Resistor_SMD:R_0402_1005Metric,RC0402FR-075K1L,
+R2,5.1k,Resistor_SMD:R_0402_1005Metric,RC0402FR-075K1L,
+D7,SS34,Diode_SMD:D_SMC,SS34,
+FB1,600R,Inductor_SMD:L_0805_2012Metric,BLM21PG601SN1D,
+C2,100u/16V,Capacitor_THT:CP_Radial_D6.3mm_P2.50mm,electrolytic 100u 16V,
+C3,10u,Capacitor_SMD:C_0805_2012Metric,CL21A106KOQNNNE,
+R3,2.2k,Resistor_SMD:R_0402_1005Metric,RC0402FR-072K2L,
+D8,LED,LED_SMD:LED_0805_2012Metric,LED 0805,
+J3,VSYS_OUT,Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical,PinHeader 1x2,

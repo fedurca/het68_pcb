@@ -1,26 +1,14 @@
 ** Drc report for het68-pwr.kicad_pcb **
-** Created on 2026-10-28T16:26:50 **
+** Created on 2026-10-28T16:52:06 **
 ** Report includes: Errors **
 
 ** Found 0 DRC violations **
 
-** Found 4 unconnected pads **
+** Found 1 unconnected pads **
 [unconnected_items]: Missing connection between items
     Local override; error
-    @(32.0000 mm, 32.5100 mm): Track [CC2] on F.Cu, length 0.3500 mm
-    @(19.7500 mm, 23.9550 mm): Pad B5 [CC2] of J2 on F.Cu
-[unconnected_items]: Missing connection between items
-    Local override; error
-    @(20.4500 mm, 23.9550 mm): Pad A9 [VBUS] of J2 on F.Cu
-    @(15.5500 mm, 23.9550 mm): Pad A4 [VBUS] of J2 on F.Cu
-[unconnected_items]: Missing connection between items
-    Local override; error
-    @(31.0500 mm, 24.0000 mm): Track [VBUS] on F.Cu, length 0.8196 mm
-    @(20.4500 mm, 23.9550 mm): Pad A9 [VBUS] of J2 on F.Cu
-[unconnected_items]: Missing connection between items
-    Local override; error
-    @(16.7500 mm, 23.9550 mm): Pad A5 [CC1] of J2 on F.Cu
-    @(32.0000 mm, 36.5100 mm): Track [CC1] on F.Cu, length 0.3500 mm
+    @(20.4500 mm, 23.9550 mm): Track [VBUS] on F.Cu, length 2.4250 mm
+    @(20.3000 mm, 19.7000 mm): Track [VBUS] on F.Cu, length 0.1000 mm
 
 ** Found 0 Footprint errors **
 
