@@ -4,8 +4,8 @@
 **Firmware a mechanika:** [github.com/fedurca/het68](https://github.com/fedurca/het68)
 **Tento dokument:** [github.com/fedurca/het68_pcb](https://github.com/fedurca/het68_pcb)
 **Stav:** proof-of-concept běží; toto je zadání další hardwarové iterace
-**Verze zadání:** 1.1.1 · 28. 10. 2026 (Europe/Prague)  
-**Git tag:** `v1.1.1`
+**Verze zadání:** 1.2.0 · 28. 10. 2026 (Europe/Prague)  
+**Git tag:** `v1.2.0`
 **Jazyk:** čeština (k odeslání návrháři)
 
 Dokument vychází z provozu prototypu, z firmware v `fedurca/het68`, z vazby na pouzdro a z **předpokladů objednatele v §1**.
@@ -14,7 +14,8 @@ Dokument vychází z provozu prototypu, z firmware v `fedurca/het68`, z vazby na
 
 | Sekce | Váha |
 |---|---|
-| §1 Předpoklady objednatele | **návrh k posouzení** — ne tvrdé požadavky. Návrhář smí navrhnout jinak, musí zdůvodnit (místo, EMI, cena, GPIO). |
+| §1.1 / F10 | **zmrazené** — 6× RJ45, jeden kabel = jeden mikrofon + jedna RGB LED. Počet jacků se neposuzuje. |
+| §1 (kromě 1.1) | **návrh k posouzení** — ne tvrdé požadavky. Návrhář smí navrhnout jinak, musí zdůvodnit (místo, EMI, cena, GPIO). |
 | §2 Omezení z běžícího firmware / fyziky | měnit jen s vědomím, že padne firmware nebo akustika |
 | §3+ | technický podklad k těm dvěma vrstvám |
 
@@ -44,22 +45,24 @@ Poloměr pole (střed → mikrofon) = `hrana / 2`. Firmware default hrana **128 
 
 ## 1. Předpoklady objednatele — k posouzení
 
-Toto je záměr, ne kusovník. Návrhář má **zhodnotit proveditelnost, cenu a rizika** a vrátit doporučení (klidně s DNP / dvěma layouty).
+Kromě §1.1 (počet RJ45) je toto záměr, ne kusovník. Návrhář má **zhodnotit proveditelnost, cenu a rizika** a vrátit doporučení (klidně s DNP / dvěma layouty).
 
-### 1.1 Mikrofony po UTP
+### 1.1 Mikrofony po UTP — **6× RJ45 (požadavek)**
 
-Šest MEMS se táhne od compute desky **kroucenou čtyřpárovou UTP/CAT5e/CAT6** (patch kabel, RJ45), ne Grove kabelem a ne nutně flexem.
+Každý mikrofon má **vlastní** kroucený CAT5e/CAT6 patch a **vlastní 8P8C**. Ne 2× jack se třemi mikrofony na kabelu, ne daisy-chain mezi satelity.
 
-Proč: CAT6 patch + RJ45 z JLC SMT knihovny + I²S buffery jsou výchozí fyzická vrstva k posouzení. Délka řádově 20–30 cm, v pouzdru možná kratší.
+Důvody:
 
-Co má návrhář posoudit:
+- **Prostor:** šest kabelů jde radiálně k šesti stěnám kostky, každý bajonet samostatně.
+- **LED směru:** na stejném RJ45 jede i data adresovatelné RGB (WS2812 / SK6812) u mikrofonu. Bez zpětného `DOUT` v osmi vodičích má každý jack **vlastní `LED_DIN`**.
 
-- **Kolik jacků:** 6× RJ45 (1 mikrofon = 1 UTP) vs. 2× RJ45 (3 mikrofony na jeden kabel, dvě hodinové větve). Standardní 8P8C má šířku ~15–16 mm — šest kusů na Pico 53 mm se klasicky nevejde. Není to zákaz; je to riziko k vyřešení (menší jack, vertikál, dvě desky, zvětšení compute, 2× jack + satelitní rozbočovač).
-- Párování vodičů: jeden pár = jeden signál + GND, ne dva SD na jednom páru, pokud se tomu lze vyhnout.
-- Magjack vs. holý 8P8C (cena vs. CM tlumivka).
-- LED / 1V8 / piezo po stejném UTP — jen pokud zbude pár a neohrozí I²S.
+Délka řádově 20–30 cm. Stínění UTP na GND jen na compute.
 
-Flex jako RPi CAM1 (GND–signál–GND) zůstává **záložní** alternativa, ne výchozí.
+Standardní 8P8C má šířku ~15–16 mm. **Šest jacků se na Pico 53 × 21 mm nevejde.** Pico modul zůstane 53 × 21; deska s konektory je větší (prstenec / šestiúhelník / dvě řady), jacky míří k příslušným stěnám. Dutina 53 × 21 × 40 mm platí jen pro MCU, ne pro I/O.
+
+K posouzení zůstává: SMT vs THT jack, magjack vs holý 8P8C, vertikál vs pravoúhlý. Ne počet jacků.
+
+Flex jako RPi CAM1 je záloha, ne výchozí.
 
 ### 1.2 Nové mikrofony + převodníky úrovní
 
@@ -125,8 +128,9 @@ Tyto body měnit jen vědomě (PIO, USB audio, DOA).
 | F7 | Piezo dnes GP6/GP7 (1× PS1240 H-můstek); 4 kusy jsou přání z konverzací | akustický node link |
 | F8 | Hobby / 230 V lab, ne VN zkoušky, ne SPDIF | rozsah zakázky |
 | F9 | Cena kusu, JLC/LCSC | celý projekt |
+| F10 | **6× RJ45**, 1 mikrofon + 1 RGB LED na kabel | prostor kostky + indikace směru |
 
-53 × 21 × 40 mm je **vazba na současný požadavek 3D tisku a na Pico modul**, ne dogma. Pokud UTP jacky + IPEX + SX126 na 53 × 21 neprojdou, návrhář navrhne větší compute a ozve se tiskaři — to je legitimní výstup zhodnocení §1.
+53 × 21 × 40 mm platí pro **Pico / MCU**. Deska s 6× RJ45 je záměrně větší; tiskař upraví dutinu / nosný prstenec podle STEP.
 
 ---
 
@@ -145,19 +149,19 @@ Power se nemíchá s I²S. Počet a tvar compute desek vypadne ze zhodnocení A 
         │  8 MB PSRAM, buffery, UTP, senzory  │
         │  B navíc: IPEX 2.4 + SX126 + IPEX 868│
         └──────────────┬──────────────────────┘
-                       │ UTP: I²S + 1V8 + volitelně LED
-              ┌────────┼────────┐
-           6× satelit MEMS (RJ45 nebo rozbočovač na 2× UTP)
+                       │ 6× UTP RJ45: I²S + 3V3 + LED_DIN
+              ┌────┬───┼───┬───┬───┐
+           sat1  sat2 sat3 sat4 sat5 sat6
 ```
 
 ### 3.1 Varianta A — shield na Pimoroni Plus 2
 
-Zmenšený protikus [Grove Shield for Pi Pico](https://www.seeedstudio.com/Grove-Shield-for-Pi-Pico-v1-0-p-4846.html) (56 × 56 mm).
+Protikus k Pimoroni Plus 2: uprostřed Pico 53 × 21 mm, okolo **6× RJ45** (ne 56 × 56 Grove a ne 53 × 21).
 
-- Header stoh; vejít se do dutiny (dnes 40 mm vč. USB-C Pico).
-- UTP, shiftery, DPS310, piezo, VSYS ze Power PCB na **zadní straně**.
-- 5 V na MEMS nikdy.
-- SX126 na A **nepočítat**, pokud se nevejde — MeshCore je argument pro B.
+- Header stoh Pico; výška MCU části ≤ 40 mm.
+- Šest jacků, shiftery, DPS310, piezo, VSYS. Jacky směřují k mic 1–6.
+- 5 V na MEMS nikdy (na kabelu 3,3 V, 1,8 V jen lokální LDO na satelitu).
+- SX126 na A nepočítat.
 
 ### 3.2 Varianta B — vlastní SoM
 
@@ -201,10 +205,12 @@ Bajonet v pouzdru, řada pinů / RJ45 **směrem k zemi**.
 | WAKE, THSEL | NC |
 | Port | TDK land pattern; nic před membránou |
 | Déšť | PTFE později, není SMT rev. 1 |
-| LED | WS2812/SK6812 2020, DAT z UTP pokud zbude vodič |
-| Konektor | RJ45 na satelitu **nebo** malý jack + UTP pigtail; min. 1V8, GND, SCK, WS, SD |
+| Napájení z UTP | **3,3 V** (LED + vstup LDO) |
+| LDO na satelitu | 3,3 V → 1,8 V pro T5848 |
+| LED | WS2812B / SK6812 @ 3,3 V, jeden pixel, `DIN` z UTP (vlastní GPIO jacku) |
+| Konektor | **RJ45 8P8C**, piny k zemi, mapa §4.2 |
 
-Při 2× UTP z compute: malý pasivní rozbočovač u horního/dolního prstence (3 mikrofony), ne šest dlouhých patchů do středu.
+Žádný rozbočovač 3+3. Žádný `DOUT` zpět na compute (není volný vodič) — proto 6× `LED_DIN`, ne jeden daisy-chain.
 
 ---
 
@@ -214,40 +220,32 @@ Při 2× UTP z compute: malý pasivní rozbočovač u horního/dolního prstence
 
 ```
 RP2350 PIO master
-    GP9  SCK ──► shifter/buffer ──┬── UTP větev A → mic1,2,3
-    GP8  WS  ──► shifter/buffer ──┤
-                                  └── UTP větev B → mic4,5,6
-GP16 SD1 ◄── shifter ◄── mic1
-GP18 SD2 ◄── shifter ◄── mic2
-GP20 SD3 ◄── shifter ◄── mic3
-GP26 SD4 ◄── shifter ◄── mic4
-GP27 SD5 ◄── shifter ◄── mic5
-GP28 SD6 ◄── shifter ◄── mic6
+    GP9  SCK ──► buffer ──┬── RJ45-1 · 2 · 3 · 4 · 5 · 6   (stejný SCK)
+    GP8  WS  ──► buffer ──┘
+GP16 SD1  ◄── RJ45-1  mic1     GP10 LED1 ──► RJ45-1
+GP18 SD2  ◄── RJ45-2  mic2     GP11 LED2 ──► RJ45-2
+GP20 SD3  ◄── RJ45-3  mic3     GP12 LED3 ──► RJ45-3
+GP26 SD4  ◄── RJ45-4  mic4     GP13 LED4 ──► RJ45-4
+GP27 SD5  ◄── RJ45-5  mic5     GP14 LED5 ──► RJ45-5
+GP28 SD6  ◄── RJ45-6  mic6     GP22 LED6 ──► RJ45-6
 ```
 
-Dvě větve hodin **stejné délky**. MCU master, mikrofony slave. SD se nedaisy-chainují.
+SCK a WS se **větví na compute** do šesti jacků (stejná délka cest). MCU master. SD ani LED se mezi satelity nedaisy-chainují. Buffer SCK/WS dimenzovat na 6 zátěží (klidně 2× budič po třech).
 
-### 4.2 Návrh mapování UTP (k posouzení)
+### 4.2 Mapování UTP — 1 mic = 1× 8P8C (zmrazené)
 
-**Šest kabelů (1 mic = 1× 8P8C)** — elektricky nejčistší:
+Platí pro všechny čtyři páry T568B. Není to Ethernet; barvy jen kvůli patch kabelu.
 
-| Pár T568B | Signál |
-|---|---|
-| 2 oranžový | SCK / GND |
-| 3 zelený | WS / GND |
-| 1 modrý | SD / GND |
-| 4 hnědý | 1V8 / LED (nebo 1V8 / GND) |
+| Pár T568B | Piny | Signál | Poznámka |
+|---|---|---|---|
+| 2 oranžový | 1, 2 | SCK , GND | hodinový pár, 1,8 V I²S |
+| 3 zelený | 3, 6 | WS , GND | word select, 1,8 V I²S |
+| 1 modrý | 4, 5 | SD , GND | data mikrofonu → MCU, 1,8 V |
+| 4 hnědý | 7, 8 | **3V3** , **LED_DIN** | napájení satelitu + WS2812; 1,8 V jen z LDO na satelitu |
 
-**Dva kabely (3 mic = 1× 8P8C)** — míň jacků na compute:
+LED GND bere z párů 1–3. `LED_DIN` je 3,3 V z MCU (SK6812 / WS2812B-V5 3,3 V). T5848 na 3,3 V z páru 4 **nepřipojovat**.
 
-| Pár | Signál | Riziko |
-|---|---|---|
-| 2 oranžový | SCK / GND | ok |
-| 3 zelený | WS / GND | ok |
-| 1 modrý | SD_a / SD_b | crosstalk dvou dat |
-| 4 hnědý | SD_c / 1V8 | data vedle napájení |
-
-Návrhář vybere podle toho, co se vejde, a napíše T568B tabulku do silkscreenu (ne Ethernet barvy jako LAN).
+Stejná tabulka na silkscreenu u každého jacku (`MIC1` … `MIC6`).
 
 ### 4.3 Integrita a EMI
 
@@ -292,33 +290,30 @@ Z [wiring_and_bom.md](https://github.com/fedurca/het68/blob/main/wiring_and_bom.
 | PSRAM CS | GP47 | — | Plus 2 / B |
 | BOOT | GP45 | — | Plus 2 W |
 
-WS2812 a SX126 ve firmware **nejsou**. Návrh rezervuje piny a zapíše je sem.
-
-### 5.2 Návrh pinů pro variantu B (k posouzení)
-
-Vyhýbá se I²S a Wi-Fi. Není MeshCore Waveshare pinout.
+WS2812 ve firmware **není**. Šest `LED_DIN` je návrh k zápisu sem.
 
 | Funkce | GPIO | Poznámka |
 |---|---|---|
-| SX126 SCK | GP10 | SPI1 |
-| SX126 MOSI | GP11 | |
-| SX126 MISO | GP12 | |
-| SX126 nSS | GP13 | |
-| SX126 DIO1 (IRQ) | GP14 | |
-| SX126 BUSY | GP15 | |
-| SX126 nRESET | GP17 | |
-| SX126 RXEN | GP19 | jen pokud modul nemá DIO2-only switch |
-| WS2812 DIN | GP22 | uvolněný GP10 ve prospěch SPI |
+| LED1 DIN (mic1 / TFC) | GP10 | 3,3 V, RJ45-1 pin 8 |
+| LED2 DIN | GP11 | RJ45-2 |
+| LED3 DIN | GP12 | RJ45-3 |
+| LED4 DIN | GP13 | RJ45-4 |
+| LED5 DIN | GP14 | RJ45-5 |
+| LED6 DIN | GP22 | RJ45-6 |
 
-Piezo: 4× paralelně na GP6/GP7, dokud GPIO sežere SX126.
+### 5.2 Varianta B — SX126 (k posouzení)
+
+GP10–14 a GP22 žerou LED. SX126 proto **ne** na ně a **ne** na Waveshare (GP16/18/24). Na Plus 2 headeru zbývá GP15, 17, 19, 21 — na plné SPI+IRQ+BUSY+RST to nestačí. U B vzít **extra GPIO RP2350B** (mimo 40pin Pico). Návrh v `PINOUT.csv`: SCK GP30, MOSI GP31, MISO GP32, NSS GP33, DIO1 GP34, BUSY GP35, NRESET GP36, RXEN GP37.
+
+Piezo: 4× paralelně na GP6/GP7.
 
 ---
 
 ## 6. Komponenty na compute (výchozí návrh)
 
 - DPS310 nebo SPL06, adresa 0x77.
-- Level shift / UTP budič — TXS0108E **nebo** to, co obstojí §1.2.
-- LDO 1,8 V na compute, lokální 100 nF u MEMS.
+- Level shift / UTP budič — TXS0108E **nebo** to, co obstojí §1.2 (I²S na kabelu 1,8 V).
+- 3,3 V na pár 4 každého RJ45; **1,8 V LDO na každém satelitu**, 100 nF u MEMS.
 - ESD na off-board I²S a RJ45.
 - Varianta B: CYW43/RM2 + IPEX 2,4 GHz; SX1262 + IPEX 868 MHz; π-matching dle datasheetu modulu.
 
@@ -342,10 +337,10 @@ Priorita objednatele: **cena/ks → SNR → I²S**.
 
 Požadavky tisku (ASA/PETG, UV, zelená):
 
-1. Dutina dnes **53 × 21 × 40 mm** — zvětšit, pokud to §1 vyžaduje.
-2. Bajonet mikrofonů, piny/RJ45 k zemi.
-3. Otvor LED směru u mikrofona.
-4. Mic 1 = sever.
+1. MCU (Pico) v hranolu **53 × 21 × 40 mm**.
+2. I/O deska s **6× RJ45** mimo ten hranol — radiálně k stěnám, jack `MIC1` = sever.
+3. Bajonet mikrofonů, RJ45 **piny k zemi**.
+4. LED ve stejném bajonetu jako MEMS (otvor / čirý tisk).
 
 MEMS ±1 mm (1 vzorek TDOA ≈ 7,15 mm). IPEX pigtaily ven, antény ne uvnitř u transformátoru.
 
@@ -356,18 +351,20 @@ MEMS ±1 mm (1 vzorek TDOA ≈ 7,15 mm). IPEX pigtaily ven, antény ne uvnitř u
 | Položka | Požadavek |
 |---|---|
 | Prototyp | po výběru A/B: pár compute + power + 6 satelitů na kus |
-| Výrobce | JLCPCB SMT, LCSC |
+| CAD | KiCad 8+ (plugin jlcpcb-tools na BOM/CPL) |
+| Gerber | RS-274X + drill; stejný balík na JLCPCB i na tisk v EU (printed.cz) |
+| Výrobce | JLC SMT + LCSC (Basic přednostně před Extended); nebo EU tisk desek + ruční/SMT osazení |
 | Vrstvy | compute 4L; satelit 2L; power 2L |
 | Povrch | HASL; satelit ENIG kvůli MEMS |
 | BOM | LCSC C-code, DNP, orientační cena @10 a @100 ks |
 
-Zhodnocení A vs. B a UTP vs. počet jacků je **součást výběru kusovníku**, ne extra zakázka. Kompletní výkresová dokumentace je podmínkou odevzdání.
+Počet RJ45 je daný (6). Zhodnocení A vs. B a volba jacku (SMT/THT) je součást kusovníku. Kompletní výkresová dokumentace je podmínkou odevzdání.
 
 ---
 
 ## 9. Dodávky od návrháře
 
-1. **Zhodnocení §1** (1–2 strany): UTP počet jacků, shifter vs. buffer, A vs. B, dva IPEX, zda drží 53 × 21. Doporučení jedné cesty.
+1. **Zhodnocení §1** (1–2 strany): tvar desky pro 6× RJ45, shifter vs. buffer, A vs. B, dva IPEX. Doporučení jedné cesty.
 2. Schéma PDF + zdroj (KiCad 8+ / Altium).
 3. Layout + Gerber + drill + IPC-356.
 4. BOM LCSC, DNP, cena.
@@ -393,10 +390,10 @@ Návrhář nepíše firmware. GPIO mimo §5.1 jen po zápisu sem.
 
 ## 11. Otázky, které má zhodnocení uzavřít
 
-1. Varianta **A** (Plus 2 / Plus 2 W + shield) nebo **B** (vlastní + IPEX BT + SX126)?
-2. UTP: **6×** nebo **2×** RJ45, jaký jack, jaké páry?
+1. Varianta **A** (Plus 2 / Plus 2 W + I/O deska) nebo **B** (vlastní + IPEX BT + SX126)?
+2. Jaký 8P8C jack (SMT/THT, orientace), aby šest kusů sedělo na prstenec kostky?
 3. T5848 + TXS0108E, nebo jiný MEMS + line driver?
-4. Drží dutina 53 × 21 × 40 mm, nebo se zvětší?
+4. Tvar I/O desky vs. tisk pouzdra (STEP).
 5. Dva IPEX, nebo LoRa IPEX a BT nechat na modulu?
 6. Čtyři pieza paralelně na GP6/GP7?
 7. Je změřený split-core (V, I)? Jinak široký vstup na Power PCB.
@@ -408,4 +405,4 @@ Návrhář nepíše firmware. GPIO mimo §5.1 jen po zápisu sem.
 
 Technický obsah zadání pochází z provozu prototypu, z firmware het68 (`wiring_and_bom.md`, pinout, 48 kHz/24 bit) a z předpokladů objednatele v §1. Osoby, kontakty, nabídky a pracnosti v tomto dokumentu **nejsou**.
 
-Konec zadání v1.1.1.
+Konec zadání v1.2.0.
