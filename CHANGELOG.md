@@ -2,7 +2,15 @@
 
 Formát podle [Keep a Changelog](https://keepachangelog.com/cs/1.1.0/), verze podle [SemVer](https://semver.org/lang/cs/).
 
-Historie gitu je přepsaná; veřejné tagy `v1.1.1` až `v1.7.0`.
+Historie gitu je přepsaná; veřejné tagy `v1.1.1` až `v1.8.0`.
+
+## [1.8.0] — 2026-10-28
+
+### Added
+
+- Na začátku README je popis tří desek, seznam otevřených problémů po v1.7.0, vyrobitelnost a odhad ceny sady pro 1 až 1000 kusů.
+- Úvaha, proč data LED zůstanou na akustické desce a z power desky má přijít jen napájení diod.
+- Do kusovníku přibyl LCSC kód stíněného RJ45 `C464586` (RJHSE-5380).
 
 ## [1.7.0] — 2026-10-28
 
@@ -80,6 +88,7 @@ Historie gitu je přepsaná; veřejné tagy `v1.1.1` až `v1.7.0`.
 - Předpoklady objednatele k posouzení: UTP k mikrofonům, nové MEMS a převodníky úrovní, compute A = Pimoroni Pico Plus 2, compute B = vlastní deska s IPEX a SX1262.
 - GPIO tabulka [`docs/PINOUT.csv`](docs/PINOUT.csv) a checklist [`docs/CHECKLIST_NAVRHAR.md`](docs/CHECKLIST_NAVRHAR.md).
 
+[1.8.0]: https://github.com/fedurca/het68_pcb/releases/tag/v1.8.0
 [1.7.0]: https://github.com/fedurca/het68_pcb/releases/tag/v1.7.0
 [1.6.0]: https://github.com/fedurca/het68_pcb/releases/tag/v1.6.0
 [1.5.0]: https://github.com/fedurca/het68_pcb/releases/tag/v1.5.0

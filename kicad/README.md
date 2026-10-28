@@ -1,4 +1,4 @@
-# het68 — KiCad (v1.7.0)
+# het68 — KiCad (v1.8.0)
 
 Náhledy návrhu i osazených desek jsou v [README](../README.md) repozitáře.
 

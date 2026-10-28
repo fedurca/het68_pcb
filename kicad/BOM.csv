@@ -5,15 +5,15 @@ hat,1,AP2112K-1.8,AP2112K-1.8TRG1,C176944,U5,
 hat,3,1u,CL05A105KA5NQNC,,C1 C2 C13,LCSC kod pro toto presne MPN neni overeny
 hat,2,10u,CL21A106KOQNNNE,,C3 C4,LCSC kod pro toto presne MPN neni overeny
 hat,9,100n,CL05B104KB5NNNC,,C5 C6 C7 C8 C9 C10 C11 C12 C14,LCSC kod pro toto presne MPN neni overeny
-hat,1,MIC1,"RJHSE-5380 (8P8C, bez magnetik)",,J1,LCSC kod pro toto presne MPN neni overeny
+hat,1,MIC1,"RJHSE-5380 (8P8C, bez magnetik)",C464586,J1,
 hat,12,33,RC0402FR-0733RL,C138002,R10 R11 R13 R14 R16 R17 R19 R20 R22 R23 R25 R26,
 hat,6,100,RC0402FR-07100RL,C106232,R12 R15 R18 R21 R24 R27,
 hat,24,PESD5V0S1BA,"PESD5V0S1BA,115",,D1 D2 D3 D4 D5 D6 D7 D8 D9 D10 D11 D12 D13 D14 D15 D16 D17 D18 D19 D20 D21 D22 D23 D24,LCSC kod pro toto presne MPN neni overeny
-hat,1,MIC2,"RJHSE-5380 (8P8C, bez magnetik)",,J2,LCSC kod pro toto presne MPN neni overeny
-hat,1,MIC3,"RJHSE-5380 (8P8C, bez magnetik)",,J3,LCSC kod pro toto presne MPN neni overeny
-hat,1,MIC4,"RJHSE-5380 (8P8C, bez magnetik)",,J4,LCSC kod pro toto presne MPN neni overeny
-hat,1,MIC5,"RJHSE-5380 (8P8C, bez magnetik)",,J5,LCSC kod pro toto presne MPN neni overeny
-hat,1,MIC6,"RJHSE-5380 (8P8C, bez magnetik)",,J6,LCSC kod pro toto presne MPN neni overeny
+hat,1,MIC2,"RJHSE-5380 (8P8C, bez magnetik)",C464586,J2,
+hat,1,MIC3,"RJHSE-5380 (8P8C, bez magnetik)",C464586,J3,
+hat,1,MIC4,"RJHSE-5380 (8P8C, bez magnetik)",C464586,J4,
+hat,1,MIC5,"RJHSE-5380 (8P8C, bez magnetik)",C464586,J5,
+hat,1,MIC6,"RJHSE-5380 (8P8C, bez magnetik)",C464586,J6,
 hat,1,DRV8837C,DRV8837CDSGR,C191000,U6,
 hat,2,10,RC1206FR-0710RL,,R40 R41,LCSC kod pro toto presne MPN neni overeny
 hat,1,PZ1,PinHeader 1x2,,J11,LCSC kod pro toto presne MPN neni overeny
@@ -29,7 +29,7 @@ hat,1,INA3221,INA3221AIRGVR,C181255,U9,
 hat,2,0.1,RC0805FR-070R1L,,R47 R48,LCSC kod pro toto presne MPN neni overeny
 hat,1,PWR,PinHeader 1x2,,J10,LCSC kod pro toto presne MPN neni overeny
 hat,1,UART,PinHeader 1x4,,J17,LCSC kod pro toto presne MPN neni overeny
-sat,6,RJ45,RJHSE-5380,,J1,LCSC kod pro toto presne MPN neni overeny
+sat,6,RJ45,RJHSE-5380,C464586,J1,
 sat,6,AP2112K-1.8,AP2112K-1.8TRG1,C176944,U1,
 sat,6,T5848,MMICT5848-00-012,C20344623,MK1,
 sat,6,SK6812,"SK6812 (5050, 3.3 V)",,D1,LCSC kod pro toto presne MPN neni overeny
