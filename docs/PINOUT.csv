@@ -1,41 +1,33 @@
 function,gpio,dir,net,notes
 debug_uart_tx,GP0,out,UART0_TX,115200 baud; firmware
 debug_uart_rx,GP1,in,UART0_RX,firmware
-dps310_sda,GP2,i2c,I2C1_SDA,firmware addr 0x77
-dps310_scl,GP3,i2c,I2C1_SCL,firmware
-qwiic_sda,GP4,i2c,I2C0_SDA,PMIC/INA here not GP8/9
-qwiic_scl,GP5,i2c,I2C0_SCL,
-piezo_a,GP6,out,PIEZO_A,firmware H-bridge
+env_sda,GP2,i2c,I2C1_SDA,firmware DPS310 0x77; add SHT4x 0x44 or replace with BME280 0x76
+env_scl,GP3,i2c,I2C1_SCL,pressure + temperature + humidity
+pm_sda,GP4,i2c,I2C0_SDA,INA219/INA3221 powermanagement; Plus 2 Qw/ST
+pm_scl,GP5,i2c,I2C0_SCL,
+piezo_a,GP6,out,PIEZO_A,firmware H-bridge; HAT driver to 4x PS1240 parallel
 piezo_b,GP7,out,PIEZO_B,firmware PWM inverted
 i2s_ws,GP8,out,I2S_WS,firmware shared
 i2s_sck,GP9,out,I2S_SCK,firmware 3.072 MHz
-led1_din,GP10,out,LED1_DIN,proposal WS2812/SK6812; RJ45-1 pin 8; not in firmware
-led2_din,GP11,out,LED2_DIN,proposal; RJ45-2 pin 8
-led3_din,GP12,out,LED3_DIN,proposal; RJ45-3 pin 8
-led4_din,GP13,out,LED4_DIN,proposal; RJ45-4 pin 8
-led5_din,GP14,out,LED5_DIN,proposal; RJ45-5 pin 8
-spare_gp15,GP15,,SPARE,Plus 2 header leftover; not SX126
+led1_din,GP10,out,LED1_DIN,WS2812/SK6812; RJ45-1 pin 8; not yet in firmware
+led2_din,GP11,out,LED2_DIN,RJ45-2 pin 8
+led3_din,GP12,out,LED3_DIN,RJ45-3 pin 8
+led4_din,GP13,out,LED4_DIN,RJ45-4 pin 8
+led5_din,GP14,out,LED5_DIN,RJ45-5 pin 8
+spare_gp15,GP15,,SPARE,header leftover; tie or test pad
 mic1_sd,GP16,in,I2S_SD1,firmware TFC north +35 USB ch1
-spare_gp17,GP17,,SPARE,Plus 2 header leftover
+spare_gp17,GP17,,SPARE,header leftover
 mic2_sd,GP18,in,I2S_SD2,firmware TRR 120 +35
-spare_gp19,GP19,,SPARE,Plus 2 header leftover
+spare_gp19,GP19,,SPARE,header leftover
 mic3_sd,GP20,in,I2S_SD3,firmware TSL 240 +35
-spare_gp21,GP21,,SPARE,Plus 2 header leftover
-led6_din,GP22,out,LED6_DIN,proposal; RJ45-6 pin 8
-wifi_wl_on,GP23,reserved,WL_ON,CYW43/RM2 do not use
+spare_gp21,GP21,,SPARE,header leftover
+led6_din,GP22,out,LED6_DIN,RJ45-6 pin 8
+wifi_wl_on,GP23,reserved,WL_ON,Plus 2 W CYW43/RM2 do not use
 wifi_data,GP24,reserved,WL_D,do not use
 wifi_cs,GP25,reserved,WL_CS,do not use
 mic4_sd,GP26,in,I2S_SD4,firmware BC 180 -35
 mic5_sd,GP27,in,I2S_SD5,firmware RLC 300 -35
 mic6_sd,GP28,in,I2S_SD6,firmware RRC 60 -35
 wifi_clk,GP29,reserved,WL_CLK,do not use
-sx126_sck,GP30,out,LORA_SCK,variant B proposal on RP2350B extra GPIO; not firmware
-sx126_mosi,GP31,out,LORA_MOSI,variant B proposal
-sx126_miso,GP32,in,LORA_MISO,variant B proposal
-sx126_nss,GP33,out,LORA_NSS,variant B proposal
-sx126_dio1,GP34,in,LORA_DIO1,variant B proposal IRQ
-sx126_busy,GP35,in,LORA_BUSY,variant B proposal
-sx126_nreset,GP36,out,LORA_RST,variant B proposal
-sx126_rxen,GP37,out,LORA_RXEN,variant B optional if no DIO2-only switch
-boot_plus2w,GP45,in,BOOT,Pimoroni Plus 2 W
-psram_cs,GP47,out,PSRAM_CS,Plus 2 / variant B
+boot_plus2w,GP45,in,BOOT,Pimoroni Plus 2 W; not on HAT
+psram_cs,GP47,out,PSRAM_CS,on Plus 2 module; not on HAT

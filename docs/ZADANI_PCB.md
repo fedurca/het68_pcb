@@ -4,20 +4,19 @@
 **Firmware a mechanika:** [github.com/fedurca/het68](https://github.com/fedurca/het68)
 **Tento dokument:** [github.com/fedurca/het68_pcb](https://github.com/fedurca/het68_pcb)
 **Stav:** proof-of-concept běží; toto je zadání další hardwarové iterace
-**Verze zadání:** 1.2.0 · 28. 10. 2026 (Europe/Prague)  
-**Git tag:** `v1.2.0`
+**Verze zadání:** 1.3.0 · 28. 10. 2026 (Europe/Prague)
+**Git tag:** `v1.3.0`
 **Jazyk:** čeština (k odeslání návrháři)
 
-Dokument vychází z provozu prototypu, z firmware v `fedurca/het68`, z vazby na pouzdro a z **předpokladů objednatele v §1**.
+Dokument vychází z provozu prototypu, z firmware v `fedurca/het68`, z vazby na pouzdro a z **zmrazeného compute + HAT v §1**.
 
 **Jak číst tento brief**
 
 | Sekce | Váha |
 |---|---|
-| §1.1 / F10 | **zmrazené** — 6× RJ45, jeden kabel = jeden mikrofon + jedna RGB LED. Počet jacků se neposuzuje. |
-| §1 (kromě 1.1) | **návrh k posouzení** — ne tvrdé požadavky. Návrhář smí navrhnout jinak, musí zdůvodnit (místo, EMI, cena, GPIO). |
-| §2 Omezení z běžícího firmware / fyziky | měnit jen s vědomím, že padne firmware nebo akustika |
-| §3+ | technický podklad k těm dvěma vrstvám |
+| §1 | **zmrazené** — Pimoroni Pico Plus 2 + HAT, 6× RJ45, převodníky úrovní, 4× piezo, 6× RGB LED, I²C (PM + P/T/RH). Architektura se neposuzuje. |
+| §2 | omezení z běžícího firmware / fyziky — měnit jen s vědomím, že padne firmware nebo akustika |
+| §3+ | technický podklad; výběr konkrétního čipu (shifter, piezo budič, BME vs DPS+SHT, jack) je na návrháři se zdůvodněním |
 
 ---
 
@@ -25,7 +24,7 @@ Dokument vychází z provozu prototypu, z firmware v `fedurca/het68`, z vazby na
 
 Šestinásobné I²S mikrofonní pole na kostce stojící na vrcholu. RP2350 počítá směr (DOA / SRP-PHAT), klasifikuje dron, posílá 6kanálové USB audio 48 kHz / 24 bit, skenuje BLE OpenDroneID a mezi nody si povídá akustickým chirpem přes piezo.
 
-Cíl další desky: **dostat elektroniku dovnitř konstrukce**, pryč od Grove Shield bastlu 56 × 56 mm, za **minimální cenu kusu** v sérii. Nasazení u vedení: nejdřív hobby lab na **230 V** venkovním vedení, indukční napájení split-core transformátorem. 22 kV a vysokonapěťové zkoušky **nejsou** součástí této zakázky.
+Cíl této desky: **HAT pod Pimoroni Pico Plus 2** uvnitř konstrukce, pryč od Grove Shield 56 × 56 mm, za **minimální cenu kusu** v sérii. Nasazení u vedení: nejdřív hobby lab na **230 V** venkovním vedení, indukční napájení split-core transformátorem. 22 kV a vysokonapěťové zkoušky **nejsou** součástí této zakázky.
 
 ```
                     mic1  sever, +35.26°
@@ -39,164 +38,152 @@ Cíl další desky: **dostat elektroniku dovnitř konstrukce**, pryč od Grove S
                     mic5               dolní prstenec −35.26°
 ```
 
-Poloměr pole (střed → mikrofon) = `hrana / 2`. Firmware default hrana **128 mm** (poloměr 64 mm). Ve starší geometrii 384 mm je poloměr **192 mm** — údaj „finální model ~192 mm“ z dřívějších konverzací. I²S počítat na **UTP do ~30 cm** (ověřeno 25 cm na současném kabelu).
+Poloměr pole (střed → mikrofon) = `hrana / 2`. Firmware default hrana **128 mm** (poloměr 64 mm). Ve starší geometrii 384 mm je poloměr **192 mm**. I²S počítat na **UTP do ~30 cm** (ověřeno 25 cm na současném kabelu).
 
 ---
 
-## 1. Předpoklady objednatele — k posouzení
+## 1. Zmrazené zadání
 
-Kromě §1.1 (počet RJ45) je toto záměr, ne kusovník. Návrhář má **zhodnotit proveditelnost, cenu a rizika** a vrátit doporučení (klidně s DNP / dvěma layouty).
+Toto se nekreslí jinak, jen se volí součástky a tvar, které to splní.
 
-### 1.1 Mikrofony po UTP — **6× RJ45 (požadavek)**
+### 1.1 Compute — Pimoroni Pico Plus 2 + HAT
 
-Každý mikrofon má **vlastní** kroucený CAT5e/CAT6 patch a **vlastní 8P8C**. Ne 2× jack se třemi mikrofony na kabelu, ne daisy-chain mezi satelity.
+MCU **není** vlastní deska. HAT se vyrábí k hotovému modulu:
 
-Důvody:
+- [Pimoroni Pico Plus 2](https://shop.pimoroni.com/products/pimoroni-pico-plus-2) — RP2350B, **8 MB PSRAM**, 16 MB flash, USB-C, 53 × 21 mm, 40pin Pico header.
+- Nebo [Pico Plus 2 W](https://shop.pimoroni.com/products/pimoroni-pico-plus-2-w) — totéž + RM2 (Wi-Fi + BT, anténa na modulu). Stejný HAT; na W **nesahat na GP23/24/25/29**.
 
-- **Prostor:** šest kabelů jde radiálně k šesti stěnám kostky, každý bajonet samostatně.
-- **LED směru:** na stejném RJ45 jede i data adresovatelné RGB (WS2812 / SK6812) u mikrofonu. Bez zpětného `DOUT` v osmi vodičích má každý jack **vlastní `LED_DIN`**.
+Firmware (`PICO_BOARD`) umí Pico 2 / Pico 2 W / Plus 2 W. Standardní Raspberry Pi Pico 2 **nemá** 8 MB PSRAM; HAT je header-kompatibilní, ale objednatel bere **Pimoroni Plus 2 / Plus 2 W**.
 
-Délka řádově 20–30 cm. Stínění UTP na GND jen na compute.
+HAT je stoh na 2× 20pin (samice na HAT, Pico zastrčí shora, nebo naopak — návrhář zvolí, ať USB-C a BOOT zůstanou přístupné). SX126, IPEX a vlastní SoM **nejsou** v této revizi.
 
-Standardní 8P8C má šířku ~15–16 mm. **Šest jacků se na Pico 53 × 21 mm nevejde.** Pico modul zůstane 53 × 21; deska s konektory je větší (prstenec / šestiúhelník / dvě řady), jacky míří k příslušným stěnám. Dutina 53 × 21 × 40 mm platí jen pro MCU, ne pro I/O.
+### 1.2 Mikrofony po UTP — 6× RJ45
 
-K posouzení zůstává: SMT vs THT jack, magjack vs holý 8P8C, vertikál vs pravoúhlý. Ne počet jacků.
+Každý mikrofon má **vlastní** CAT5e/CAT6 patch a **vlastní 8P8C**. Ne 2× jack se třemi mikrofony na kabelu, ne daisy-chain mezi satelity.
 
-Flex jako RPi CAM1 je záloha, ne výchozí.
+Důvody: radiální kabely ke stěnám kostky; na stejném RJ45 i `LED_DIN` adresovatelné RGB. Bez zpětného `DOUT` má každý jack vlastní GPIO.
 
-### 1.2 Nové mikrofony + převodníky úrovní
+Délka 20–30 cm. Stínění UTP na GND jen na HAT.
 
-Opustit ICS-43434 (NRND, prototyp na 3,3 V). Nová generace MEMS + obvod, který zároveň **posune úroveň** a **budí kabel**.
+Šest 8P8C (~15–16 mm) se na 53 × 21 mm **nevejde**. Pico zůstane 53 × 21 uprostřed; HAT je větší (prstenec / šestiúhelník / dvě řady), jacky k příslušným stěnám. Dutina 53 × 21 × 40 mm platí jen pro sloupec MCU, ne pro celý HAT.
 
-Výchozí návrh k posouzení:
+K posouzení: SMT vs THT, magjack vs holý, vertikál vs pravoúhlý. Ne počet jacků.
 
-| Role | Návrh | Proč jen návrh |
+### 1.3 Převodníky úrovní / budiče I²S
+
+Opustit ICS-43434 (NRND, prototyp na 3,3 V). Na HAT obvod, který **posune úroveň** 3,3 V MCU ⇔ 1,8 V MEMS a **budí šest UTP**.
+
+| Role | Výchozí návrh | Volba návrháře |
 |---|---|---|
-| MEMS | TDK InvenSense **T5848** (I²S, VDD 1,62–1,98 V, SNR 68 dBA, ~310 µA) | kandidát z výběru; alternativa DMM-4026-B-I2S-R; Sensibel SBM140B je lepší, zatím se nesežene |
-| Převod / budič | **TXS0108E** (8 bit = SCK+WS+6×SD, 1,8 ⇔ 3,3 V) | kandidát z výběru; alternativa I²S line driver / 74LVC, který umí i level shift a delší linku. TXS má one-shot a nesnáší velkou kapacitu — na UTP 30 cm to **musí návrhář posoudit**, ne slepě osadit |
+| MEMS (na satelitu) | TDK InvenSense **T5848** (I²S, 1,62–1,98 V, SNR 68 dBA) | alternativa DMM-4026-B-I2S-R; Sensibel SBM140B se nesežene |
+| Převod / budič (na HAT) | **TXS0108E** (SCK+WS+6×SD) | TXS nesnáší velkou kapacitu — na UTP 30 cm posoudit; jinak 74LVC / TXU / SN74LVC8T245 / I²S line driver |
 
-Pokud TXS na UTP nestojí: unidirekční 74LVC / TXU / SN74LVC8T245 / dedicated I²S line driver. Stejně tak jiný I²S MEMS ve stejném footprintu, pokud vyhraje cena/SNR.
+### 1.4 Driver 4× piezo
 
-### 1.3 Dvě varianty compute — vybrat po zhodnocení, ne obě vyrábět naslepo
+Na HAT **budič čtyř** pasivních piezo (PS1240 nebo ekvivalent, rezonance ~4 kHz). Firmware je **jeden** software H-můstek: GP6 a GP7, stejný PWM slice, kanál B invertovaný, nosná ~4 kHz / FHSS.
 
-Obě mají **8 MB PSRAM** (echo cancel + mezilehlá sync). Ne 16 MB PSRAM — to byla záměna s 16 MB flash.
+Čtyři elementy **paralelně** za tím budičem. Ne čtyři nezávislé GPIO kanály (na to není firmware ani piny).
 
-**Varianta A — Pimoroni Pico Plus 2 (8 MB PSRAM) jako modul**
+GPIO netahej přímo na čtyři PS1240 — na HAT MOSFET H-můstek / dual gate driver (TC4427/4428) / DRV8837 nebo ekvivalent, napájení z 3V3 (nebo VSYS, pokud návrhář zdůvodní hlasitost). Krátké vývody, ESD, případně sériové R.
 
-- Reference: [Pico Plus 2](https://shop.pimoroni.com/products/pimoroni-pico-plus-2) (bez rádia) nebo [Pico Plus 2 W](https://shop.pimoroni.com/products/pimoroni-pico-plus-2-w) (RM2 = Wi-Fi + BT, **anténa na modulu, bez IPEX**).
-- K tomu vlastní shield: UTP jacky, buffery/shiftery, DPS310, piezo, napájecí vstup.
-- Plus 2 W stačí na dnešní BLE OpenDroneID, ale anténa uvnitř kovem/uhlíkem stíněného pouzdra u vedení bude slabá — to je důvod varianty B.
-- Standardní Pico 2 / Pico 2 W **nemá** 8 MB PSRAM, na A se nehodí.
+### 1.5 6× adresovatelná RGB LED
 
-**Varianta B — vlastní deska: BT na IPEX + SX126 pro MeshCore**
+Jeden pixel WS2812B / SK6812 u každého mikrofonu (indikace detekovaného směru). Data po RJ45 (`LED_DIN`, 3,3 V). HAT má šest samostatných GPIO, ne daisy-chain.
 
-- RP2350B + 16 MB flash + 8 MB PSRAM na jedné desce (elektricky ~ Plus 2, ne mechanicky XL 77 mm).
-- **IPEX (U.FL) na 2,4 GHz** pro Bluetooth (CYW43439 / RM2 s externí anténou místo PCB antény). OpenDroneID BLE a případné Wi-Fi ven z pouzdra kabelem.
-- **Semtech SX1262** (EU **868 MHz**, MeshCore default ~869,618 MHz) jako mesh místo / vedle akustického chirpu a Wi-Fi sync. Referenční moduly: Wio-SX1262, Ebyte E22-900M22S, nebo čip + matching; MeshCore už SX1262 umí (`USE_SX1262`, RadioLib).
-- SX126 má **vlastní IPEX 868 MHz** — 2,4 GHz a 868 MHz se na jeden konektor bez diplexeru nesdílí. Posoudit **dva IPEX** (BT + LoRa) vs. jen LoRa IPEX a BT onboard.
-- Napájecí/PMIC část dál **zvlášť** (indukční rušení).
+### 1.6 I²C periferie na HAT
 
-Posoudit mimo jiné: místo vs. 53 × 21 × 40 mm dutina, koexistence CYW43439 SPI + SX126 SPI + 6× I²S DMA, spotřeba vs. split-core, certifikace ISM 868, zda MeshCore na RP2350 (upstream varianty jsou spíš RP2040 — firmware práce objednatele, deska má jen vyvést čip).
+Dvě funkce, dva byty — **nesdílet** s I²S (GP8/GP9) ani s piezem (GP6/GP7).
 
-```
-  Varianta A                         Varianta B
-  ┌──────────────┐                   ┌──────────────────┐
-  │ Pico Plus 2  │                   │ RP2350B+PSRAM    │
-  │ (+ W / RM2)  │                   │ CYW43 → IPEX 2.4 │
-  └──────┬───────┘                   │ SX1262 → IPEX 868│
-         │ shield                    └────────┬─────────┘
-  ┌──────▼───────┐                   ┌────────▼─────────┐
-  │ UTP + shift  │                   │ UTP + shift      │
-  │ DPS310 piezo │                   │ DPS310 piezo     │
-  └──────────────┘                   └──────────────────┘
-```
+| Bus | GPIO | Zařízení | Účel |
+|---|---|---|---|
+| I²C1 | GP2 SDA, GP3 SCL | environmentální senzor | **tlak + teplota + vlhkost** → rychlost zvuku pro DOA |
+| I²C0 | GP4 SDA, GP5 SCL | powermanagement | napětí / proud harvestu a VSYS (Plus 2 má Qw/ST na stejném I²C0) |
+
+**Environment (návrh k výběru, funkce je daná):**
+
+Firmware dnes čte **DPS310** na GP2/GP3 (0x77 / 0x76), vlhkost jen jako `BARO RH` default 50 %. Má se měřit.
+
+1. **Doporučeno kvůli firmware:** DPS310 @ 0x77 + Sensirion SHT40/SHT45 @ 0x44 na stejném I²C1. Tlak a teplota beze změny; RH nahradí odhad.
+2. **Jeden čip:** Bosch BME280 (P+T+H) @ **0x76** na I²C1. Vyžaduje nový firmware driver; neosazovat zároveň s DPS310 (kolize 0x76/0x77).
+
+Otvory / vent v pouzdru k senzoru. Ne do proudu transformátoru.
+
+**Powermanagement (návrh k výběru):**
+
+INA219 (1× VSYS) nebo **INA3221** (až 3 kanály: harvest, 3V3, VSYS). Adresa mimo 0x76/0x77 a mimo SHT 0x44. Shunt podle změřeného split-core; pokud není V/I, široký rozsah a DNP varianty.
 
 ---
 
 ## 2. Omezení z firmware a fyziky
 
-Tyto body měnit jen vědomě (PIO, USB audio, DOA).
+Tyto body měnit jen vědomě (PIO, USB audio, DOA, piezo PHY).
 
 | # | Omezení | Proč |
 |---|---|---|
-| F1 | 6× digitální MEMS **I²S**, ne PDM (PDM jen výhled) | firmware PIO |
+| F1 | 6× digitální MEMS **I²S**, ne PDM | firmware PIO |
 | F2 | Jeden společný `SCK` + `WS` z MCU, každý mikrofon vlastní `SD` | 100% sync |
 | F3 | 48 kHz, I²S 24 bit, 64 SCK/frame → **SCK = 3,072 MHz**; rezerva návrhu 192 kHz | USB UAC2 + T5848 HQ okno 2,0–3,7 MHz |
-| F4 | Pinout I²S/periferií v §5 držet u varianty A (Pico header). U B lze přemapovat, ale stojí to firmware. | `wiring_and_bom.md` |
-| F5 | GP23/24/25/29 na W deskách = Wi-Fi — nepoužít na I²S ani SX126 | RM2/CYW43 |
-| F6 | DPS310 (nebo kompatibil) na I²C, firmware dnes GP2/GP3 | rychlost zvuku pro DOA |
-| F7 | Piezo dnes GP6/GP7 (1× PS1240 H-můstek); 4 kusy jsou přání z konverzací | akustický node link |
-| F8 | Hobby / 230 V lab, ne VN zkoušky, ne SPDIF | rozsah zakázky |
+| F4 | Pinout §5 držet (Pico header) | `wiring_and_bom.md` |
+| F5 | GP23/24/25/29 na W = Wi-Fi — nepoužít | RM2/CYW43 |
+| F6 | Environment na I²C1 GP2/GP3; firmware dnes DPS310 0x77 | `c(T,p,RH)` pro TDOA |
+| F7 | Piezo PHY GP6/GP7, 4 elementy paralelně za H-můstkem | `buzzer.c` |
+| F8 | Hobby / 230 V lab, ne VN, ne SPDIF | rozsah zakázky |
 | F9 | Cena kusu, JLC/LCSC | celý projekt |
 | F10 | **6× RJ45**, 1 mikrofon + 1 RGB LED na kabel | prostor kostky + indikace směru |
+| F11 | Compute = Pimoroni Plus 2 / Plus 2 W + HAT | tato revize |
 
-53 × 21 × 40 mm platí pro **Pico / MCU**. Deska s 6× RJ45 je záměrně větší; tiskař upraví dutinu / nosný prstenec podle STEP.
+53 × 21 × 40 mm platí pro **sloupec Pico**. HAT s 6× RJ45 je větší; tiskař upraví nosný prstenec podle STEP.
 
 ---
 
 ## 3. Sada desek
 
-Power se nemíchá s I²S. Počet a tvar compute desek vypadne ze zhodnocení A vs. B.
+Power se nemíchá s I²S. Compute je vždy Pico modul + HAT.
 
 ```
         ┌─────────────────────────────────────┐
         │  POWER PCB  (volný tvar, u split-core)
         │  split-core → usměrnění → TVS → VSYS
         └──────────────┬──────────────────────┘
-                       │ silové + I2C sense
+                       │ silové (+ sense na I²C HAT)
         ┌──────────────▼──────────────────────┐
-        │  COMPUTE  (A: Pico+shield / B: SoM) │
-        │  8 MB PSRAM, buffery, UTP, senzory  │
-        │  B navíc: IPEX 2.4 + SX126 + IPEX 868│
+        │  HAT  (tato zakázka)                │
+        │  6× RJ45, shiftery, 4× piezo driver │
+        │  6× LED_DIN, I²C env + PM           │
+        │     ┌──────────────┐                │
+        │     │ Pico Plus 2  │  53 × 21 mm    │
+        │     │ (+ W / RM2)  │                │
+        │     └──────────────┘                │
         └──────────────┬──────────────────────┘
                        │ 6× UTP RJ45: I²S + 3V3 + LED_DIN
               ┌────┬───┼───┬───┬───┐
            sat1  sat2 sat3 sat4 sat5 sat6
 ```
 
-### 3.1 Varianta A — shield na Pimoroni Plus 2
+### 3.1 HAT
 
-Protikus k Pimoroni Plus 2: uprostřed Pico 53 × 21 mm, okolo **6× RJ45** (ne 56 × 56 Grove a ne 53 × 21).
+- Uprostřed footprint Pico 53 × 21 mm, okolo **6× RJ45**.
+- Výška stohu Pico+header+HAT: MCU sloupec ≤ 40 mm, USB-C a BOOT přístupné.
+- 5 V na MEMS nikdy (na kabelu 3,3 V, 1,8 V jen LDO na satelitu).
+- Piezo konektor / pájecí plošky × 4, nebo jeden 8pin, aby šly čtyři PS1240 ven z desky do pouzdra.
+- I²C pull-upy 2,2–4,7 kΩ na 3V3, jednou na HAT (Qw/ST na Plus 2 už má pull-upy — nezdvojit naslepo).
 
-- Header stoh Pico; výška MCU části ≤ 40 mm.
-- Šest jacků, shiftery, DPS310, piezo, VSYS. Jacky směřují k mic 1–6.
-- 5 V na MEMS nikdy (na kabelu 3,3 V, 1,8 V jen lokální LDO na satelitu).
-- SX126 na A nepočítat.
+### 3.2 Power PCB
 
-### 3.2 Varianta B — vlastní SoM
-
-RP2350B, W25Q128, APS6404L-3SQR-ZR (PSRAM CS jako u Pimoroni na GP47, pokud se pin zachová), USB-C, CYW43439/RM2 → **IPEX 2,4 GHz**, SX1262 → **IPEX 868 MHz**.
-
-Pimoroni Pico LiPo 2 XL W (77 × 21 mm) je jen elektrická reference MCU+PSRAM, ne tvar.
-
-**SX1262 — co posoudit**
-
-| Položka | Návrh k posouzení |
-|---|---|
-| Čip | SX1262 HF 868 MHz, TCXO, DIO2 jako RF switch, DIO3 = 1,8 V TCXO (MeshCore `SX126X_DIO3_TCXO_VOLTAGE=1.8`) |
-| Výkon | 14–22 dBm; u vedení a 230 V lab držet se EU 868 limitů (návrhář nenařizuje ERP, jen footprint a PA) |
-| SPI | vlastní SPI1, **ne** piny Waveshare RP2040-LoRa (DIO1=GP16, BUSY=GP18, MISO=GP24 — kolidují s I²S a Wi-Fi) |
-| Návrh GPIO | viz §5.2 |
-| Anténa | IPEX-1 + pigtail ven z pouzdra; 50 Ω, GND stínicí šití, keep-out |
-| Koexistence | LoRa TX vs. MEMS / 3,072 MHz I²S — filtr na VCC rádia, vzdálenost IPEX od UTP jacků |
-
-### 3.3 Power PCB
-
-Samostatně, tvar volný.
+Samostatně, tvar volný. Na HAT je jen měření (INA), ne usměrnění harvestu.
 
 - Vstup sekundár split-core, usměrnění, bulk, TVS podle 230 V lab, pojistka.
-- Lab USB-C / 5 V, diodový OR s harvestem.
-- VSYS 3,3–5,5 V na compute, stíněný kablík.
-- I²C PMIC / INA219–3221 (firmware s nimi počítá jako s plánem).
+- Lab USB-C / 5 V na Pico, diodový OR s harvestem (na Power PCB nebo na HAT — návrhář).
+- VSYS 3,3–5,5 V na Pico VSYS, stíněný kablík.
 - LC/CM na výstupu, ať 50 Hz a buck neleze do 1V8 mikrofonů.
 
 Mimo rozsah: vlastní split-core, VN izolace, 22 kV.
 
-### 3.4 Satelit mikrofonu × 6
+### 3.3 Satelit mikrofonu × 6
 
-Bajonet v pouzdru, řada pinů / RJ45 **směrem k zemi**.
+Bajonet v pouzdru, RJ45 **piny k zemi**.
 
-| Položka | Výchozí návrh k posouzení |
+| Položka | Výchozí návrh |
 |---|---|
 | MEMS | T5848 bottom port 3,50 × 2,65 × 0,98 mm (nebo vybraný ekvivalent) |
 | VDD | 1,8 V, 100 nF X7R u VDD |
@@ -206,11 +193,11 @@ Bajonet v pouzdru, řada pinů / RJ45 **směrem k zemi**.
 | Port | TDK land pattern; nic před membránou |
 | Déšť | PTFE později, není SMT rev. 1 |
 | Napájení z UTP | **3,3 V** (LED + vstup LDO) |
-| LDO na satelitu | 3,3 V → 1,8 V pro T5848 |
-| LED | WS2812B / SK6812 @ 3,3 V, jeden pixel, `DIN` z UTP (vlastní GPIO jacku) |
+| LDO | 3,3 V → 1,8 V pro T5848 |
+| LED | WS2812B / SK6812 @ 3,3 V, jeden pixel, `DIN` z UTP |
 | Konektor | **RJ45 8P8C**, piny k zemi, mapa §4.2 |
 
-Žádný rozbočovač 3+3. Žádný `DOUT` zpět na compute (není volný vodič) — proto 6× `LED_DIN`, ne jeden daisy-chain.
+Žádný rozbočovač 3+3. Žádný `DOUT` zpět na HAT.
 
 ---
 
@@ -219,9 +206,9 @@ Bajonet v pouzdru, řada pinů / RJ45 **směrem k zemi**.
 ### 4.1 Topologie hodin
 
 ```
-RP2350 PIO master
-    GP9  SCK ──► buffer ──┬── RJ45-1 · 2 · 3 · 4 · 5 · 6   (stejný SCK)
-    GP8  WS  ──► buffer ──┘
+RP2350 PIO master (Pico Plus 2)
+    GP9  SCK ──► buffer na HAT ──┬── RJ45-1 · 2 · 3 · 4 · 5 · 6
+    GP8  WS  ──► buffer na HAT ──┘
 GP16 SD1  ◄── RJ45-1  mic1     GP10 LED1 ──► RJ45-1
 GP18 SD2  ◄── RJ45-2  mic2     GP11 LED2 ──► RJ45-2
 GP20 SD3  ◄── RJ45-3  mic3     GP12 LED3 ──► RJ45-3
@@ -230,11 +217,11 @@ GP27 SD5  ◄── RJ45-5  mic5     GP14 LED5 ──► RJ45-5
 GP28 SD6  ◄── RJ45-6  mic6     GP22 LED6 ──► RJ45-6
 ```
 
-SCK a WS se **větví na compute** do šesti jacků (stejná délka cest). MCU master. SD ani LED se mezi satelity nedaisy-chainují. Buffer SCK/WS dimenzovat na 6 zátěží (klidně 2× budič po třech).
+SCK a WS se větví **na HAT** do šesti jacků (stejná délka). MCU master. Buffer SCK/WS na 6 zátěží (klidně 2× budič po třech).
 
 ### 4.2 Mapování UTP — 1 mic = 1× 8P8C (zmrazené)
 
-Platí pro všechny čtyři páry T568B. Není to Ethernet; barvy jen kvůli patch kabelu.
+Není to Ethernet; barvy T568B kvůli patch kabelu.
 
 | Pár T568B | Piny | Signál | Poznámka |
 |---|---|---|---|
@@ -243,7 +230,7 @@ Platí pro všechny čtyři páry T568B. Není to Ethernet; barvy jen kvůli pat
 | 1 modrý | 4, 5 | SD , GND | data mikrofonu → MCU, 1,8 V |
 | 4 hnědý | 7, 8 | **3V3** , **LED_DIN** | napájení satelitu + WS2812; 1,8 V jen z LDO na satelitu |
 
-LED GND bere z párů 1–3. `LED_DIN` je 3,3 V z MCU (SK6812 / WS2812B-V5 3,3 V). T5848 na 3,3 V z páru 4 **nepřipojovat**.
+LED GND bere z párů 1–3. `LED_DIN` je 3,3 V (SK6812 / WS2812B-V5). T5848 na 3,3 V z páru 4 **nepřipojovat**.
 
 Stejná tabulka na silkscreenu u každého jacku (`MIC1` … `MIC6`).
 
@@ -251,71 +238,61 @@ Stejná tabulka na silkscreenu u každého jacku (`MIC1` … `MIC6`).
 
 230 V indukce, harvest, I²S na UTP. Proto buffer, ne holé GPIO.
 
-Na každém I²S ven z compute (k posouzení, ne dogma):
+Na každém I²S ven z HAT (k posouzení, ne dogma):
 
 1. sériový 22–33 Ω u budiče,
 2. ESD TVS,
 3. CM choke na párech SCK a WS,
-4. stínění UTP na GND **jen na compute**.
+4. stínění UTP na GND **jen na HAT**.
 
-Doporučený stackup compute: 4L SIG / GND / napájení / SIG.
+Doporučený stackup HAT: 4L SIG / GND / napájení / SIG.
 
 ---
 
-## 5. GPIO
+## 5. GPIO (Pico header — držet)
 
-### 5.1 Stávající firmware (varianta A — držet)
-
-Z [wiring_and_bom.md](https://github.com/fedurca/het68/blob/main/wiring_and_bom.md).
+Z [wiring_and_bom.md](https://github.com/fedurca/het68/blob/main/wiring_and_bom.md). WS2812 ve firmware zatím **není** — šest `LED_DIN` se sem zapíše.
 
 | Funkce | GPIO | Směr | Poznámka |
 |---|---|---|---|
 | Debug UART TX | GP0 | out | UART0, 115200 |
 | Debug UART RX | GP1 | in | |
-| DPS310 SDA | GP2 | I²C1 | |
-| DPS310 SCL | GP3 | I²C1 | |
-| Qw/ST SDA | GP4 | I²C0 | PMIC/INA sem, ne na GP8/9 |
-| Qw/ST SCL | GP5 | I²C0 | |
-| Piezo A | GP6 | out | SW H-můstek |
-| Piezo B | GP7 | out | |
+| Env SDA | GP2 | I²C1 | DPS310 / BME280 / SHT na stejném bytu |
+| Env SCL | GP3 | I²C1 | |
+| PM SDA | GP4 | I²C0 | INA; Qw/ST na Plus 2 |
+| PM SCL | GP5 | I²C0 | |
+| Piezo A | GP6 | out | PWM H-můstek → budič 4× PS1240 |
+| Piezo B | GP7 | out | totéž, invertovaný kanál |
 | I²S WS | GP8 | out | společné |
 | I²S SCK | GP9 | out | společné, 3,072 MHz |
+| LED1 DIN (mic1 / TFC) | GP10 | out | RJ45-1 pin 8 |
+| LED2 DIN | GP11 | out | RJ45-2 |
+| LED3 DIN | GP12 | out | RJ45-3 |
+| LED4 DIN | GP13 | out | RJ45-4 |
+| LED5 DIN | GP14 | out | RJ45-5 |
+| (volné) | GP15, 17, 19, 21 | — | nenechat viset; test pad / DNP |
 | Mic 1 SD | GP16 | in | TFC sever +35°, USB ch 1 |
 | Mic 2 SD | GP18 | in | TRR 120° +35° |
 | Mic 3 SD | GP20 | in | TSL 240° +35° |
+| LED6 DIN | GP22 | out | RJ45-6 |
+| Wi-Fi (W) | GP23, 24, 25, 29 | — | nesahat |
 | Mic 4 SD | GP26 | in | BC 180° −35° |
 | Mic 5 SD | GP27 | in | RLC 300° −35° |
 | Mic 6 SD | GP28 | in | RRC 60° −35° |
-| Wi-Fi (W) | GP23, 24, 25, 29 | — | nesahat |
-| PSRAM CS | GP47 | — | Plus 2 / B |
+| PSRAM CS | GP47 | — | na modulu Plus 2, ne na HAT |
 | BOOT | GP45 | — | Plus 2 W |
 
-WS2812 ve firmware **není**. Šest `LED_DIN` je návrh k zápisu sem.
-
-| Funkce | GPIO | Poznámka |
-|---|---|---|
-| LED1 DIN (mic1 / TFC) | GP10 | 3,3 V, RJ45-1 pin 8 |
-| LED2 DIN | GP11 | RJ45-2 |
-| LED3 DIN | GP12 | RJ45-3 |
-| LED4 DIN | GP13 | RJ45-4 |
-| LED5 DIN | GP14 | RJ45-5 |
-| LED6 DIN | GP22 | RJ45-6 |
-
-### 5.2 Varianta B — SX126 (k posouzení)
-
-GP10–14 a GP22 žerou LED. SX126 proto **ne** na ně a **ne** na Waveshare (GP16/18/24). Na Plus 2 headeru zbývá GP15, 17, 19, 21 — na plné SPI+IRQ+BUSY+RST to nestačí. U B vzít **extra GPIO RP2350B** (mimo 40pin Pico). Návrh v `PINOUT.csv`: SCK GP30, MOSI GP31, MISO GP32, NSS GP33, DIO1 GP34, BUSY GP35, NRESET GP36, RXEN GP37.
-
-Piezo: 4× paralelně na GP6/GP7.
+Návrhář nepíše firmware. GPIO mimo tuto tabulku jen po zápisu sem.
 
 ---
 
-## 6. Komponenty na compute (výchozí návrh)
+## 6. Komponenty na HAT (výchozí návrh)
 
-- DPS310 nebo SPL06, adresa 0x77.
-- Level shift / UTP budič — TXS0108E **nebo** to, co obstojí §1.2 (I²S na kabelu 1,8 V).
-- 3,3 V na pár 4 každého RJ45; **1,8 V LDO na každém satelitu**, 100 nF u MEMS.
-- ESD na off-board I²S a RJ45.
-- Varianta B: CYW43/RM2 + IPEX 2,4 GHz; SX1262 + IPEX 868 MHz; π-matching dle datasheetu modulu.
+- Level shift / UTP budič — TXS0108E **nebo** to, co obstojí §1.3.
+- 3,3 V na pár 4 každého RJ45; **1,8 V LDO na každém satelitu**.
+- ESD na off-board I²S, RJ45 a piezo.
+- Piezo H-můstek viz §1.4.
+- I²C viz §1.6.
 
 Nepoužívat 5 V na MEMS.
 
@@ -337,12 +314,13 @@ Priorita objednatele: **cena/ks → SNR → I²S**.
 
 Požadavky tisku (ASA/PETG, UV, zelená):
 
-1. MCU (Pico) v hranolu **53 × 21 × 40 mm**.
-2. I/O deska s **6× RJ45** mimo ten hranol — radiálně k stěnám, jack `MIC1` = sever.
+1. Pico v hranolu **53 × 21 × 40 mm**.
+2. HAT s **6× RJ45** mimo ten hranol — radiálně k stěnám, jack `MIC1` = sever.
 3. Bajonet mikrofonů, RJ45 **piny k zemi**.
 4. LED ve stejném bajonetu jako MEMS (otvor / čirý tisk).
+5. Čtyři pieza v pouzdru, ne na membráně MEMS.
 
-MEMS ±1 mm (1 vzorek TDOA ≈ 7,15 mm). IPEX pigtaily ven, antény ne uvnitř u transformátoru.
+MEMS ±1 mm (1 vzorek TDOA ≈ 7,15 mm).
 
 ---
 
@@ -350,59 +328,57 @@ MEMS ±1 mm (1 vzorek TDOA ≈ 7,15 mm). IPEX pigtaily ven, antény ne uvnitř u
 
 | Položka | Požadavek |
 |---|---|
-| Prototyp | po výběru A/B: pár compute + power + 6 satelitů na kus |
+| Prototyp | pár HAT + power + 6 satelitů; Pico Plus 2 se kupuje hotový |
 | CAD | KiCad 8+ (plugin jlcpcb-tools na BOM/CPL) |
 | Gerber | RS-274X + drill; stejný balík na JLCPCB i na tisk v EU (printed.cz) |
-| Výrobce | JLC SMT + LCSC (Basic přednostně před Extended); nebo EU tisk desek + ruční/SMT osazení |
-| Vrstvy | compute 4L; satelit 2L; power 2L |
+| Výrobce | JLC SMT + LCSC (Basic přednostně před Extended); nebo EU tisk + osazení |
+| Vrstvy | HAT 4L; satelit 2L; power 2L |
 | Povrch | HASL; satelit ENIG kvůli MEMS |
-| BOM | LCSC C-code, DNP, orientační cena @10 a @100 ks |
+| BOM | LCSC C-code, DNP, orientační cena @10 a @100 ks (bez ceny samotného Pico) |
 
-Počet RJ45 je daný (6). Zhodnocení A vs. B a volba jacku (SMT/THT) je součást kusovníku. Kompletní výkresová dokumentace je podmínkou odevzdání.
+Počet RJ45 je daný (6). Volba jacku, shifteru, piezo budiče a env čipu je součást kusovníku. Kompletní výkresová dokumentace je podmínkou odevzdání.
 
 ---
 
 ## 9. Dodávky od návrháře
 
-1. **Zhodnocení §1** (1–2 strany): tvar desky pro 6× RJ45, shifter vs. buffer, A vs. B, dva IPEX. Doporučení jedné cesty.
-2. Schéma PDF + zdroj (KiCad 8+ / Altium).
+1. Krátké zhodnocení (1–2 strany): tvar HAT, shifter vs. buffer, env čip, piezo budič, INA.
+2. Schéma PDF + zdroj (KiCad 8+ / Altium) — **HAT + satelit + power**.
 3. Layout + Gerber + drill + IPC-356.
 4. BOM LCSC, DNP, cena.
-5. CPL + STEP osazené desky.
-6. Pinout konektorů = silkscreen (T568B mapování!).
-7. Stackup, I²S pravidla, u B: RF keep-out.
+5. CPL + STEP osazené desky (HAT se zasunutým Plus 2).
+6. Pinout konektorů = silkscreen (T568B!).
+7. Stackup, I²S pravidla.
 8. JLC nastavení.
-
-Návrhář nepíše firmware. GPIO mimo §5.1 jen po zápisu sem.
 
 ---
 
 ## 10. Mimo tuto zakázku
 
-- VN izolace, 22 kV, certifikace.
-- SPDIF / optika (úvaha pro linky >5 m — tady UTP ≤ 0,3 m).
+- Vlastní MCU deska, SX1262, MeshCore RF, IPEX / pigtaily.
+- VN izolace, 22 kV, certifikace, RF certifikace 868 / 2,4 GHz.
+- SPDIF / optika (UTP ≤ 0,3 m).
 - PTFE a déšť (objednatel).
 - 3D model pouzdra (tiskař); STEP desky ano.
-- Port MeshCore na RP2350 (objednatel); deska jen vyvede SX1262.
-- RF certifikace 868 / 2,4 GHz.
+- Firmware (objednatel) — vč. driveru SHT / BME a WS2812.
 
 ---
 
 ## 11. Otázky, které má zhodnocení uzavřít
 
-1. Varianta **A** (Plus 2 / Plus 2 W + I/O deska) nebo **B** (vlastní + IPEX BT + SX126)?
-2. Jaký 8P8C jack (SMT/THT, orientace), aby šest kusů sedělo na prstenec kostky?
-3. T5848 + TXS0108E, nebo jiný MEMS + line driver?
-4. Tvar I/O desky vs. tisk pouzdra (STEP).
-5. Dva IPEX, nebo LoRa IPEX a BT nechat na modulu?
-6. Čtyři pieza paralelně na GP6/GP7?
-7. Je změřený split-core (V, I)? Jinak široký vstup na Power PCB.
-8. Power PCB: jen harvest + USB, nebo i LiPo?
+1. Jaký 8P8C jack (SMT/THT, orientace), aby šest kusů sedělo na prstenec kostky?
+2. T5848 + TXS0108E, nebo jiný MEMS + line driver?
+3. Tvar HAT vs. tisk pouzdra (STEP), strana osazení Pico.
+4. DPS310+SHT4x, nebo BME280?
+5. Piezo budič: jaký čip, napájení 3V3 vs VSYS?
+6. INA219 vs INA3221; je změřený split-core (V, I)?
+7. Power PCB: jen harvest + USB, nebo i LiPo?
+8. Plus 2, nebo Plus 2 W (BLE)? HAT musí sedět na oba.
 
 ---
 
 ## 12. Podklady (bez jmen)
 
-Technický obsah zadání pochází z provozu prototypu, z firmware het68 (`wiring_and_bom.md`, pinout, 48 kHz/24 bit) a z předpokladů objednatele v §1. Osoby, kontakty, nabídky a pracnosti v tomto dokumentu **nejsou**.
+Technický obsah zadání pochází z provozu prototypu, z firmware het68 (`wiring_and_bom.md`, `buzzer.c`, `dps310.c`, pinout, 48 kHz/24 bit) a ze zmrazeného HAT v §1. Osoby, kontakty, nabídky a pracnosti v tomto dokumentu **nejsou**.
 
-Konec zadání v1.2.0.
+Konec zadání v1.3.0.
