@@ -1,0 +1,32 @@
+function,gpio,dir,net,notes
+debug_uart_tx,GP0,out,UART0_TX,115200 baud; firmware
+debug_uart_rx,GP1,in,UART0_RX,firmware
+dps310_sda,GP2,i2c,I2C1_SDA,firmware addr 0x77
+dps310_scl,GP3,i2c,I2C1_SCL,firmware
+qwiic_sda,GP4,i2c,I2C0_SDA,PMIC/INA here not GP8/9
+qwiic_scl,GP5,i2c,I2C0_SCL,
+piezo_a,GP6,out,PIEZO_A,firmware H-bridge
+piezo_b,GP7,out,PIEZO_B,firmware PWM inverted
+i2s_ws,GP8,out,I2S_WS,firmware shared
+i2s_sck,GP9,out,I2S_SCK,firmware 3.072 MHz
+sx126_sck,GP10,out,LORA_SCK,variant B proposal; not firmware
+sx126_mosi,GP11,out,LORA_MOSI,variant B proposal
+sx126_miso,GP12,in,LORA_MISO,variant B proposal
+sx126_nss,GP13,out,LORA_NSS,variant B proposal
+sx126_dio1,GP14,in,LORA_DIO1,variant B proposal IRQ
+sx126_busy,GP15,in,LORA_BUSY,variant B proposal
+mic1_sd,GP16,in,I2S_SD1,firmware TFC north +35 USB ch1
+sx126_nreset,GP17,out,LORA_RST,variant B proposal
+mic2_sd,GP18,in,I2S_SD2,firmware TRR 120 +35
+sx126_rxen,GP19,out,LORA_RXEN,variant B optional if no DIO2-only switch
+mic3_sd,GP20,in,I2S_SD3,firmware TSL 240 +35
+ws2812_din,GP22,out,LED_DIN,proposal; GP10 taken by SX126 SPI
+wifi_wl_on,GP23,reserved,WL_ON,CYW43/RM2 do not use
+wifi_data,GP24,reserved,WL_D,do not use
+wifi_cs,GP25,reserved,WL_CS,do not use
+mic4_sd,GP26,in,I2S_SD4,firmware BC 180 -35
+mic5_sd,GP27,in,I2S_SD5,firmware RLC 300 -35
+mic6_sd,GP28,in,I2S_SD6,firmware RRC 60 -35
+wifi_clk,GP29,reserved,WL_CLK,do not use
+boot_plus2w,GP45,in,BOOT,Pimoroni Plus 2 W
+psram_cs,GP47,out,PSRAM_CS,Plus 2 / variant B
