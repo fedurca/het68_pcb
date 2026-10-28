@@ -1,25 +1,45 @@
 # het68_pcb
 
-Zadání návrhu a výroby PCB pro **het68** (akustická detekce dronů).
+Zadání a KiCad návrh PCB pro **het68** (akustická detekce dronů).
 
-Aktuální verze: **[v1.3.0](https://github.com/fedurca/het68_pcb/releases/tag/v1.3.0)** — viz [CHANGELOG.md](CHANGELOG.md).
+Aktuální verze: **[v1.4.0](https://github.com/fedurca/het68_pcb/releases/tag/v1.4.0)** — viz [CHANGELOG.md](CHANGELOG.md).
 
-Firmware, geometrie pole a stávající Grove zapojení: [fedurca/het68](https://github.com/fedurca/het68).
+Firmware a geometrie pole: [fedurca/het68](https://github.com/fedurca/het68). Zadání pro návrháře: [docs/ZADANI_PCB.md](docs/ZADANI_PCB.md). Projekty v KiCadu: [kicad/README.md](kicad/README.md).
 
-## Dokument k odeslání návrháři
+Tři desky: HAT k Pimoroni Pico Plus 2, satelit mikrofonu (6×) a napájení ze sekundáru split-core. Schémata prošla ERC. Layout rev A je první autorout — před objednávkou desek je potřeba dočistit DRC.
 
-**[docs/ZADANI_PCB.md](docs/ZADANI_PCB.md)** — zadání **v1.3.0** (česky, tag `v1.3.0`).
+## HAT — 99 × 96 mm, 4 vrstvy
 
-**Zmrazené:** HAT k [Pimoroni Pico Plus 2](https://shop.pimoroni.com/products/pimoroni-pico-plus-2) (nebo Plus 2 W). Na HAT:
+Pico Plus 2 uprostřed, šest RJ45, převodníky I²S, budič čtyř piez, DPS310, SHT40 a INA3221.
 
-- převodníky úrovní a **6× RJ45** (jeden UTP na mikrofon + RGB LED směru)
-- budič **4× piezo** (firmware H-můstek GP6/GP7)
-- **6×** `LED_DIN` (WS2812 / SK6812 u satelitů)
-- I²C: powermanagement a environmentální senzor (tlak, teplota, vlhkost)
+**Návrh PCB** (vrchní měď, potisk, maska):
 
-Vlastní MCU deska, SX126 a IPEX v této revizi nejsou.
+![Návrh HAT](docs/img/hat-pcb.png)
 
-Doplňky:
+**Osazená deska:**
 
-- [docs/PINOUT.csv](docs/PINOUT.csv) — GPIO firmware + HAT
-- [docs/CHECKLIST_NAVRHAR.md](docs/CHECKLIST_NAVRHAR.md) — zhodnocení a odevzdání
+![Osazený HAT](docs/img/hat-osazeno.png)
+
+## Satelit — 28 × 52 mm, 2 vrstvy
+
+Jeden mikrofon T5848, LDO 1,8 V a adresovatelná RGB dioda. Stejná mapa RJ45 jako na HAT.
+
+**Návrh PCB:**
+
+![Návrh satelitu](docs/img/sat-pcb.png)
+
+**Osazená deska:**
+
+![Osazený satelit](docs/img/sat-osazeno.png)
+
+## Napájení — 90 × 50 mm, 2 vrstvy
+
+Sekundár split-core, můstek, TVS a diodové OR s USB-C. Na desce není 230 V.
+
+**Návrh PCB:**
+
+![Návrh napájení](docs/img/pwr-pcb.png)
+
+**Osazená deska:**
+
+![Osazené napájení](docs/img/pwr-osazeno.png)

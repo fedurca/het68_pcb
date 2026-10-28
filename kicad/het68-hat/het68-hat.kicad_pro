@@ -1,0 +1,6 @@
+{
+  "board": {"design_settings": {"rules": {"min_clearance": 0.2, "min_track_width": 0.2, "min_via_diameter": 0.6, "min_via_drill": 0.3, "min_hole_clearance": 0.2}}},
+  "meta": {"filename": "het68-hat.kicad_pro", "version": 3},
+  "sheets": [["het68-hat.kicad_sch", ""]],
+  "text_variables": {}
+}

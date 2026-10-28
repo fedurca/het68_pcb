@@ -1,0 +1,166 @@
+** Drc report for het68-sat.kicad_pcb **
+** Created on 2026-10-28T15:03:23 **
+** Report includes: Errors **
+
+** Found 28 DRC violations **
+[tracks_crossing]: Tracks crossing
+    Local override; error
+    @(13.1000 mm, 39.4560 mm): Track [SCK] on F.Cu, length 2.8000 mm
+    @(13.1000 mm, 38.6360 mm): Track [+1V8] on F.Cu, length 1.3000 mm
+[hole_clearance]: Hole clearance violation (board setup constraints hole clearance 0.2000 mm; actual 0.0950 mm)
+    Rule: board setup constraints hole; error
+    @(13.3800 mm, 40.7080 mm): Track [GND] on F.Cu, length 1.3000 mm
+    @(14.0000 mm, 40.7080 mm): NPTH pad of MK1
+[hole_clearance]: Hole clearance violation (board setup constraints hole clearance 0.2000 mm; actual 0.0950 mm)
+    Rule: board setup constraints hole; error
+    @(14.6200 mm, 40.7080 mm): Track [GND] on F.Cu, length 1.3000 mm
+    @(14.0000 mm, 40.7080 mm): NPTH pad of MK1
+[hole_clearance]: Hole clearance violation (board setup constraints hole clearance 0.2000 mm; actual 0.0950 mm)
+    Rule: board setup constraints hole; error
+    @(14.0000 mm, 40.0880 mm): Track [GND] on F.Cu, length 1.3000 mm
+    @(14.0000 mm, 40.7080 mm): NPTH pad of MK1
+[hole_clearance]: Hole clearance violation (board setup constraints hole clearance 0.2000 mm; actual 0.0950 mm)
+    Rule: board setup constraints hole; error
+    @(14.0000 mm, 41.3280 mm): Track [GND] on F.Cu, length 1.3000 mm
+    @(14.0000 mm, 40.7080 mm): NPTH pad of MK1
+[shorting_items]: Items shorting two nets (nets WS and SD)
+    Local override; error
+    @(15.4000 mm, 38.4000 mm): Track [WS] on F.Cu, length 0.2000 mm
+    @(14.0000 mm, 38.6360 mm): Track [SD] on F.Cu, length 2.8000 mm
+[shorting_items]: Items shorting two nets (nets WS and SD)
+    Local override; error
+    @(14.8000 mm, 38.6000 mm): Track [WS] on F.Cu, length 0.2000 mm
+    @(14.0000 mm, 38.6360 mm): Track [SD] on F.Cu, length 2.8000 mm
+[clearance]: Clearance violation ( clearance 0.2000 mm; actual 0.1750 mm)
+    Local override; error
+    @(18.8000 mm, 19.2000 mm): Via [WS] on F.Cu - B.Cu
+    @(19.0000 mm, 18.6000 mm): Track [SD_J] on F.Cu, length 0.2000 mm
+[shorting_items]: Items shorting two nets (nets SD and WS)
+    Local override; error
+    @(14.0000 mm, 38.6360 mm): Track [SD] on F.Cu, length 2.8000 mm
+    @(15.2000 mm, 38.6000 mm): Track [WS] on F.Cu, length 0.2000 mm
+[shorting_items]: Items shorting two nets (nets WS and SD)
+    Local override; error
+    @(15.4000 mm, 38.6000 mm): Track [WS] on F.Cu, length 0.2000 mm
+    @(14.0000 mm, 38.6360 mm): Track [SD] on F.Cu, length 2.8000 mm
+[clearance]: Clearance violation ( clearance 0.2000 mm; actual 0.1860 mm)
+    Local override; error
+    @(15.4000 mm, 38.2000 mm): Track [WS] on F.Cu, length 0.2000 mm
+    @(14.0000 mm, 38.6360 mm): Track [SD] on F.Cu, length 2.8000 mm
+[tracks_crossing]: Tracks crossing
+    Local override; error
+    @(14.9000 mm, 38.6360 mm): Track [WS] on F.Cu, length 0.1063 mm
+    @(14.0000 mm, 38.6360 mm): Track [SD] on F.Cu, length 2.8000 mm
+[shorting_items]: Items shorting two nets (nets WS and SD)
+    Local override; error
+    @(14.9000 mm, 38.6360 mm): Pad 1 [WS] of MK1 on F.Cu
+    @(14.0000 mm, 38.6360 mm): Track [SD] on F.Cu, length 2.8000 mm
+[shorting_items]: Items shorting two nets (nets WS and SD)
+    Local override; error
+    @(15.0000 mm, 38.6000 mm): Track [WS] on F.Cu, length 0.2000 mm
+    @(14.0000 mm, 38.6360 mm): Track [SD] on F.Cu, length 2.8000 mm
+[hole_clearance]: Hole clearance violation (board setup constraints hole clearance 0.2000 mm; actual 0.0600 mm)
+    Rule: board setup constraints hole; error
+    @(13.3800 mm, 40.7080 mm): Pad 3 [GND] of MK1 on F.Cu
+    @(14.0000 mm, 40.7080 mm): NPTH pad of MK1
+[hole_clearance]: Hole clearance violation (board setup constraints hole clearance 0.2000 mm; actual 0.0600 mm)
+    Rule: board setup constraints hole; error
+    @(14.0000 mm, 41.3280 mm): Pad 3 [GND] of MK1 on F.Cu
+    @(14.0000 mm, 40.7080 mm): NPTH pad of MK1
+[hole_clearance]: Hole clearance violation (board setup constraints hole clearance 0.2000 mm; actual 0.0600 mm)
+    Rule: board setup constraints hole; error
+    @(14.0000 mm, 40.0880 mm): Pad 3 [GND] of MK1 on F.Cu
+    @(14.0000 mm, 40.7080 mm): NPTH pad of MK1
+[hole_clearance]: Hole clearance violation (board setup constraints hole clearance 0.2000 mm; actual 0.0600 mm)
+    Rule: board setup constraints hole; error
+    @(14.6200 mm, 40.7080 mm): Pad 3 [GND] of MK1 on F.Cu
+    @(14.0000 mm, 40.7080 mm): NPTH pad of MK1
+[clearance]: Clearance violation ( clearance 0.2000 mm; actual 0.0000 mm)
+    Local override; error
+    @(13.3800 mm, 40.7080 mm): Pad 3 [GND] of MK1 on F.Cu
+    @(14.0000 mm, 40.7080 mm): Circle [<no net>] of MK1 on F.Cu
+[clearance]: Clearance violation ( clearance 0.2000 mm; actual 0.0000 mm)
+    Local override; error
+    @(14.0000 mm, 41.3280 mm): Pad 3 [GND] of MK1 on F.Cu
+    @(14.0000 mm, 40.7080 mm): Circle [<no net>] of MK1 on F.Cu
+[clearance]: Clearance violation ( clearance 0.2000 mm; actual 0.0450 mm)
+    Local override; error
+    @(14.0000 mm, 40.0880 mm): Pad 3 [GND] of MK1 on F.Cu
+    @(14.0000 mm, 40.7080 mm): Circle [<no net>] of MK1 on F.Cu
+[clearance]: Clearance violation ( clearance 0.2000 mm; actual 0.0000 mm)
+    Local override; error
+    @(14.6200 mm, 40.7080 mm): Pad 3 [GND] of MK1 on F.Cu
+    @(14.0000 mm, 40.7080 mm): Circle [<no net>] of MK1 on F.Cu
+[copper_edge_clearance]: Board edge clearance violation (board setup constraints edge clearance 0.5000 mm; actual 0.3005 mm)
+    Rule: board setup constraints edge; error
+    @(0.0000 mm, 0.0000 mm): Segment on Edge.Cuts
+    @(0.3000 mm, 0.3000 mm): Zone [GND] on B.Cu, priority 0
+[solder_mask_bridge]: Front solder mask aperture bridges items with different nets
+    Rule: board setup solder mask min width; error
+    @(13.1000 mm, 39.4560 mm): Track [SCK] on F.Cu, length 2.8000 mm
+    @(13.1000 mm, 38.6360 mm): Pad 7 [+1V8] of MK1 on F.Cu
+[solder_mask_bridge]: Front solder mask aperture bridges items with different nets
+    Rule: board setup solder mask min width; error
+    @(14.0000 mm, 38.6360 mm): Track [SD] on F.Cu, length 2.8000 mm
+    @(14.9000 mm, 38.6360 mm): Pad 1 [WS] of MK1 on F.Cu
+[solder_mask_bridge]: Front solder mask aperture bridges items with different nets
+    Rule: board setup solder mask min width; error
+    @(14.0000 mm, 40.7080 mm): Circle [<no net>] of MK1 on F.Cu
+    @(13.3800 mm, 40.7080 mm): Pad 3 [GND] of MK1 on F.Cu
+[solder_mask_bridge]: Front solder mask aperture bridges items with different nets
+    Rule: board setup solder mask min width; error
+    @(14.0000 mm, 40.7080 mm): Circle [<no net>] of MK1 on F.Cu
+    @(14.0000 mm, 41.3280 mm): Pad 3 [GND] of MK1 on F.Cu
+[solder_mask_bridge]: Front solder mask aperture bridges items with different nets
+    Rule: board setup solder mask min width; error
+    @(14.0000 mm, 40.7080 mm): Circle [<no net>] of MK1 on F.Cu
+    @(14.6200 mm, 40.7080 mm): Pad 3 [GND] of MK1 on F.Cu
+
+** Found 9 unconnected pads **
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(12.8000 mm, 11.2000 mm): Track [WS] on B.Cu, length 0.2000 mm
+    @(12.5320 mm, 14.0000 mm): Track [WS] on F.Cu, length 2.8000 mm
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(13.1000 mm, 38.6360 mm): Track [+1V8] on F.Cu, length 1.3000 mm
+    @(7.5200 mm, 38.0000 mm): Track [+1V8] on F.Cu, length 1.3000 mm
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(17.1375 mm, 27.0500 mm): Track [+1V8] on F.Cu, length 1.3000 mm
+    @(13.1000 mm, 38.6360 mm): Track [+1V8] on F.Cu, length 1.3000 mm
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(17.1375 mm, 27.0500 mm): Track [+1V8] on F.Cu, length 1.3000 mm
+    @(22.0000 mm, 28.4800 mm): Track [+1V8] on F.Cu, length 1.3000 mm
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(8.0000 mm, 28.4800 mm): Track [+3V3] on F.Cu, length 1.3000 mm
+    @(14.8625 mm, 28.9500 mm): Track [+3V3] on F.Cu, length 1.3000 mm
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(14.8625 mm, 27.0500 mm): Track [+3V3] on F.Cu, length 1.3000 mm
+    @(14.8625 mm, 28.9500 mm): Track [+3V3] on F.Cu, length 1.3000 mm
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(14.8625 mm, 28.9500 mm): Track [+3V3] on F.Cu, length 1.3000 mm
+    @(19.5500 mm, 40.3500 mm): Track [+3V3] on F.Cu, length 1.3000 mm
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(16.5960 mm, 14.0000 mm): PTH pad 7 [+3V3] of J1
+    @(14.8625 mm, 27.0500 mm): Track [+3V3] on F.Cu, length 1.3000 mm
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(21.5200 mm, 46.0000 mm): Track [+3V3] on F.Cu, length 1.3000 mm
+    @(19.5500 mm, 40.3500 mm): Track [+3V3] on F.Cu, length 1.3000 mm
+
+** Found 0 Footprint errors **
+
+** Ignored checks **
+    - Footprint has no courtyard defined
+    - Track endpoint not centered on via
+    - Tuning profile track geometries
+    - Footprint doesn't match symbol's footprint filters
+    - Footprint component type doesn't match footprint pads
+
+** End of Report **

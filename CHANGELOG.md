@@ -2,7 +2,15 @@
 
 Formát podle [Keep a Changelog](https://keepachangelog.com/cs/1.1.0/), verze podle [SemVer](https://semver.org/lang/cs/).
 
-Historie gitu je přepsaná; veřejné tagy `v1.1.1`, `v1.2.0`, `v1.3.0`.
+Historie gitu je přepsaná; veřejné tagy `v1.1.1`, `v1.2.0`, `v1.3.0`, `v1.4.0`.
+
+## [1.4.0] — 2026-10-28
+
+### Added
+
+- KiCad 10 rev A: HAT, satelit mikrofonu a napájecí deska v [`kicad/`](kicad/README.md).
+- Náhledy návrhu PCB a osazených desek v [README](README.md) (`docs/img/`).
+- Gerbery, vrtání a BOM v `kicad/*/fab/`. Layout ještě neprošel DRC, do výroby až po dočištění.
 
 ## [1.3.0] — 2026-10-28
 
@@ -34,6 +42,7 @@ Historie gitu je přepsaná; veřejné tagy `v1.1.1`, `v1.2.0`, `v1.3.0`.
 - Předpoklady objednatele k posouzení: UTP k mikrofonům, nové MEMS a převodníky úrovní, compute A = Pimoroni Pico Plus 2, compute B = vlastní deska s IPEX a SX1262.
 - GPIO tabulka [`docs/PINOUT.csv`](docs/PINOUT.csv) a checklist [`docs/CHECKLIST_NAVRHAR.md`](docs/CHECKLIST_NAVRHAR.md).
 
+[1.4.0]: https://github.com/fedurca/het68_pcb/releases/tag/v1.4.0
 [1.3.0]: https://github.com/fedurca/het68_pcb/releases/tag/v1.3.0
 [1.2.0]: https://github.com/fedurca/het68_pcb/releases/tag/v1.2.0
 [1.1.1]: https://github.com/fedurca/het68_pcb/releases/tag/v1.1.1

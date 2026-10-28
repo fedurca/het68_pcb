@@ -1,0 +1,2 @@
+Gerbery jsou export z autoroutovaného návrhu rev A.
+DRC stále hlásí zkraty a vůle. Do výroby je neposílej, dokud v KiCadu DRC neprojde a Gerbery se znovu nevyexportují.
