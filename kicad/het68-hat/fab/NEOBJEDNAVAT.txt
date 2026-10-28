@@ -1,2 +1,3 @@
-Gerbery jsou export dvouvrstvého autoroutu v1.5.0.
-DRC stále hlásí zkraty a vůle. Do výroby je neposílej, dokud v KiCadu DRC neprojde a Gerbery se znovu nevyexportují.
+Gerbery jsou export dvouvrstvého layoutu v1.6.0.
+Satelit v DRC prošel. Power deska nemá zkraty, na USB-C ale nejsou dotažené CC1, CC2 a oba piny VBUS.
+HAT má pořád desítky DRC chyb. Do výroby je neposílej, dokud DRC neprojde a Gerbery se znovu nevyexportují.

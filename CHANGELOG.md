@@ -2,7 +2,20 @@
 
 Formát podle [Keep a Changelog](https://keepachangelog.com/cs/1.1.0/), verze podle [SemVer](https://semver.org/lang/cs/).
 
-Historie gitu je přepsaná; veřejné tagy `v1.1.1`, `v1.2.0`, `v1.3.0`, `v1.4.0`, `v1.5.0`.
+Historie gitu je přepsaná; veřejné tagy `v1.1.1`, `v1.2.0`, `v1.3.0`, `v1.4.0`, `v1.5.0`, `v1.6.0`.
+
+## [1.6.0] — 2026-10-28
+
+### Changed
+
+- Routing na dvou vrstvách je znovu. Mřížka 0,1 mm, vůle 0,2 mm, zakázané zóny součástek (tělo SHT40, anténa Pico) se obcházejí. Součástky na HAT už nesedí na Pico ani na RJ45.
+- Satelit mikrofonu prošel DRC bez chyb a bez nepřipojených padů.
+- Napájecí deska nemá zkraty ani vůle. Nepřipojené zůstávají CC1, CC2 a propojení VBUS na USB-C (rozteč 0,5 mm).
+- HAT klesl z několika set DRC chyb na desítky. Pořád není na výrobu: část sítí chybí a pár via je moc blízko padům převodníků.
+
+### Added
+
+- Náhledy desek jsou z tohoto layoutu, včetně osazení. Nově i sestava: kleště na jednom vodiči vedení, panel, článek 21700 a propojené desky. [`docs/img/sestava.png`](docs/img/sestava.png).
 
 ## [1.5.0] — 2026-10-28
 
@@ -55,6 +68,7 @@ Historie gitu je přepsaná; veřejné tagy `v1.1.1`, `v1.2.0`, `v1.3.0`, `v1.4.
 - Předpoklady objednatele k posouzení: UTP k mikrofonům, nové MEMS a převodníky úrovní, compute A = Pimoroni Pico Plus 2, compute B = vlastní deska s IPEX a SX1262.
 - GPIO tabulka [`docs/PINOUT.csv`](docs/PINOUT.csv) a checklist [`docs/CHECKLIST_NAVRHAR.md`](docs/CHECKLIST_NAVRHAR.md).
 
+[1.6.0]: https://github.com/fedurca/het68_pcb/releases/tag/v1.6.0
 [1.5.0]: https://github.com/fedurca/het68_pcb/releases/tag/v1.5.0
 [1.4.0]: https://github.com/fedurca/het68_pcb/releases/tag/v1.4.0
 [1.3.0]: https://github.com/fedurca/het68_pcb/releases/tag/v1.3.0

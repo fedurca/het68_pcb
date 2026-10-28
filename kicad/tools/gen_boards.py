@@ -1447,47 +1447,30 @@ def place_hat(board: Board, sch: Sch):
     for ref, x in zip(("J4", "J5", "J6"), bot_x):
         board.place(by[ref], x, 10.5, 180)
     # translators on the right
-    board.place(by["U2"], 78, 62, 0)
-    board.place(by["U3"], 78, 48, 0)
-    board.place(by["U4"], 78, 34, 0)
-    board.place(by["U5"], 70, 22, 0)
-    board.place(by["C1"], 64, 20, 0)
-    board.place(by["C2"], 64, 23, 0)
-    board.place(by["C3"], 48, 20, 0)
-    board.place(by["C4"], 52, 20, 0)
+    # Right of the Pico. Jacks and the module leave no strip between them,
+    # so series resistors and ESD sit in the side channels, not on the Pico.
+    board.place(by["U4"], 70, 32, 0)
+    board.place(by["U3"], 70, 46, 0)
+    board.place(by["U2"], 70, 60, 0)
+    board.place(by["U5"], 82, 28, 0)
+    board.place(by["C1"], 82, 24, 0)
+    board.place(by["C2"], 86, 24, 0)
+    board.place(by["C3"], 46, 21.4, 0)
+    board.place(by["C4"], 52, 21.4, 0)
     for i, ref in enumerate(("C5", "C6", "C7", "C8", "C9", "C10")):
-        board.place(by[ref], 88, 30 + i * 3.2, 90)
-    # resistors and ESD near jacks — laid out in the router, just park them in lanes
-    # R10.. are created in order SCK, WS, LED per jack 1..6
+        board.place(by[ref], 88, 62 + i * 2.4, 90)
     rs = [p for p in sch.parts if p["ref"].startswith("R") and p["ref"][1:].isdigit() and int(p["ref"][1:]) < 40]
-    # 18 resistors R10-R27
-    # place 3 per jack in a row inside the jack
-    groups = [rs[i : i + 3] for i in range(0, 18, 3)]
-    # groups follow jack order J1..J6
-    jack_anchor = {
-        0: (46, H - 22),  # J1 top center
-        1: (75, H - 22),
-        2: (16, H - 22),
-        3: (20, 22),
-        4: (50, 22),
-        5: (80, 22),
-    }
-    for gi, g in enumerate(groups):
-        ax, ay = jack_anchor[gi]
-        for k, part in enumerate(g):
-            board.place(part, ax - 4 + k * 4, ay, 90)
+    for i, part in enumerate(rs):
+        board.place(part, 64 + (i % 6) * 2.4, 67 + (i // 6) * 2.8, 90)
     ds = [p for p in sch.parts if p["ref"].startswith("D") and p["value"].startswith("PESD")]
-    dgroups = [ds[i : i + 4] for i in range(0, 24, 4)]
-    for gi, g in enumerate(dgroups):
-        ax, ay = jack_anchor[gi]
-        for k, part in enumerate(g):
-            board.place(part, ax - 6 + k * 4, ay + (4 if gi < 3 else -4), 0)
-    board.place(by["U6"], 86, 22, 0)
-    board.place(by["C11"], 86, 16, 0)
-    board.place(by["R40"], 92, 20, 90)
-    board.place(by["R41"], 92, 24, 90)
+    for i, part in enumerate(ds):
+        board.place(part, 10 + (i % 6) * 4.0, 64.5 + (i // 6) * 2.7, 0)
+    board.place(by["U6"], 82, 36, 0)
+    board.place(by["C11"], 86, 36, 0)
+    board.place(by["R40"], 80, 46, 90)
+    board.place(by["R41"], 80, 52, 90)
     for i, ref in enumerate(("J11", "J12", "J13", "J14")):
-        board.place(by[ref], 94, 30 + i * 5, 0)
+        board.place(by[ref], 94, 28 + i * 8, 0)
     # sensors left
     board.place(by["U7"], 18, 55, 0)
     board.place(by["U8"], 18, 48, 0)
@@ -1502,9 +1485,9 @@ def place_hat(board: Board, sch: Sch):
     board.place(by["U9"], 18, 36, 0)
     board.place(by["R47"], 10, 36, 90)
     board.place(by["R48"], 10, 40, 90)
-    board.place(by["C14"], 26, 36, 0)
+    board.place(by["C14"], 33, 36, 0)
     board.place(by["J10"], 10, 28, 0)
-    board.place(by["J17"], 28, 28, 0)
+    board.place(by["J17"], 33, 44, 0)
     # holes
     hole_fp = "MountingHole:MountingHole_3.2mm_M3"
     for i, (x, y) in enumerate(((4, 4), (W - 4, 4), (4, H - 4), (W - 4, H - 4)), start=1):
@@ -1538,7 +1521,7 @@ def place_pwr(board: Board, sch: Sch):
     board.place(by["R1"], 32, 36, 90)
     board.place(by["R2"], 32, 32, 90)
     board.place(by["C3"], 32, 24, 0)
-    board.place(by["D7"], 28, 22, 0)
+    board.place(by["D7"], 38, 38, 0)
     board.place(by["J1"], 70, 40, 0)
     board.place(by["F1"], 58, 40, 0)
     board.place(by["R4"], 64, 44, 0)
@@ -1607,10 +1590,10 @@ def main():
     build_hat(hat)
     hb = Board("het68-hat", 99, 96, 2)
     place_hat(hb, hat)
-    hb.text("het68 HAT rev B  2L", 62, 74, size=1.0)
-    hb.text("MIC1 sever", 46, 80, size=0.9)
-    hb.text("T568B 1=SCK 3=WS 4=SD 7=3V3 8=LED", 50, 18, size=0.6)
-    hb.text("PZ pin1 = +", 86, 28, size=0.7)
+    hb.text("het68 HAT rev C  2L", 64, 23.2, size=0.7)
+    hb.text("MIC1 sever", 64, 81, size=0.7)
+    hb.text("T568B 1=SCK 3=WS 4=SD 7=3V3 8=LED", 64, 25.2, size=0.45)
+    hb.text("PZ pin1 = +", 86, 56, size=0.6)
     out = ROOT / "het68-hat"
     out.mkdir(exist_ok=True)
     miss = finish(hb, hat, out, None)

@@ -1,2 +1,2 @@
-Gerbery jsou export dvouvrstvého autoroutu v1.5.0.
-DRC stále hlásí zkraty a vůle. Do výroby je neposílej, dokud v KiCadu DRC neprojde a Gerbery se znovu nevyexportují.
+Gerbery jsou export dvouvrstvého layoutu v1.6.0.
+Satelit v DRC prošel (žádné chyby, žádné nepřipojené pady).

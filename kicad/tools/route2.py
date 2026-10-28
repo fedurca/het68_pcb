@@ -1,35 +1,44 @@
 """2-layer router: signals on top, GND pour on the bottom.
 
-Track centers stay clearance + half-width away from foreign copper, so a
-via cannot land on the next pad of a fine-pitch part.
+Grid is 0.1 mm. A track center may sit only on a cell that is either its own
+pad or far enough from foreign copper that the finished 0.25 mm track still
+has 0.2 mm clearance, including the straight segment between cell centers.
+Footprint keepouts (SHT40 body, Pico antenna) are blocked. Tracks are not
+dropped after the search: if the grid allows a cell, the segment is drawn.
 """
 from __future__ import annotations
 
 import heapq
-from array import array
+import math
 
 import pcbnew
 
-G = 0.2
+G = 0.1
 TRACK_W = 0.25
-POWER_W = 0.45
 CLEAR = 0.2
-# How far a track center must stay from foreign copper.
-EXPAND = CLEAR + TRACK_W / 2
-EDGE = 65000
-TRACK = 64000
+# Extra beyond the nominal clearance so a segment between two legal cells
+# cannot clip a pad corner.
+MARGIN = 0.2
+BODY = CLEAR + TRACK_W / 2 + MARGIN
+VIA_R = 0.3
+VIA_DRILL = 0.3
+EDGE = 255
 
 
 def route_board(board) -> list:
-    nx = int(board.w / G) + 4
-    ny = int(board.h / G) + 4
-    own = [array("H", [0]) * (nx * ny) for _ in range(2)]
+    nx = int(round(board.w / G)) + 3
+    ny = int(round(board.h / G)) + 3
+    copper = [bytearray(nx * ny) for _ in range(2)]
+    block = [bytearray(nx * ny) for _ in range(2)]
+    via_keep = bytearray(nx * ny)
     ids = {}
     nxt = 1
 
     def nid(name: str) -> int:
         nonlocal nxt
         if name not in ids:
+            if nxt >= 250:
+                raise RuntimeError("too many nets for the router grid")
             ids[name] = nxt
             nxt += 1
         return ids[name]
@@ -37,45 +46,41 @@ def route_board(board) -> list:
     def idx(ix, iy):
         return iy * nx + ix
 
-    def cell(x, y):
-        return int(round(x / G)), int(round(y / G))
-
     def mm(ix, iy):
         return ix * G, iy * G
 
-    def mark(layer, x0, y0, x1, y1, val, force=False):
-        xa, xb = sorted((x0, x1))
-        ya, yb = sorted((y0, y1))
-        ix0 = max(0, int(xa / G))
-        ix1 = min(nx - 1, int(xb / G))
-        iy0 = max(0, int(ya / G))
-        iy1 = min(ny - 1, int(yb / G))
-        grid = own[layer]
-        for iy in range(iy0, iy1 + 1):
-            row = iy * nx
-            for ix in range(ix0, ix1 + 1):
-                cur = grid[row + ix]
-                if force or cur == 0:
-                    grid[row + ix] = val
+    def cell(x, y):
+        return int(round(x / G)), int(round(y / G))
 
-    pads = []  # dicts
+    def inside(ix, iy):
+        return 0 <= ix < nx and 0 <= iy < ny
+
+    pads = []
+    obstacles = []
     holes = []
     for _part, fp in board.fps:
         fx = pcbnew.ToMM(fp.GetPosition().x)
         fy = pcbnew.ToMM(fp.GetPosition().y)
         for pad in fp.Pads():
             pos = pad.GetPosition()
-            sz = pad.GetSize()
-            x = pcbnew.ToMM(pos.x)
-            y = pcbnew.ToMM(pos.y)
-            hw = pcbnew.ToMM(sz.x) / 2
-            hh = pcbnew.ToMM(sz.y) / 2
+            bb = pad.GetBoundingBox()
+            x = pcbnew.ToMM(bb.GetX()) + pcbnew.ToMM(bb.GetWidth()) / 2
+            y = pcbnew.ToMM(bb.GetY()) + pcbnew.ToMM(bb.GetHeight()) / 2
+            hw = pcbnew.ToMM(bb.GetWidth()) / 2
+            hh = pcbnew.ToMM(bb.GetHeight()) / 2
+            if hw < 0.05 or hh < 0.05:
+                sz = pad.GetSize()
+                x = pcbnew.ToMM(pos.x)
+                y = pcbnew.ToMM(pos.y)
+                hw = pcbnew.ToMM(sz.x) / 2
+                hh = pcbnew.ToMM(sz.y) / 2
             attr = pad.GetAttribute()
             net = pad.GetNetname()
+            drill = pad.GetDrillSize()
+            drill_r = pcbnew.ToMM(max(drill.x, drill.y)) / 2
             if attr == pcbnew.PAD_ATTRIB_NPTH or not net:
-                holes.append((x, y, max(hw, hh) + 0.35))
-                for layer in (0, 1):
-                    mark(layer, x - hw - 0.45, y - hh - 0.45, x + hw + 0.45, y + hh + 0.45, EDGE, True)
+                obstacles.append((x, y, hw, hh))
+                holes.append((x, y, max(hw, hh, drill_r)))
                 continue
             both = attr == pcbnew.PAD_ATTRIB_PTH or pad.IsOnLayer(pcbnew.B_Cu)
             layers = (0, 1) if both else (0,)
@@ -91,62 +96,261 @@ def route_board(board) -> list:
                     "smd": attr != pcbnew.PAD_ATTRIB_PTH,
                     "fx": fx,
                     "fy": fy,
+                    "drill_r": drill_r,
+                    "shape": pad.GetShape(),
                 }
             )
+            if drill_r > 0.05:
+                holes.append((x, y, drill_r))
 
-    for p in pads:
-        for layer in p["layers"]:
-            mark(layer, p["x"] - p["hw"], p["y"] - p["hh"], p["x"] + p["hw"], p["y"] + p["hh"], p["id"], True)
-    for p in pads:
-        for layer in p["layers"]:
-            mark(
-                layer,
-                p["x"] - p["hw"] - EXPAND,
-                p["y"] - p["hh"] - EXPAND,
-                p["x"] + p["hw"] + EXPAND,
-                p["y"] + p["hh"] + EXPAND,
-                p["id"],
-            )
-    for layer in (0, 1):
-        mark(layer, -1, -1, board.w + 1, 0.6, EDGE, True)
-        mark(layer, -1, board.h - 0.6, board.w + 1, board.h + 1, EDGE, True)
-        mark(layer, -1, -1, 0.6, board.h + 1, EDGE, True)
-        mark(layer, board.w - 0.6, -1, board.w + 1, board.h + 1, EDGE, True)
-
-    by_net = {}
-    for p in pads:
-        by_net.setdefault(p["net"], []).append(p)
-
-    def segment_hits(x1, y1, x2, y2, netname, width):
-        need = CLEAR + width / 2
-        steps = int(max(abs(x2 - x1), abs(y2 - y1)) / 0.1) + 1
-        for s in range(steps + 1):
-            t = s / max(steps, 1)
-            x = x1 + (x2 - x1) * t
-            y = y1 + (y2 - y1) * t
-            for p in pads:
-                if p["net"] == netname:
-                    continue
-                dx = max(abs(x - p["x"]) - p["hw"], 0)
-                dy = max(abs(y - p["y"]) - p["hh"], 0)
-                if dx * dx + dy * dy < need * need:
-                    return True
-            for hx, hy, hr in holes:
-                dx = x - hx
-                dy = y - hy
-                if dx * dx + dy * dy < (hr + need) * (hr + need):
-                    return True
-        return False
-
-    def add_track(x1, y1, x2, y2, layer, netname, width):
-        if abs(x1 - x2) < 1e-6 and abs(y1 - y2) < 1e-6:
+    def mark_rect_cells(x, y, hw, hh, inset=0.0):
+        x0, x1 = x - hw + inset, x + hw - inset
+        y0, y1 = y - hh + inset, y + hh - inset
+        if x1 < x0 or y1 < y0:
             return
-        if segment_hits(x1, y1, x2, y2, netname, width):
+        ix0 = max(0, int(math.ceil(x0 / G - 1e-6)))
+        ix1 = min(nx - 1, int(math.floor(x1 / G + 1e-6)))
+        iy0 = max(0, int(math.ceil(y0 / G - 1e-6)))
+        iy1 = min(ny - 1, int(math.floor(y1 / G + 1e-6)))
+        for iy in range(iy0, iy1 + 1):
+            cy = iy * G
+            if cy < y0 - 1e-9 or cy > y1 + 1e-9:
+                continue
+            row = iy * nx
+            for ix in range(ix0, ix1 + 1):
+                cx = ix * G
+                if x0 - 1e-9 <= cx <= x1 + 1e-9:
+                    yield row + ix, ix, iy
+
+    def dist_rect(px, py, pad):
+        dx = max(abs(px - pad["x"]) - pad["hw"], 0.0)
+        dy = max(abs(py - pad["y"]) - pad["hh"], 0.0)
+        return math.hypot(dx, dy)
+
+    for p in pads:
+        for layer in p["layers"]:
+            grid = copper[layer]
+            for i, _ix, _iy in mark_rect_cells(p["x"], p["y"], p["hw"], p["hh"]):
+                grid[i] = p["id"]
+
+    # Keepouts in board coordinates (Footprint.SetPosition already moved them).
+    keep_polys = []
+    for _part, fp in board.fps:
+        try:
+            zones = fp.Zones()
+            count = zones.size()
+        except Exception:
+            continue
+        for zi in range(count):
+            zone = zones[zi]
+            if not zone.GetDoNotAllowTracks() and not zone.GetDoNotAllowVias():
+                continue
+            try:
+                lset = zone.GetLayerSet()
+                on_f = bool(lset.Contains(pcbnew.F_Cu))
+                on_b = bool(lset.Contains(pcbnew.B_Cu))
+            except Exception:
+                on_f, on_b = True, False
+            outline = zone.Outline()
+            n = outline.FullPointCount()
+            if n < 3:
+                continue
+            pts = []
+            for i in range(n):
+                v = outline.CVertex(i)
+                pts.append((pcbnew.ToMM(v.x), pcbnew.ToMM(v.y)))
+            keep_polys.append((outline, on_f, on_b, zone.GetDoNotAllowTracks(), zone.GetDoNotAllowVias(), pts))
+
+    for outline, on_f, on_b, no_track, no_via, pts in keep_polys:
+        xs = [p[0] for p in pts]
+        ys = [p[1] for p in pts]
+        ix0 = max(0, int(min(xs) / G) - 1)
+        ix1 = min(nx - 1, int(max(xs) / G) + 1)
+        iy0 = max(0, int(min(ys) / G) - 1)
+        iy1 = min(ny - 1, int(max(ys) / G) + 1)
+        layers = []
+        if no_track and on_f:
+            layers.append(0)
+        if no_track and on_b:
+            layers.append(1)
+        hits = []
+        for iy in range(iy0, iy1 + 1):
+            for ix in range(ix0, ix1 + 1):
+                x, y = mm(ix, iy)
+                if not outline.PointInside(pcbnew.VECTOR2I(pcbnew.FromMM(x), pcbnew.FromMM(y))):
+                    continue
+                hits.append((ix, iy))
+        track_r = TRACK_W / 2 + 0.08
+        via_r = VIA_R + CLEAR
+        for ix, iy in hits:
+            span = int(math.ceil(max(track_r, via_r) / G)) + 1
+            for oy in range(-span, span + 1):
+                for ox in range(-span, span + 1):
+                    jx, jy = ix + ox, iy + oy
+                    if not inside(jx, jy):
+                        continue
+                    dist = math.hypot(ox * G, oy * G)
+                    j = idx(jx, jy)
+                    if no_via and dist <= via_r:
+                        via_keep[j] = 1
+                    if dist > track_r:
+                        continue
+                    for layer in layers:
+                        if copper[layer][j] == 0:
+                            copper[layer][j] = EDGE
+                            block[layer][j] = EDGE
+
+    def paint_halo(layer, x, y, hw, hh, myid, radius):
+        ix0 = max(0, int((x - hw - radius) / G) - 1)
+        ix1 = min(nx - 1, int((x + hw + radius) / G) + 1)
+        iy0 = max(0, int((y - hh - radius) / G) - 1)
+        iy1 = min(ny - 1, int((y + hh + radius) / G) + 1)
+        grid_c = copper[layer]
+        grid_b = block[layer]
+        for iy in range(iy0, iy1 + 1):
+            cy = iy * G
+            row = iy * nx
+            for ix in range(ix0, ix1 + 1):
+                dx = max(abs(ix * G - x) - hw, 0.0)
+                dy = max(abs(cy - y) - hh, 0.0)
+                if dx * dx + dy * dy > radius * radius:
+                    continue
+                i = row + ix
+                if grid_c[i] not in (0, myid):
+                    continue
+                cur = grid_b[i]
+                if cur == 0 or cur == myid:
+                    grid_b[i] = myid
+                elif cur != EDGE:
+                    grid_b[i] = EDGE
+
+    for p in pads:
+        for layer in p["layers"]:
+            paint_halo(layer, p["x"], p["y"], p["hw"], p["hh"], p["id"], BODY)
+
+    def force_obstacle(x, y, hw, hh):
+        radius = CLEAR + TRACK_W / 2 + 0.08
+        ix0 = max(0, int((x - hw - radius) / G) - 1)
+        ix1 = min(nx - 1, int((x + hw + radius) / G) + 1)
+        iy0 = max(0, int((y - hh - radius) / G) - 1)
+        iy1 = min(ny - 1, int((y + hh + radius) / G) + 1)
+        for iy in range(iy0, iy1 + 1):
+            for ix in range(ix0, ix1 + 1):
+                dx = max(abs(ix * G - x) - hw, 0.0)
+                dy = max(abs(iy * G - y) - hh, 0.0)
+                if dx * dx + dy * dy > radius * radius:
+                    continue
+                i = idx(ix, iy)
+                for layer in (0, 1):
+                    # NC and NPTH copper stays blocked even if a net halo claimed it.
+                    if copper[layer][i] in (0, EDGE):
+                        block[layer][i] = EDGE
+                        if dx == 0 and dy == 0:
+                            copper[layer][i] = EDGE
+
+    for ox, oy, hw, hh in obstacles:
+        force_obstacle(ox, oy, hw, hh)
+
+    def paint_hole(x, y, r):
+        radius = r + BODY
+        ix0 = max(0, int((x - radius) / G) - 1)
+        ix1 = min(nx - 1, int((x + radius) / G) + 1)
+        iy0 = max(0, int((y - radius) / G) - 1)
+        iy1 = min(ny - 1, int((y + radius) / G) + 1)
+        for iy in range(iy0, iy1 + 1):
+            for ix in range(ix0, ix1 + 1):
+                dx = ix * G - x
+                dy = iy * G - y
+                d2 = dx * dx + dy * dy
+                i = idx(ix, iy)
+                if d2 <= (r + VIA_DRILL / 2 + CLEAR + 0.05) * (r + VIA_DRILL / 2 + CLEAR + 0.05):
+                    via_keep[i] = 1
+                if d2 <= (r + 0.05) * (r + 0.05):
+                    for layer in (0, 1):
+                        # Don't route across the drill. The annular ring stays usable.
+                        block[layer][i] = EDGE
+                        if copper[layer][i] == 0:
+                            copper[layer][i] = EDGE
+                elif d2 <= radius * radius:
+                    for layer in (0, 1):
+                        if copper[layer][i] == 0 and block[layer][i] == 0:
+                            block[layer][i] = EDGE
+
+    for hx, hy, hr in holes:
+        paint_hole(hx, hy, hr)
+
+    # Board edge. Track copper stays 0.3 mm inside the outline.
+    edge = CLEAR + TRACK_W / 2 + 0.05
+    for layer in (0, 1):
+        for iy in range(ny):
+            y = iy * G
+            row = iy * nx
+            for ix in range(nx):
+                x = ix * G
+                if x < edge or y < edge or x > board.w - edge or y > board.h - edge:
+                    i = row + ix
+                    if copper[layer][i] == 0:
+                        copper[layer][i] = EDGE
+
+    def walkable(layer, ix, iy, myid):
+        if not inside(ix, iy):
+            return False
+        i = idx(ix, iy)
+        c = copper[layer][i]
+        b = block[layer][i]
+        if c == EDGE or b == EDGE:
+            return False
+        if c not in (0, myid):
+            return False
+        if b not in (0, myid):
+            return False
+        return True
+
+    def via_ok(ix, iy, myid, lattice=True):
+        # Signal vias sit on a 0.4 mm lattice. Dedicated GND vias may use any cell.
+        if lattice and (ix & 3 or iy & 3):
+            return False
+        x, y = mm(ix, iy)
+        if not (0.9 < x < board.w - 0.9 and 0.9 < y < board.h - 0.9):
+            return False
+        i = idx(ix, iy)
+        if via_keep[i]:
+            return False
+        for layer in (0, 1):
+            if not walkable(layer, ix, iy, myid):
+                return False
+            for ox, oy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                if not walkable(layer, ix + ox, iy + oy, myid):
+                    return False
+        return True
+
+    def paint_disc(x, y, myid, radius):
+        ix0 = max(0, int((x - radius) / G) - 1)
+        ix1 = min(nx - 1, int((x + radius) / G) + 1)
+        iy0 = max(0, int((y - radius) / G) - 1)
+        iy1 = min(ny - 1, int((y + radius) / G) + 1)
+        for iy in range(iy0, iy1 + 1):
+            for ix in range(ix0, ix1 + 1):
+                if math.hypot(ix * G - x, iy * G - y) > radius:
+                    continue
+                i = idx(ix, iy)
+                for layer in (0, 1):
+                    c = copper[layer][i]
+                    if c not in (0, myid):
+                        continue
+                    b = block[layer][i]
+                    if b == 0 or b == myid:
+                        block[layer][i] = myid
+                    elif b != EDGE:
+                        block[layer][i] = EDGE
+
+    def add_track(x1, y1, x2, y2, layer, netname):
+        if abs(x1 - x2) < 1e-6 and abs(y1 - y2) < 1e-6:
             return
         t = pcbnew.PCB_TRACK(board.b)
         t.SetStart(pcbnew.VECTOR2I(pcbnew.FromMM(x1), pcbnew.FromMM(y1)))
         t.SetEnd(pcbnew.VECTOR2I(pcbnew.FromMM(x2), pcbnew.FromMM(y2)))
-        t.SetWidth(pcbnew.FromMM(width))
+        t.SetWidth(pcbnew.FromMM(TRACK_W))
         t.SetLayer(pcbnew.F_Cu if layer == 0 else pcbnew.B_Cu)
         t.SetNet(board.nets[netname])
         board.b.Add(t)
@@ -154,155 +358,248 @@ def route_board(board) -> list:
     def add_via(x, y, netname):
         v = pcbnew.PCB_VIA(board.b)
         v.SetPosition(pcbnew.VECTOR2I(pcbnew.FromMM(x), pcbnew.FromMM(y)))
-        v.SetWidth(pcbnew.FromMM(0.6))
-        v.SetDrill(pcbnew.FromMM(0.3))
+        v.SetWidth(pcbnew.FromMM(VIA_R * 2))
+        v.SetDrill(pcbnew.FromMM(VIA_DRILL))
         v.SetNet(board.nets[netname])
         board.b.Add(v)
 
-    def paint(ix, iy, layers):
-        r = int(EXPAND / G) + 1
-        for oy in range(-r, r + 1):
-            for ox in range(-r, r + 1):
-                if (ox * ox + oy * oy) > r * r:
-                    continue
-                jx, jy = ix + ox, iy + oy
-                if not (0 <= jx < nx and 0 <= jy < ny):
-                    continue
-                for layer in layers:
-                    i = idx(jx, jy)
-                    if own[layer][i] == 0:
-                        own[layer][i] = TRACK
+    def paint_path_cells(cells, myid):
+        # Center-to-center clearance for two 0.25 mm tracks, plus margin so
+        # the segment between cell centers still clears.
+        radius = TRACK_W + CLEAR + MARGIN
+        for ix, iy, layer in cells:
+            x, y = mm(ix, iy)
+            i = idx(ix, iy)
+            if copper[layer][i] in (0, myid):
+                copper[layer][i] = myid
+            ix0 = max(0, ix - 8)
+            ix1 = min(nx - 1, ix + 8)
+            iy0 = max(0, iy - 8)
+            iy1 = min(ny - 1, iy + 8)
+            for jy in range(iy0, iy1 + 1):
+                for jx in range(ix0, ix1 + 1):
+                    if math.hypot((jx - ix) * G, (jy - iy) * G) > radius:
+                        continue
+                    j = idx(jx, jy)
+                    if copper[layer][j] not in (0, myid):
+                        continue
+                    b = block[layer][j]
+                    if b == 0 or b == myid:
+                        block[layer][j] = myid
+                    elif b != EDGE:
+                        block[layer][j] = EDGE
 
-    def walkable(layer, ix, iy, myid, targets):
-        if not (0 <= ix < nx and 0 <= iy < ny):
-            return False
-        if (ix, iy, layer) in targets or (ix, iy) in targets:
-            return True
-        v = own[layer][idx(ix, iy)]
-        return v == 0 or v == myid
+    def copper_cells(p):
+        found = []
+        for layer in p["layers"]:
+            grid = copper[layer]
+            for i, ix, iy in mark_rect_cells(p["x"], p["y"], p["hw"], p["hh"]):
+                if grid[i] != p["id"] or block[layer][i] == EDGE:
+                    continue
+                x, y = mm(ix, iy)
+                dx = abs(x - p["x"])
+                dy = abs(y - p["y"])
+                if p["drill_r"] > 0.05 and math.hypot(dx, dy) <= p["drill_r"] + 0.05:
+                    continue
+                shape = p["shape"]
+                if shape == pcbnew.PAD_SHAPE_CIRCLE:
+                    if math.hypot(dx, dy) > p["hw"] - 0.02:
+                        continue
+                elif shape == pcbnew.PAD_SHAPE_OVAL:
+                    rad = min(p["hw"], p["hh"])
+                    if p["hw"] >= p["hh"]:
+                        cx = max(dx - (p["hw"] - rad), 0.0)
+                        if math.hypot(cx, dy) > rad - 0.02:
+                            continue
+                    else:
+                        cy = max(dy - (p["hh"] - rad), 0.0)
+                        if math.hypot(dx, cy) > rad - 0.02:
+                            continue
+                found.append((ix, iy, layer))
+        if not found:
+            for layer in p["layers"]:
+                grid = copper[layer]
+                for i, ix, iy in mark_rect_cells(p["x"], p["y"], p["hw"], p["hh"]):
+                    if grid[i] == p["id"]:
+                        found.append((ix, iy, layer))
+                        break
+                if found:
+                    break
+        return found
 
-    def bfs(start, targets, myid):
-        sx, sy = start
-        if not targets:
+    def line_cells_ok(x1, y1, x2, y2, layer, myid):
+        steps = int(math.hypot(x2 - x1, y2 - y1) / (G * 0.5)) + 1
+        for s in range(steps + 1):
+            t = s / max(steps, 1)
+            ix, iy = cell(x1 + (x2 - x1) * t, y1 + (y2 - y1) * t)
+            if not walkable(layer, ix, iy, myid):
+                return False
+        return True
+
+    # One via per SMD GND pad, outward from the part, onto the bottom pour.
+    gnd_id = ids.get("GND")
+    failed_gnd = []
+    if gnd_id and "GND" in board.nets:
+        for p in pads:
+            if p["net"] != "GND" or not p["smd"]:
+                continue
+            dx, dy = p["x"] - p["fx"], p["y"] - p["fy"]
+            nrm = math.hypot(dx, dy)
+            if nrm < 0.4:
+                dirs = ((0, -1), (0, 1), (1, 0), (-1, 0))
+            else:
+                dirs = (
+                    (dx / nrm, dy / nrm),
+                    (0, -1),
+                    (0, 1),
+                    (1, 0),
+                    (-1, 0),
+                    (0.7, 0.7),
+                    (0.7, -0.7),
+                    (-0.7, 0.7),
+                    (-0.7, -0.7),
+                )
+            placed = False
+            for dist in (1.5, 2.0, 2.6, 3.2):
+                for ux, uy in dirs:
+                    scale = math.hypot(ux, uy) or 1
+                    vx = p["x"] + ux / scale * dist
+                    vy = p["y"] + uy / scale * dist
+                    ix, iy = cell(vx, vy)
+                    if not via_ok(ix, iy, gnd_id, lattice=False):
+                        continue
+                    x, y = mm(ix, iy)
+                    if not line_cells_ok(p["x"], p["y"], x, y, 0, gnd_id):
+                        continue
+                    add_track(p["x"], p["y"], x, y, 0, "GND")
+                    add_via(x, y, "GND")
+                    copper[0][idx(*cell(p["x"], p["y"]))] = gnd_id
+                    copper[0][idx(ix, iy)] = gnd_id
+                    copper[1][idx(ix, iy)] = gnd_id
+                    paint_disc(x, y, gnd_id, VIA_R + CLEAR + TRACK_W / 2 + MARGIN)
+                    steps = int(math.hypot(x - p["x"], y - p["y"]) / G) + 1
+                    stub = []
+                    for s in range(steps + 1):
+                        tt = s / max(steps, 1)
+                        stub.append((*cell(p["x"] + (x - p["x"]) * tt, p["y"] + (y - p["y"]) * tt), 0))
+                    paint_path_cells(stub, gnd_id)
+                    placed = True
+                    break
+                if placed:
+                    break
+            if not placed:
+                failed_gnd.append(p)
+
+    by_net = {}
+    for p in pads:
+        by_net.setdefault(p["net"], []).append(p)
+
+    def bfs(starts, targets, myid):
+        if not starts or not targets:
             return None
-        tx, ty = next(iter(targets))[:2]
-        heap = [(0, 0, sx, sy, 0)]
+        target_set = set(targets)
+        heap = []
         prev = {}
         seen = set()
-        best = None
+        tx, ty, _tl = targets[0]
+        for sx, sy, sl in starts:
+            if (sx, sy, sl) in target_set:
+                return [(sx, sy, sl)]
+            heapq.heappush(heap, (0, 0, sx, sy, sl))
+            prev[(sx, sy, sl)] = None
         expands = 0
+        best = None
         while heap:
             _f, cost, ix, iy, layer = heapq.heappop(heap)
             key = (ix, iy, layer)
             if key in seen:
                 continue
             seen.add(key)
-            if cost > 0 and ((ix, iy) in targets or (ix, iy, layer) in targets):
+            if cost > 0 and key in target_set:
                 best = key
                 break
             expands += 1
-            if expands > 350000:
+            if expands > 600000:
                 return None
             for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
                 jx, jy = ix + dx, iy + dy
-                if not walkable(layer, jx, jy, myid, targets):
+                if not walkable(layer, jx, jy, myid):
                     continue
                 nk = (jx, jy, layer)
-                if nk in seen:
+                if nk in seen or nk in prev:
                     continue
-                step = cost + 1
+                step = cost + (1 if layer == 0 else 3)
                 h = abs(jx - tx) + abs(jy - ty)
                 prev[nk] = key
                 heapq.heappush(heap, (step + h, step, jx, jy, layer))
             ol = 1 - layer
-            if walkable(ol, ix, iy, myid, targets) and own[0][idx(ix, iy)] in (0, myid) and own[1][idx(ix, iy)] in (0, myid):
+            if via_ok(ix, iy, myid) and walkable(ol, ix, iy, myid):
                 nk = (ix, iy, ol)
-                if nk not in seen:
-                    step = cost + 8
+                if nk not in seen and nk not in prev:
+                    step = cost + 25
                     h = abs(ix - tx) + abs(iy - ty)
                     prev[nk] = key
                     heapq.heappush(heap, (step + h, step, ix, iy, ol))
         if best is None:
             return None
         path = [best]
-        while path[-1] in prev:
+        while prev.get(path[-1]) is not None:
             path.append(prev[path[-1]])
         path.reverse()
         return path
 
-    def copper_cells(p):
-        cells = set()
-        ix0 = max(0, int((p["x"] - p["hw"]) / G))
-        ix1 = min(nx - 1, int((p["x"] + p["hw"]) / G))
-        iy0 = max(0, int((p["y"] - p["hh"]) / G))
-        iy1 = min(ny - 1, int((p["y"] + p["hh"]) / G))
-        for iy in range(iy0, iy1 + 1):
-            for ix in range(ix0, ix1 + 1):
-                cells.add((ix, iy))
-        return cells
-
-    def draw(path, netname, width):
+    def draw(path, netname, myid):
         if not path or len(path) < 2:
+            paint_path_cells(path, myid)
             return
-        # merge collinear runs on one layer
-        run = [path[0]]
-        for a, b in zip(path, path[1:]):
+        i = 0
+        while i < len(path) - 1:
+            a = path[i]
+            b = path[i + 1]
             if a[2] != b[2]:
-                _flush(run, netname, width)
-                add_via(*mm(a[0], a[1]), netname)
-                paint(a[0], a[1], (0, 1))
-                run = [b]
-            else:
-                run.append(b)
-        _flush(run, netname, width)
-        for ix, iy, layer in path:
-            paint(ix, iy, (layer,))
-
-    def _flush(run, netname, width):
-        if len(run) < 2:
-            return
-        layer = run[0][2]
-        x1, y1 = mm(run[0][0], run[0][1])
-        x2, y2 = mm(run[-1][0], run[-1][1])
-        # only if the run is straight; otherwise segment it
-        straight = all(p[0] == run[0][0] or p[1] == run[0][1] for p in run)
-        if straight:
-            add_track(x1, y1, x2, y2, layer, netname, width)
-            return
-        for a, b in zip(run, run[1:]):
-            add_track(*mm(a[0], a[1]), *mm(b[0], b[1]), a[2], netname, width)
-
-    # GND vias, outward from the part, never on a foreign pad.
-    for p in pads:
-        if p["net"] != "GND" or not p["smd"]:
-            continue
-        dx, dy = p["x"] - p["fx"], p["y"] - p["fy"]
-        nrm = (dx * dx + dy * dy) ** 0.5
-        if nrm < 0.3:
-            dx, dy, nrm = 0, -1, 1
-        placed = False
-        for dist in (1.8, 2.4, 3.0):
-            for ux, uy in ((dx / nrm, dy / nrm), (0, 1), (0, -1), (1, 0), (-1, 0)):
-                vx = p["x"] + ux * dist
-                vy = p["y"] + uy * dist
-                if not (1.2 < vx < board.w - 1.2 and 1.2 < vy < board.h - 1.2):
-                    continue
-                if segment_hits(p["x"], p["y"], vx, vy, "GND", TRACK_W):
-                    continue
-                ix, iy = cell(vx, vy)
-                if own[0][idx(ix, iy)] not in (0, p["id"]):
-                    continue
-                if own[1][idx(ix, iy)] not in (0, p["id"]):
-                    continue
-                add_track(p["x"], p["y"], vx, vy, 0, "GND", TRACK_W)
-                add_via(vx, vy, "GND")
-                paint(ix, iy, (0, 1))
-                placed = True
-                break
-            if placed:
-                break
+                x, y = mm(a[0], a[1])
+                add_via(x, y, netname)
+                paint_disc(x, y, myid, VIA_R + CLEAR + TRACK_W / 2 + MARGIN)
+                copper[0][idx(a[0], a[1])] = myid
+                copper[1][idx(a[0], a[1])] = myid
+                i += 1
+                continue
+            j = i + 1
+            horiz = b[1] == a[1]
+            vert = b[0] == a[0]
+            while j + 1 < len(path) and path[j + 1][2] == a[2]:
+                nxtp = path[j + 1]
+                if horiz and nxtp[1] == a[1]:
+                    j += 1
+                elif vert and nxtp[0] == a[0]:
+                    j += 1
+                else:
+                    break
+            add_track(*mm(a[0], a[1]), *mm(path[j][0], path[j][1]), a[2], netname)
+            i = j
+        paint_path_cells(path, myid)
 
     unrouted = []
+    # GND pads that did not get a via still need a copper path to a PTH pad.
+    if failed_gnd:
+        group = by_net.get("GND", [])
+        myid = gnd_id
+        targets = []
+        failed_ids = {id(p) for p in failed_gnd}
+        for p in group:
+            if id(p) in failed_ids:
+                continue
+            targets.extend(copper_cells(p))
+        for p in failed_gnd:
+            starts = copper_cells(p)
+            path = bfs(starts, targets, myid) if targets else None
+            if not path:
+                unrouted.append("GND")
+                break
+            draw(path, "GND", myid)
+            targets.extend(path)
+            targets.extend(starts)
+
     nets = [n for n, ps in by_net.items() if n != "GND" and len(ps) >= 2]
 
     def span(n):
@@ -310,24 +607,43 @@ def route_board(board) -> list:
         ys = [p["y"] for p in by_net[n]]
         return (max(xs) - min(xs)) + (max(ys) - min(ys))
 
-    powerish = {"+3V3", "+3V3A", "+3V3_MIC", "+1V8", "VSYS", "VSYS_IN", "VBUS", "DC"}
-    nets.sort(key=lambda n: (0 if n in powerish else 1, span(n)))
+    def stitch(p, ix, iy, layer, netname):
+        x, y = mm(ix, iy)
+        # Keep the extra segment on the pad. A cell just outside the copper
+        # would otherwise stick a 0.25 mm track into the neighbour.
+        maxx = max(p["hw"] - 0.04, 0.0)
+        maxy = max(p["hh"] - 0.04, 0.0)
+        dx = min(max(x - p["x"], -maxx), maxx)
+        dy = min(max(y - p["y"], -maxy), maxy)
+        add_track(p["x"], p["y"], p["x"] + dx, p["y"] + dy, layer, netname)
 
-    for n in nets:
-        width = POWER_W if n in powerish else TRACK_W
+    nets.sort(key=span)
+
+    print(f"route {board.name}: {len(nets)} nets, {len(pads)} pads, gnd vias missing {len(failed_gnd)}", flush=True)
+    for ni, n in enumerate(nets):
+        if ni % 20 == 0:
+            print(f"  {board.name} {ni}/{len(nets)} {n}", flush=True)
         group = by_net[n]
         myid = group[0]["id"]
+        # Seed is the pad with the most copper cells (usually a PTH pad).
+        group = sorted(group, key=lambda p: -len(copper_cells(p)))
         targets = copper_cells(group[0])
-        ok = True
+        if targets:
+            stitch(group[0], targets[0][0], targets[0][1], targets[0][2], n)
+        ok = bool(targets) or len(group) == 1
         for p in group[1:]:
-            start = cell(p["x"], p["y"])
-            path = bfs(start, targets, myid)
+            starts = copper_cells(p)
+            if not starts:
+                ok = False
+                break
+            path = bfs(starts, targets, myid)
             if not path:
                 ok = False
                 break
-            draw(path, n, width)
-            targets |= set((ix, iy) for ix, iy, _layer in path)
-            targets |= copper_cells(p)
+            draw(path, n, myid)
+            stitch(p, path[0][0], path[0][1], path[0][2], n)
+            targets.extend(path)
+            targets.extend(starts)
         if not ok:
             unrouted.append(n)
     return unrouted

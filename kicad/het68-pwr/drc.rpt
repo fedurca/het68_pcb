@@ -1,158 +1,26 @@
 ** Drc report for het68-pwr.kicad_pcb **
-** Created on 2026-10-28T15:38:13 **
+** Created on 2026-10-28T16:26:50 **
 ** Report includes: Errors **
 
-** Found 15 DRC violations **
-[clearance]: Clearance violation ( clearance 0.2000 mm; actual 0.0972 mm)
-    Local override; error
-    @(46.0000 mm, 28.0000 mm): Track [GND] on F.Cu, length 1.8000 mm
-    @(43.8000 mm, 28.2000 mm): Track [DC] on F.Cu, length 0.2000 mm
-[clearance]: Clearance violation ( clearance 0.2000 mm; actual 0.1232 mm)
-    Local override; error
-    @(22.4000 mm, 23.2000 mm): Track [VBUS] on B.Cu, length 0.2000 mm
-    @(22.3774 mm, 22.5518 mm): Via [GND] on F.Cu - B.Cu
-[clearance]: Clearance violation ( clearance 0.2000 mm; actual 0.1075 mm)
-    Local override; error
-    @(29.2000 mm, 22.6000 mm): Via [CC2] on F.Cu - B.Cu
-    @(29.0000 mm, 23.2000 mm): Track [VBUS] on B.Cu, length 0.2000 mm
-[clearance]: Clearance violation ( clearance 0.2000 mm; actual 0.1904 mm)
-    Local override; error
-    @(32.0000 mm, 31.4900 mm): Pad 2 [GND] of R2 on F.Cu
-    @(31.4000 mm, 32.0000 mm): Track [CC2] on F.Cu, length 0.2000 mm
-[clearance]: Clearance violation ( clearance 0.2000 mm; actual 0.1904 mm)
-    Local override; error
-    @(32.0000 mm, 31.4900 mm): Pad 2 [GND] of R2 on F.Cu
-    @(31.4000 mm, 31.8000 mm): Track [CC2] on F.Cu, length 0.2000 mm
-[clearance]: Clearance violation ( clearance 0.2000 mm; actual 0.0722 mm)
-    Local override; error
-    @(31.4000 mm, 22.0000 mm): Pad 2 [VBUS] of D7 on F.Cu
-    @(30.0000 mm, 23.6000 mm): Track [CC2] on F.Cu, length 0.2000 mm
-[clearance]: Clearance violation ( clearance 0.2000 mm; actual 0.1907 mm)
-    Local override; error
-    @(31.4000 mm, 22.0000 mm): Pad 2 [VBUS] of D7 on F.Cu
-    @(30.0000 mm, 24.0000 mm): Track [CC2] on F.Cu, length 0.2000 mm
-[clearance]: Clearance violation ( clearance 0.2000 mm; actual 0.0722 mm)
-    Local override; error
-    @(31.4000 mm, 22.0000 mm): Pad 2 [VBUS] of D7 on F.Cu
-    @(30.0000 mm, 23.8000 mm): Track [CC2] on F.Cu, length 0.2000 mm
-[clearance]: Clearance violation ( clearance 0.2000 mm; actual 0.1696 mm)
-    Local override; error
-    @(15.6000 mm, 22.4000 mm): Track [VBUS] on F.Cu, length 0.2000 mm
-    @(14.7500 mm, 22.1550 mm): Via [GND] on F.Cu - B.Cu
-[clearance]: Clearance violation ( clearance 0.2000 mm; actual 0.0509 mm)
-    Local override; error
-    @(20.8000 mm, 21.8000 mm): Track [CC2] on B.Cu, length 0.2000 mm
-    @(21.2500 mm, 22.1550 mm): Via [GND] on F.Cu - B.Cu
-[clearance]: Clearance violation ( clearance 0.2000 mm; actual 0.0750 mm)
-    Local override; error
-    @(43.6000 mm, 28.0000 mm): Track [DC] on F.Cu, length 0.2000 mm
-    @(44.2000 mm, 28.0000 mm): Via [GND] on F.Cu - B.Cu
-[shorting_items]: Items shorting two nets (nets GND and VBUS)
-    Local override; error
-    @(32.9500 mm, 24.0000 mm): Pad 2 [GND] of C3 on F.Cu
-    @(31.4000 mm, 22.0000 mm): Pad 2 [VBUS] of D7 on F.Cu
-[courtyards_overlap]: Courtyards overlap
-    Rule: board setup constraints courtyard; error
-    @(18.0000 mm, 28.0000 mm): Footprint J2
-    @(28.0000 mm, 22.0000 mm): Footprint D7
-[courtyards_overlap]: Courtyards overlap
-    Rule: board setup constraints courtyard; error
-    @(32.0000 mm, 24.0000 mm): Footprint C3
-    @(28.0000 mm, 22.0000 mm): Footprint D7
-[solder_mask_bridge]: Front solder mask aperture bridges items with different nets
-    Rule: board setup solder mask min width; error
-    @(32.9500 mm, 24.0000 mm): Pad 2 [GND] of C3 on F.Cu
-    @(31.4000 mm, 22.0000 mm): Pad 2 [VBUS] of D7 on F.Cu
+** Found 0 DRC violations **
 
-** Found 22 unconnected pads **
+** Found 4 unconnected pads **
 [unconnected_items]: Missing connection between items
     Local override; error
-    @(26.4000 mm, 21.0000 mm): Track [VSYS_RAW] on B.Cu, length 0.2000 mm
-    @(24.6000 mm, 22.0000 mm): Pad 1 [VSYS_RAW] of D7 on F.Cu
-[unconnected_items]: Missing connection between items
-    Local override; error
-    @(33.6000 mm, 21.0000 mm): Track [VSYS_RAW] on B.Cu, length 0.2000 mm
-    @(29.4000 mm, 21.0000 mm): Track [VSYS_RAW] on B.Cu, length 0.2000 mm
-[unconnected_items]: Missing connection between items
-    Local override; error
-    @(58.6000 mm, 21.0000 mm): Track [VSYS_RAW] on B.Cu, length 0.2000 mm
-    @(60.4000 mm, 20.6000 mm): Track [VSYS_RAW] on F.Cu, length 0.2000 mm
-[unconnected_items]: Missing connection between items
-    Local override; error
-    @(44.6000 mm, 32.8000 mm): Track [DC] on F.Cu, length 0.2000 mm
-    @(46.0000 mm, 34.0000 mm): Pad 1 [DC] of D1 on F.Cu
-[unconnected_items]: Missing connection between items
-    Local override; error
-    @(51.6000 mm, 29.2000 mm): Track [DC] on F.Cu, length 0.2000 mm
-    @(51.6000 mm, 26.6000 mm): Track [DC] on F.Cu, length 0.2000 mm
-[unconnected_items]: Missing connection between items
-    Local override; error
-    @(51.6000 mm, 32.6000 mm): Track [DC] on F.Cu, length 0.2000 mm
-    @(54.0000 mm, 34.0000 mm): Pad 1 [DC] of D3 on F.Cu
-[unconnected_items]: Missing connection between items
-    Local override; error
-    @(51.6000 mm, 32.6000 mm): Track [DC] on F.Cu, length 0.2000 mm
-    @(46.0000 mm, 34.0000 mm): Pad 1 [DC] of D1 on F.Cu
-[unconnected_items]: Missing connection between items
-    Local override; error
-    @(65.4000 mm, 22.0000 mm): Pad 2 [DC] of D6 on F.Cu
-    @(51.6000 mm, 21.8000 mm): Track [DC] on F.Cu, length 0.2000 mm
-[unconnected_items]: Missing connection between items
-    Local override; error
-    @(73.4000 mm, 17.2000 mm): Track [VSYS] on F.Cu, length 0.2000 mm
-    @(75.8000 mm, 17.2000 mm): Track [VSYS] on F.Cu, length 0.2000 mm
-[unconnected_items]: Missing connection between items
-    Local override; error
-    @(78.0000 mm, 28.6000 mm): Track [VSYS] on F.Cu, length 0.2000 mm
-    @(77.2000 mm, 27.8000 mm): Track [VSYS] on F.Cu, length 0.2000 mm
-[unconnected_items]: Missing connection between items
-    Local override; error
-    @(62.6000 mm, 42.2000 mm): Track [AC1] on F.Cu, length 0.2000 mm
-    @(70.0000 mm, 40.0000 mm): PTH pad 1 [AC1] of J1
-[unconnected_items]: Missing connection between items
-    Local override; error
-    @(65.4000 mm, 44.0000 mm): Track [AC2] on F.Cu, length 0.2000 mm
-    @(64.8000 mm, 42.8000 mm): Track [AC2] on F.Cu, length 0.2000 mm
-[unconnected_items]: Missing connection between items
-    Local override; error
-    @(69.0000 mm, 43.4000 mm): Track [AC2] on F.Cu, length 0.2000 mm
-    @(70.0000 mm, 42.5400 mm): PTH pad 2 [AC2] of J1
-[unconnected_items]: Missing connection between items
-    Local override; error
-    @(15.4000 mm, 22.4000 mm): Track [VBUS] on F.Cu, length 0.2000 mm
-    @(15.5500 mm, 23.9550 mm): Pad A4 [VBUS] of J2 on F.Cu
-[unconnected_items]: Missing connection between items
-    Local override; error
-    @(20.4000 mm, 22.8000 mm): Track [VBUS] on F.Cu, length 0.2000 mm
-    @(20.4500 mm, 23.9550 mm): Pad A9 [VBUS] of J2 on F.Cu
-[unconnected_items]: Missing connection between items
-    Local override; error
-    @(22.2000 mm, 23.2000 mm): Track [VBUS] on B.Cu, length 0.2000 mm
-    @(20.4000 mm, 22.8000 mm): Track [VBUS] on F.Cu, length 0.2000 mm
-[unconnected_items]: Missing connection between items
-    Local override; error
-    @(27.0000 mm, 23.2000 mm): Track [VBUS] on B.Cu, length 0.2000 mm
-    @(22.4000 mm, 23.2000 mm): Track [VBUS] on B.Cu, length 0.2000 mm
-[unconnected_items]: Missing connection between items
-    Local override; error
-    @(16.7500 mm, 23.9550 mm): Pad A5 [CC1] of J2 on F.Cu
-    @(32.0000 mm, 36.5100 mm): Pad 1 [CC1] of R1 on F.Cu
-[unconnected_items]: Missing connection between items
-    Local override; error
-    @(20.4000 mm, 22.8000 mm): Track [CC2] on B.Cu, length 0.2000 mm
+    @(32.0000 mm, 32.5100 mm): Track [CC2] on F.Cu, length 0.3500 mm
     @(19.7500 mm, 23.9550 mm): Pad B5 [CC2] of J2 on F.Cu
 [unconnected_items]: Missing connection between items
     Local override; error
-    @(26.8000 mm, 21.6000 mm): Track [CC2] on B.Cu, length 0.2000 mm
-    @(22.6000 mm, 21.6000 mm): Track [CC2] on B.Cu, length 0.2000 mm
+    @(20.4500 mm, 23.9550 mm): Pad A9 [VBUS] of J2 on F.Cu
+    @(15.5500 mm, 23.9550 mm): Pad A4 [VBUS] of J2 on F.Cu
 [unconnected_items]: Missing connection between items
     Local override; error
-    @(32.0000 mm, 32.4000 mm): Track [CC2] on F.Cu, length 0.2000 mm
-    @(31.4000 mm, 32.0000 mm): Track [CC2] on F.Cu, length 0.2000 mm
+    @(31.0500 mm, 24.0000 mm): Track [VBUS] on F.Cu, length 0.8196 mm
+    @(20.4500 mm, 23.9550 mm): Pad A9 [VBUS] of J2 on F.Cu
 [unconnected_items]: Missing connection between items
     Local override; error
-    @(59.4000 mm, 38.0000 mm): Track [AC1F] on F.Cu, length 0.2000 mm
-    @(60.1375 mm, 40.0000 mm): Pad 2 [AC1F] of F1 on F.Cu
+    @(16.7500 mm, 23.9550 mm): Pad A5 [CC1] of J2 on F.Cu
+    @(32.0000 mm, 36.5100 mm): Track [CC1] on F.Cu, length 0.3500 mm
 
 ** Found 0 Footprint errors **
 

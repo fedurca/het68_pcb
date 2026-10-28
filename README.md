@@ -2,11 +2,17 @@
 
 Zadání a KiCad návrh PCB pro **het68** (akustická detekce dronů).
 
-Aktuální verze: **[v1.5.0](https://github.com/fedurca/het68_pcb/releases/tag/v1.5.0)** — viz [CHANGELOG.md](CHANGELOG.md).
+Aktuální verze: **[v1.6.0](https://github.com/fedurca/het68_pcb/releases/tag/v1.6.0)** — viz [CHANGELOG.md](CHANGELOG.md).
 
 Firmware a geometrie pole: [fedurca/het68](https://github.com/fedurca/het68). Zadání pro návrháře: [docs/ZADANI_PCB.md](docs/ZADANI_PCB.md). Projekty v KiCadu: [kicad/README.md](kicad/README.md).
 
-Tři desky: HAT k Pimoroni Pico Plus 2, satelit mikrofonu (6×) a napájení ze sekundáru split-core. Schémata prošla ERC. Layout je dvouvrstvý autorout a DRC není čisté — před objednávkou desek je potřeba ho dočistit.
+Tři desky: HAT k Pimoroni Pico Plus 2, satelit mikrofonu (6×) a napájení ze sekundáru split-core. Satelit je v DRC čistý. Napájení nemá zkraty; na USB-C ještě chybí CC a propojení VBUS. HAT je dvouvrstvý a součástky se nepřekrývají, část spojů ale pořád chybí. Do výroby až po dočištění HAT.
+
+## Sestava
+
+Kleště jsou na jednom izolovaném vodiči obvodu 230 V. Na desku jde jen sekundár. Panel a článek 21700 jsou u power desky, výstup 5 V jde na HAT, šest satelitů je na RJ45.
+
+![Sestava het68](docs/img/sestava.png)
 
 ## HAT — 99 × 96 mm, 2 vrstvy
 

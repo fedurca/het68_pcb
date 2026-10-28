@@ -1,4 +1,4 @@
-# het68 — KiCad (v1.5.0)
+# het68 — KiCad (v1.6.0)
 
 Náhledy návrhu i osazených desek jsou v [README](../README.md) repozitáře.
 
@@ -39,7 +39,7 @@ Generátor (umístění i routování): `kicad/tools/gen_boards.py` (Python z Ki
 
 V `*/fab/` jsou Gerbery RS-274X, Excellon (PTH a NPTH zvlášť), mapy děr a CSV pozic. `bom.csv` má MPN.
 
-**Tyto Gerbery zatím neposílej do výroby.** Plošný spoj je autoroutovaný první návrh a DRC hlásí zkraty, vůle a nepřipojené pady (HAT stovky, satelit a power desítky). Schéma je v pořádku; layout je potřeba v PCB editoru dočistit (hlavně vějíř od převodníků k jackům a via u T5848) a znovu vyexportovat Gerbery.
+**Tyto Gerbery zatím neposílej do výroby.** Satelit v DRC prošel. Power deska nemá zkraty, na USB-C ale nejsou dotažené CC1, CC2 a oba piny VBUS. HAT má desítky chyb (nepřipojené sítě, via u převodníků, pár spojů v zakázané zóně).
 
 Až DRC projde:
 
