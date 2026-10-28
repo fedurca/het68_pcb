@@ -1,0 +1,12 @@
+Gerbery HAT v2.0.0 (rev E): 100 × 100 mm, 4 vrstvy, 1,6 mm.
+DRC 0, nepřipojené 0, parita schéma ↔ deska 0, ERC 0 chyb.
+
+Vrstvy: F.Cu signál (gtl), In1.Cu GND (g1), In2.Cu 3V3 + ostrov +3V3_MIC (g2), B.Cu signál (gbl).
+Stopa ≥ 0,25 mm, mezera ≥ 0,2 mm. Nejmenší vrták 0,5 mm (prokovy 0,9/0,5 mm). Povrch HASL nebo ENIG.
+SMT jen nahoře (79 součástek), THT: 6× RJ45, 2× zásuvková lišta 1×20 8,5 mm pro Pico, J10, J11–J14, J17.
+
+Soubory: Gerbery RS-274X, Excellon PTH a NPTH zvlášť s mapami, het68-hat-pos.csv (CPL),
+het68-hat.d356 (IPC-D-356, elektrický test), het68-hat.step (osazená deska se zasunutým Pico Plus 2).
+
+Před objednávkou: srovnat land pattern DPS310 (U7) s C130156. Firmware přepnout na pinout rev E (docs/PINOUT.csv).
+Pimoroni Pico Plus 2 se kupuje zvlášť, se samčími lištami 1×20.

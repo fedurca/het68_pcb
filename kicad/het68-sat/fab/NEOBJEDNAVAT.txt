@@ -1,4 +1,0 @@
-Gerbery satelitu v1.10.0: 28 × 52 mm, 2 vrstvy.
-DRC error 0, nepřipojené 0, ERC 0.
-Objednej ENIG kvůli T5848. Šest kusů na jedno zařízení.
-Stínění RJ45 na satelitu není na GND.

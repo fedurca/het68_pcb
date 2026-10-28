@@ -13,9 +13,9 @@
 
 ## Elektrika
 
-- [ ] I²S: GP8 WS, GP9 SCK, SD GP16/18/20/26/27/28
+- [ ] I²S: GP8 WS, GP9 SCK, SD MIC1–6 = GP18/17/16/13/14/15 (rev E, v2.0.0)
 - [ ] SCK/WS buffer na 6 jacků, stejná délka větví
-- [ ] 6× `LED_DIN`: GP10–14 a GP22; žádný daisy-chain `DOUT`
+- [ ] 6× `LED_DIN`: MIC1–6 = GP21/20/19/10/11/12 (rev E); žádný daisy-chain `DOUT`
 - [ ] T568B: oranžový SCK, zelený WS, modrý SD, hnědý 3V3 + LED_DIN
 - [ ] Satelit: 3,3 V z UTP → LDO 1,8 V pro T5848; WS2812/SK6812 @ 3,3 V
 - [ ] I²C1 env GP2/GP3; I²C0 PM GP4/GP5; adresy bez kolize

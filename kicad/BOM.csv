@@ -8,6 +8,7 @@ hat,9,100n,CL05B104KB5NNNC,,C5 C6 C7 C8 C9 C10 C11 C12 C14,LCSC kod pro toto pre
 hat,1,MIC1,"RJHSE-5380 (8P8C, bez magnetik)",C464586,J1,
 hat,12,33,RC0402FR-0733RL,C138002,R10 R11 R13 R14 R16 R17 R19 R20 R22 R23 R25 R26,
 hat,6,100,RC0402FR-07100RL,C106232,R12 R15 R18 R21 R24 R27,
+hat,6,100k,RC0402FR-07100KL,,R50 R51 R52 R53 R54 R55,LCSC kod pro toto presne MPN neni overeny
 hat,24,PESD5V0S1BA,"PESD5V0S1BA,115",,D1 D2 D3 D4 D5 D6 D7 D8 D9 D10 D11 D12 D13 D14 D15 D16 D17 D18 D19 D20 D21 D22 D23 D24,LCSC kod pro toto presne MPN neni overeny
 hat,1,MIC2,"RJHSE-5380 (8P8C, bez magnetik)",C464586,J2,
 hat,1,MIC3,"RJHSE-5380 (8P8C, bez magnetik)",C464586,J3,
@@ -24,7 +25,6 @@ hat,1,DPS310,DPS310,C130156,U7,
 hat,1,SHT40,SHT40-AD1B-R2,C2909890,U8,
 hat,1,600R,BLM18PG601SN1D,,FB1,LCSC kod pro toto presne MPN neni overeny
 hat,4,4.7k,RC0402FR-074K7L,,R42 R43 R44 R45,LCSC kod pro toto presne MPN neni overeny
-hat,1,10k,RC0402FR-0710KL,,R46,LCSC kod pro toto presne MPN neni overeny
 hat,1,INA3221,INA3221AIRGVR,C181255,U9,
 hat,2,0.1,RC0805FR-070R1L,,R47 R48,LCSC kod pro toto presne MPN neni overeny
 hat,1,PWR,PinHeader 1x2,,J10,LCSC kod pro toto presne MPN neni overeny
@@ -56,6 +56,7 @@ pwr,1,10u,CL21A106KOQNNNE,,C3,LCSC kod pro toto presne MPN neni overeny
 pwr,1,2.2k,RC0402FR-072K2L,,R3,LCSC kod pro toto presne MPN neni overeny
 pwr,1,LED,LED 0805,,D8,LCSC kod pro toto presne MPN neni overeny
 pwr,1,VSYS_OUT,PinHeader 1x2,,J3,LCSC kod pro toto presne MPN neni overeny
+hat,2,PinSocket 1x20,"zásuvková lišta 1×20, rozteč 2,54 mm, výška 8,5 mm",,U1,Pico Plus 2 se zasouvá shora; na modul samčí lišty 1×20
 zdroj,1,SCT-013-000,YHDC SCT-013-000,,CT1,"kleště / CT na izolovaný vodič, není SMT na desce"
 zdroj,1,CN3791,CN3791,C154992,U_MPPT,"MPPT do 1S, není na nakreslené desce"
 zdroj,1,BQ25895,BQ25895RTWR,C80200,U_CHG,"I2C power-path a 5 V, není na nakreslené desce"

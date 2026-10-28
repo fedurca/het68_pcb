@@ -2,7 +2,38 @@
 
 Formát podle [Keep a Changelog](https://keepachangelog.com/cs/1.1.0/), verze podle [SemVer](https://semver.org/lang/cs/).
 
-Historie gitu je přepsaná; veřejné tagy `v1.1.1` až `v1.10.0`.
+Historie gitu je přepsaná; veřejné tagy `v1.1.1` až `v2.0.0`.
+
+## [2.0.0] — 2026-10-28
+
+HAT rev E je kompletně propojený a vyrobitelný. Major verze proto, že se mění GPIO pro SD a LED: firmware musí přepsat pole `PIN_I2S_SD` a doplnit LED piny.
+
+### Changed
+
+- **GPIO (nekompatibilní s předchozím pinoutem):** SD MIC1–MIC6 = GP18, GP17, GP16, GP13, GP14, GP15. LED_DIN MIC1–MIC6 = GP21, GP20, GP19, GP10, GP11, GP12. GP0–GP9 beze změny, GP22 a GP26–GP28 volné. Mapa je v [`docs/PINOUT.csv`](docs/PINOUT.csv) a v zadání §5.
+- **HAT 100 × 100 mm, 4 vrstvy:** F.Cu signál, In1 plná GND, In2 3V3 s ostrovem `+3V3_MIC` pod jacky, B.Cu signál. Prokovy 0,9/0,5 mm, stopa ≥ 0,25 mm, mezera ≥ 0,2 mm.
+- **Jacky ve dvou řadách:** MIC1–MIC3 na severní hraně, MIC4–MIC6 na jižní, otvorem ven. Ve v1.10.0 mířila horní řada otvorem do desky.
+- Budiče hodin po řadách: U2 SCK/WS pro MIC1–MIC3, U3 pro MIC4–MIC6. Výstupy B jdou SCK/WS střídavě v pořadí jacků, takže se nekříží. U4 přijímá všech šest SD.
+- Pico Plus 2 leží naplocho, USB-C na západní hraně desky. Na HAT jsou dvě zásuvkové lišty 1×20 (8,5 mm).
+- Kontakty RJ45 mají plošku 1,3 mm (vrták 0,89 mm), aby se SCK a WS dostaly mezi zadní řadou kontaktů. 3D model jacku ukazuje skutečné pouzdro.
+
+### Added
+
+- 100 kΩ pull-down na každém SD u jacku (R50–R55). Prázdný jack nenechá vstup převodníku plavat.
+- ESD diody a sériové odpory přímo za každým jackem, pevně vedené.
+- Výroba HAT: Gerbery všech čtyř vrstev, vrtání PTH/NPTH, CPL, IPC-D-356 a STEP se zasunutým Pico Plus 2.
+- Náhledy spodní mědi, obou vnitřních vrstev a izometrický render sestavy.
+- Zásuvkové lišty pro Pico v souhrnném kusovníku.
+
+### Fixed
+
+- HAT: DRC 0, nepřipojené 0, parita schéma ↔ deska 0, ERC 0 chyb.
+- `ADC_VREF` (pin 35) už není spojený s 3V3.
+- Router mazal při neúspěchu jedné sítě i dříve položené spoje (porovnával Python wrappery místo UUID).
+
+### Removed
+
+- Pull-up na `RUN` (R46). Pico má vlastní.
 
 ## [1.10.0] — 2026-10-28
 
@@ -118,6 +149,8 @@ Historie gitu je přepsaná; veřejné tagy `v1.1.1` až `v1.10.0`.
 - Předpoklady objednatele k posouzení: UTP k mikrofonům, nové MEMS a převodníky úrovní, compute A = Pimoroni Pico Plus 2, compute B = vlastní deska s IPEX a SX1262.
 - GPIO tabulka [`docs/PINOUT.csv`](docs/PINOUT.csv) a checklist [`docs/CHECKLIST_NAVRHAR.md`](docs/CHECKLIST_NAVRHAR.md).
 
+[2.0.0]: https://github.com/fedurca/het68_pcb/releases/tag/v2.0.0
+[1.10.0]: https://github.com/fedurca/het68_pcb/releases/tag/v1.10.0
 [1.9.0]: https://github.com/fedurca/het68_pcb/releases/tag/v1.9.0
 [1.8.0]: https://github.com/fedurca/het68_pcb/releases/tag/v1.8.0
 [1.7.0]: https://github.com/fedurca/het68_pcb/releases/tag/v1.7.0

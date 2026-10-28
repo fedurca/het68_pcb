@@ -1,3 +1,0 @@
-Gerbery HAT v1.10.0, obrys 94 × 96 mm, 2 vrstvy.
-Zkraty a vůle DRC nehlásí. Pořád chybí spoje (desítky nepřipojených padů).
-Do výroby HAT neposílej.

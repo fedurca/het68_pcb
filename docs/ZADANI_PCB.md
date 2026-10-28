@@ -4,8 +4,8 @@
 **Firmware a mechanika:** [github.com/fedurca/het68](https://github.com/fedurca/het68)
 **Tento dokument:** [github.com/fedurca/het68_pcb](https://github.com/fedurca/het68_pcb)
 **Stav:** proof-of-concept běží; toto je zadání další hardwarové iterace
-**Verze zadání:** 1.5.0 · 28. 10. 2026 (Europe/Prague)
-**Git tag:** `v1.5.0`
+**Verze zadání:** 2.0.0 · 28. 10. 2026 (Europe/Prague)
+**Git tag:** `v2.0.0`
 **Jazyk:** čeština (k odeslání návrháři)
 
 Dokument vychází z provozu prototypu, z firmware v `fedurca/het68`, z vazby na pouzdro a z **zmrazeného compute + HAT v §1**.
@@ -123,7 +123,7 @@ Tyto body měnit jen vědomě (PIO, USB audio, DOA, piezo PHY).
 | F1 | 6× digitální MEMS **I²S**, ne PDM | firmware PIO |
 | F2 | Jeden společný `SCK` + `WS` z MCU, každý mikrofon vlastní `SD` | 100% sync |
 | F3 | 48 kHz, I²S 24 bit, 64 SCK/frame → **SCK = 3,072 MHz**; rezerva návrhu 192 kHz | USB UAC2 + T5848 HQ okno 2,0–3,7 MHz |
-| F4 | Pinout §5 držet (Pico header) | `wiring_and_bom.md` |
+| F4 | Pinout §5 držet (Pico header). Od v2.0.0 jsou SD a LED přesunuté kvůli trase na HAT, se souhlasem objednatele | `wiring_and_bom.md`, `main.c` `PIN_I2S_SD` |
 | F5 | GP23/24/25/29 na W = Wi-Fi — nepoužít | RM2/CYW43 |
 | F6 | Environment na I²C1 GP2/GP3; firmware dnes DPS310 0x77 | `c(T,p,RH)` pro TDOA |
 | F7 | Piezo PHY GP6/GP7, 4 elementy paralelně za H-můstkem | `buzzer.c` |
@@ -218,14 +218,16 @@ Bajonet v pouzdru, RJ45 **piny k zemi**.
 
 ```
 RP2350 PIO master (Pico Plus 2)
-    GP9  SCK ──► buffer na HAT ──┬── RJ45-1 · 2 · 3 · 4 · 5 · 6
-    GP8  WS  ──► buffer na HAT ──┘
-GP16 SD1  ◄── RJ45-1  mic1     GP10 LED1 ──► RJ45-1
-GP18 SD2  ◄── RJ45-2  mic2     GP11 LED2 ──► RJ45-2
-GP20 SD3  ◄── RJ45-3  mic3     GP12 LED3 ──► RJ45-3
-GP26 SD4  ◄── RJ45-4  mic4     GP13 LED4 ──► RJ45-4
-GP27 SD5  ◄── RJ45-5  mic5     GP14 LED5 ──► RJ45-5
-GP28 SD6  ◄── RJ45-6  mic6     GP22 LED6 ──► RJ45-6
+    GP9  SCK ──► U2 (RJ45-1…3) + U3 (RJ45-4…6) na HAT
+    GP8  WS  ──► U2 (RJ45-1…3) + U3 (RJ45-4…6) na HAT
+GP18 SD1  ◄── RJ45-1  mic1     GP21 LED1 ──► RJ45-1
+GP17 SD2  ◄── RJ45-2  mic2     GP20 LED2 ──► RJ45-2
+GP16 SD3  ◄── RJ45-3  mic3     GP19 LED3 ──► RJ45-3
+GP13 SD4  ◄── RJ45-4  mic4     GP10 LED4 ──► RJ45-4
+GP14 SD5  ◄── RJ45-5  mic5     GP11 LED5 ──► RJ45-5
+GP15 SD6  ◄── RJ45-6  mic6     GP12 LED6 ──► RJ45-6
+
+pinout rev E (v2.0.0), SD přes U4 (1,8 V → 3,3 V)
 ```
 
 SCK a WS se větví **na HAT** do šesti jacků (stejná délka). MCU master. Buffer SCK/WS na 6 zátěží (klidně 2× budič po třech).
@@ -262,7 +264,9 @@ Doporučený stackup HAT: 4L SIG / GND / napájení / SIG.
 
 ## 5. GPIO (Pico header — držet)
 
-Z [wiring_and_bom.md](https://github.com/fedurca/het68/blob/main/wiring_and_bom.md). WS2812 ve firmware zatím **není** — šest `LED_DIN` se sem zapíše.
+GP0–GP9 z [wiring_and_bom.md](https://github.com/fedurca/het68/blob/main/wiring_and_bom.md). WS2812 ve firmware zatím **není** — šest `LED_DIN` je zapsaných tady.
+
+**Od v2.0.0 (HAT rev E):** SD a LED jsou přesunuté na konec patice u svých řad jacků, jinak se HAT nedá čistě propojit. Firmware: `PIN_I2S_SD[6] = { 18, 17, 16, 13, 14, 15 }` (MIC1…MIC6), LED_DIN MIC1…MIC6 = GP21, GP20, GP19, GP10, GP11, GP12. Každý SD má vlastní PIO SM, takže piny nemusí jít po sobě.
 
 | Funkce | GPIO | Směr | Poznámka |
 |---|---|---|---|
@@ -276,20 +280,20 @@ Z [wiring_and_bom.md](https://github.com/fedurca/het68/blob/main/wiring_and_bom.
 | Piezo B | GP7 | out | totéž, invertovaný kanál |
 | I²S WS | GP8 | out | společné |
 | I²S SCK | GP9 | out | společné, 3,072 MHz |
-| LED1 DIN (mic1 / TFC) | GP10 | out | RJ45-1 pin 8 |
-| LED2 DIN | GP11 | out | RJ45-2 |
-| LED3 DIN | GP12 | out | RJ45-3 |
-| LED4 DIN | GP13 | out | RJ45-4 |
-| LED5 DIN | GP14 | out | RJ45-5 |
-| (volné) | GP15, 17, 19, 21 | — | nenechat viset; test pad / DNP |
-| Mic 1 SD | GP16 | in | TFC sever +35°, USB ch 1 |
-| Mic 2 SD | GP18 | in | TRR 120° +35° |
-| Mic 3 SD | GP20 | in | TSL 240° +35° |
-| LED6 DIN | GP22 | out | RJ45-6 |
+| LED4 DIN | GP10 | out | RJ45-4 pin 8 |
+| LED5 DIN | GP11 | out | RJ45-5 |
+| LED6 DIN | GP12 | out | RJ45-6 |
+| Mic 4 SD | GP13 | in | BC 180° −35° |
+| Mic 5 SD | GP14 | in | RLC 300° −35° |
+| Mic 6 SD | GP15 | in | RRC 60° −35° |
+| Mic 3 SD | GP16 | in | TSL 240° +35° |
+| Mic 2 SD | GP17 | in | TRR 120° +35° |
+| Mic 1 SD | GP18 | in | TFC sever +35°, USB ch 1 |
+| LED3 DIN | GP19 | out | RJ45-3 |
+| LED2 DIN | GP20 | out | RJ45-2 |
+| LED1 DIN (mic1 / TFC) | GP21 | out | RJ45-1 pin 8 |
+| (volné) | GP22, 26, 27, 28 | — | na HAT nezapojené |
 | Wi-Fi (W) | GP23, 24, 25, 29 | — | nesahat |
-| Mic 4 SD | GP26 | in | BC 180° −35° |
-| Mic 5 SD | GP27 | in | RLC 300° −35° |
-| Mic 6 SD | GP28 | in | RRC 60° −35° |
 | PSRAM CS | GP47 | — | na modulu Plus 2, ne na HAT |
 | BOOT | GP45 | — | Plus 2 W |
 
@@ -392,4 +396,4 @@ Počet RJ45 je daný (6). Volba jacku, shifteru, piezo budiče a env čipu je so
 
 Technický obsah zadání pochází z provozu prototypu, z firmware het68 (`wiring_and_bom.md`, `buzzer.c`, `dps310.c`, pinout, 48 kHz/24 bit) a ze zmrazeného HAT v §1. Osoby, kontakty, nabídky a pracnosti v tomto dokumentu **nejsou**.
 
-Konec zadání v1.5.0.
+Konec zadání v2.0.0.

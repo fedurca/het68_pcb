@@ -1,33 +1,33 @@
 function,gpio,dir,net,notes
-debug_uart_tx,GP0,out,UART0_TX,115200 baud; firmware
-debug_uart_rx,GP1,in,UART0_RX,firmware
-env_sda,GP2,i2c,I2C1_SDA,firmware DPS310 0x77; add SHT4x 0x44 or replace with BME280 0x76
+debug_uart_tx,GP0,out,UART0_TX,115200 baud; firmware; HAT J17 pin 1
+debug_uart_rx,GP1,in,UART0_RX,firmware; HAT J17 pin 2
+env_sda,GP2,i2c,I2C1_SDA,firmware DPS310 0x77; SHT40 0x44 on the same bus
 env_scl,GP3,i2c,I2C1_SCL,pressure + temperature + humidity
-pm_sda,GP4,i2c,I2C0_SDA,INA219/INA3221 powermanagement; Plus 2 Qw/ST
+pm_sda,GP4,i2c,I2C0_SDA,INA3221 0x40; Plus 2 Qw/ST
 pm_scl,GP5,i2c,I2C0_SCL,
-piezo_a,GP6,out,PIEZO_A,firmware H-bridge; HAT driver to 4x PS1240 parallel
-piezo_b,GP7,out,PIEZO_B,firmware PWM inverted
-i2s_ws,GP8,out,I2S_WS,firmware shared
-i2s_sck,GP9,out,I2S_SCK,firmware 3.072 MHz
-led1_din,GP10,out,LED1_DIN,WS2812/SK6812; RJ45-1 pin 8; not yet in firmware
-led2_din,GP11,out,LED2_DIN,RJ45-2 pin 8
-led3_din,GP12,out,LED3_DIN,RJ45-3 pin 8
-led4_din,GP13,out,LED4_DIN,RJ45-4 pin 8
-led5_din,GP14,out,LED5_DIN,RJ45-5 pin 8
-spare_gp15,GP15,,SPARE,header leftover; tie or test pad
-mic1_sd,GP16,in,I2S_SD1,firmware TFC north +35 USB ch1
-spare_gp17,GP17,,SPARE,header leftover
-mic2_sd,GP18,in,I2S_SD2,firmware TRR 120 +35
-spare_gp19,GP19,,SPARE,header leftover
-mic3_sd,GP20,in,I2S_SD3,firmware TSL 240 +35
-spare_gp21,GP21,,SPARE,header leftover
-led6_din,GP22,out,LED6_DIN,RJ45-6 pin 8
+piezo_a,GP6,out,PIEZO_IN1,firmware H-bridge; DRV8837 IN1; 4x PS1240 parallel
+piezo_b,GP7,out,PIEZO_IN2,firmware PWM inverted; DRV8837 IN2
+i2s_ws,GP8,out,I2S_WS,firmware shared; HAT U2/U3 A2 A4 A6
+i2s_sck,GP9,out,I2S_SCK,firmware 3.072 MHz; HAT U2/U3 A1 A3 A5
+led4_din,GP10,out,LED4_DIN,rev E; RJ45 MIC4 (J4) pin 8; not yet in firmware
+led5_din,GP11,out,LED5_DIN,rev E; RJ45 MIC5 (J5) pin 8
+led6_din,GP12,out,LED6_DIN,rev E; RJ45 MIC6 (J6) pin 8
+mic4_sd,GP13,in,I2S_SD4,rev E; MIC4 (J4) BC 180 -35; firmware PIN_I2S_SD[3]
+mic5_sd,GP14,in,I2S_SD5,rev E; MIC5 (J5) RLC 300 -35; firmware PIN_I2S_SD[4]
+mic6_sd,GP15,in,I2S_SD6,rev E; MIC6 (J6) RRC 60 -35; firmware PIN_I2S_SD[5]
+mic3_sd,GP16,in,I2S_SD3,rev E; MIC3 (J3) TSL 240 +35; firmware PIN_I2S_SD[2]
+mic2_sd,GP17,in,I2S_SD2,rev E; MIC2 (J2) TRR 120 +35; firmware PIN_I2S_SD[1]
+mic1_sd,GP18,in,I2S_SD1,rev E; MIC1 (J1) TFC north +35 USB ch1; firmware PIN_I2S_SD[0]
+led3_din,GP19,out,LED3_DIN,rev E; RJ45 MIC3 (J3) pin 8
+led2_din,GP20,out,LED2_DIN,rev E; RJ45 MIC2 (J2) pin 8
+led1_din,GP21,out,LED1_DIN,rev E; RJ45 MIC1 (J1) pin 8
+spare_gp22,GP22,,SPARE,not connected on HAT rev E
 wifi_wl_on,GP23,reserved,WL_ON,Plus 2 W CYW43/RM2 do not use
 wifi_data,GP24,reserved,WL_D,do not use
 wifi_cs,GP25,reserved,WL_CS,do not use
-mic4_sd,GP26,in,I2S_SD4,firmware BC 180 -35
-mic5_sd,GP27,in,I2S_SD5,firmware RLC 300 -35
-mic6_sd,GP28,in,I2S_SD6,firmware RRC 60 -35
+spare_gp26,GP26,,SPARE,ADC0; not connected on HAT rev E
+spare_gp27,GP27,,SPARE,ADC1; not connected on HAT rev E
+spare_gp28,GP28,,SPARE,ADC2; not connected on HAT rev E
 wifi_clk,GP29,reserved,WL_CLK,do not use
 boot_plus2w,GP45,in,BOOT,Pimoroni Plus 2 W; not on HAT
 psram_cs,GP47,out,PSRAM_CS,on Plus 2 module; not on HAT

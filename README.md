@@ -2,7 +2,7 @@
 
 Zadání a KiCad návrh PCB pro **het68** (akustická detekce dronů).
 
-Aktuální verze: **[v1.10.0](https://github.com/fedurca/het68_pcb/releases/tag/v1.10.0)** — viz [CHANGELOG.md](CHANGELOG.md). Kusovník: [kicad/BOM.csv](kicad/BOM.csv).
+Aktuální verze: **[v2.0.0](https://github.com/fedurca/het68_pcb/releases/tag/v2.0.0)** — viz [CHANGELOG.md](CHANGELOG.md). Kusovník: [kicad/BOM.csv](kicad/BOM.csv).
 
 Firmware a geometrie pole: [fedurca/het68](https://github.com/fedurca/het68). Zadání pro návrháře: [docs/ZADANI_PCB.md](docs/ZADANI_PCB.md). Projekty v KiCadu: [kicad/README.md](kicad/README.md).
 
@@ -12,31 +12,34 @@ Tři desky.
 
 **Power deska** (100 × 58 mm) bere sekundár CT / kleští (ne 230 V ani 22 kV na desku), USB-C jako laboratorní vstup, a později panel + 21700. Na nakreslené desce je teď: THT burden 100 Ω trvale na J1, LC filtr před usměrňovačem, můstek, crowbar ~25 V (SCR X0202MN + Zener BZX84-C24) a výstup přes ferit. MPPT, nabíječka a PAC1934 jsou v kusovníku, ve schématu ještě ne.
 
-**Akustická deska** je HAT pod Pimoroni Pico Plus 2. Nese šest RJ45, převodníky I²S, budič čtyř piezoměničů, DPS310, SHT40 a INA3221. Piezoměniče jsou signalizace na téhle desce, ne v satelitech.
+**Akustická deska** je HAT pod Pimoroni Pico Plus 2 (100 × 100 mm, 4 vrstvy). Nese šest RJ45 ve dvou řadách, převodníky I²S, budič čtyř piezoměničů, DPS310, SHT40 a INA3221. Piezoměniče jsou signalizace na téhle desce, ne v satelitech.
 
 **Satelit** je šest stejných destiček, každá na vlastním kabelu. Na každé je mikrofon T5848, LDO 1,8 V a jedna adresovatelná RGB dioda.
 
 ## Co je ještě potřeba vyřešit
 
-Schémata mají ERC 0. Gerbery jsou dvouvrstvé, 1,6 mm.
+Schémata mají ERC 0 chyb. HAT je čtyřvrstvý, satelit a power dvouvrstvé, vše 1,6 mm.
 
-1. **HAT — pořád neobjednávat.** Zkraty a vůle DRC nehlásí, ale zbývají nepřipojené sítě (I²S, LED, část napájení a piezo mezi převodníky a jacky). Autorouter na 94 × 96 mm s šesti jacky a třemi TSSOP nestačí.
-2. **Power — harvest front-end je DRC 0.** Burden, LC a crowbar jsou na desce. CN3791, BQ25895, držák 21700 a PAC1934 ve schématu ještě nejsou; bez nich to není kompletní napájení ze zadání.
-3. **Stínění satelitu.** Plášť je na GND jen na HAT. Na satelitu je `SH` nezapojený.
-4. **LED a I²S sdílejí země v kabelu.** Mapa T568B je zmrazená. Proud diody pořád jede po zemích hodin.
-5. **RGB na 3,3 V.** Šest bílých diod se nevejde do 3,3 V z Pica. Footprint je 5050.
-6. **DPS310.** Land pattern je z BMP280 — před výrobou HAT srovnat s C130156. T5848 chce ENIG. SS34 je SMC.
-7. **Satelit** je elektricky uzavřený (DRC 0). Objednat s ENIG.
+1. **Firmware na pinout rev E.** HAT přesunul SD a LED: `PIN_I2S_SD[6] = { 18, 17, 16, 13, 14, 15 }` pro MIC1–MIC6 a LED_DIN MIC1–MIC6 na GP21, GP20, GP19, GP10, GP11, GP12. Každý SD má vlastní PIO SM, jiná změna ve firmware není potřeba. Bez úpravy firmware čte staré piny a mikrofony mlčí.
+2. **Pouzdro.** Jacky jsou ve dvou řadách: MIC1–MIC3 na severní hraně HAT, MIC4–MIC6 na jižní, otvorem ven. USB-C Pica je na západní hraně. Díry M3 jsou na [4; 4], [4; 96], [94; 34] a [94; 66] mm od levého horního rohu. Nosný prstenec se upraví podle STEP v `kicad/het68-hat/fab/`.
+3. **Power — harvest front-end je DRC 0.** Burden, LC a crowbar jsou na desce. CN3791, BQ25895, držák 21700 a PAC1934 ve schématu ještě nejsou; bez nich to není kompletní napájení ze zadání.
+4. **Stínění satelitu.** Plášť je na GND jen na HAT. Na satelitu je `SH` nezapojený.
+5. **LED a I²S sdílejí země v kabelu.** Mapa T568B je zmrazená. Proud diody pořád jede po zemích hodin.
+6. **RGB na 3,3 V.** Šest bílých diod se nevejde do 3,3 V z Pica. Firmware má svítit nejvýš dvěma pixely naráz a na zlomek jasu (cíl pod 150 mA na `+3V3_MIC`; INA3221 kanál 2 to měří).
+7. **DPS310.** Land pattern je z BMP280 — před výrobou HAT srovnat s C130156. T5848 chce ENIG. SS34 je SMC.
+8. **Vrtání satelitu a power.** Mají prokovy 0,3 mm. U výrobce s nejlevnější třídou „vrtání > 0,5 mm“ je objednat ve třídě 0,3 mm, nebo je přegenerovat s prokovy 0,5 mm jako HAT. JLCPCB 0,3 mm bere bez příplatku.
 
 ## Vyrobitelnost
 
-Proces je běžný. Všechny tři desky jsou dvouvrstvé, do 100 × 100 mm. Jedna strana SMT, druhá zemní plocha. RJ45, hřebínky, Pico, THT burden, tlumivka a radiální kondenzátory jsou vývodové. QFN, LGA, DFN a SOT-223 crowbaru potřebují běžné SMT / rentgen podle pouzdra. Satelit chce ENIG, HAT a power stačí HASL.
+Proces je běžný. Všechny desky mají do 100 × 100 mm a SMT jen na horní straně. HAT má 4 vrstvy, satelit a power 2. RJ45, hřebínky, zásuvkové lišty Pica, THT burden, tlumivka a radiální kondenzátory jsou vývodové. QFN, LGA, DFN a SOT-223 crowbaru potřebují běžné SMT / rentgen podle pouzdra. Satelit chce ENIG, HAT a power stačí HASL.
+
+HAT vychází z nejlevnější třídy běžného výrobce: stopa ≥ 0,25 mm, mezera ≥ 0,2 mm (čára/mezera ≥ 200/200 µm), nejmenší vrták 0,5 mm (prokovy 0,9/0,5 mm), 127 prokovů, 79 SMD a 13 THT součástek.
 
 | Deska | DRC error | Unconnected | Objednat Gerbery? |
 |---|---|---|---|
+| HAT | 0 | 0 | ano, 4 vrstvy |
 | Satelit | 0 | 0 | ano, ENIG, 6× |
 | Power | 0 | 0 | ano jen pro harvest front-end; bez MPPT/BQ |
-| HAT | 0 (zkraty/vůle) | ano, desítky | ne |
 
 ## Odhad výrobní ceny
 
@@ -62,7 +65,9 @@ U 1–4 sad se stejně objedná minimum desek (5 + 5 + 10), proto prvních pár 
 | 100 | 4900 | 49 |
 | 1000 | 43300 | 43 |
 
-U jednoho kusu je zhruba 16 USD desky, 140 USD osazení (skoro celé jsou to jednorázové poplatky) a 50 USD součástky včetně Pica. Od dvaceti sad začne cenu táhnout Pico, šest mikrofonů a dvanáct stíněných jacků. Rozptyl je klidně ±30 %, dokud není košík: poplatek za feeder závisí na tom, co JLCPCB vede jako Basic. Akustická deska je v téhle verzi 94 × 96 mm místo 99 × 96 mm. U JLCPCB je do 100 × 100 mm stejná cena, takže zmenšení samo o sobě tabulku nemění.
+Tabulka je ještě pro dvouvrstvý HAT. Od v2.0.0 má HAT čtyři vrstvy; podle srovnání níže (čtyři vrstvy 100 × 100 mm za ~96 USD / 10 ks proti 5 USD za dvě) přidá deska HAT v malé sérii řádově +9 USD na sadu, v tisícové sérii jednotky USD. U českého výrobce stojí dvouvrstvá 100 × 100 mm při 100 ks 126 Kč/ks plus 650 Kč příprava dat (galvanické zlato, 1,5 mm, bez potisku); čtyřvrstvou je potřeba nacenit zvlášť. Jeho prototypová služba bere jen jedno- a dvouvrstvé desky bez pouzder 0402, na HAT tedy neplatí.
+
+U jednoho kusu je zhruba 16 USD desky, 140 USD osazení (skoro celé jsou to jednorázové poplatky) a 50 USD součástky včetně Pica. Od dvaceti sad začne cenu táhnout Pico, šest mikrofonů a dvanáct stíněných jacků. Rozptyl je klidně ±30 %, dokud není košík: poplatek za feeder závisí na tom, co JLCPCB vede jako Basic. Akustická deska má 100 × 100 mm, pořád v cenové hranici JLCPCB do 100 × 100 mm.
 
 ## Vlastní deska místo Pico Plus 2 W
 
@@ -89,17 +94,39 @@ Kleště / CT jsou na jednom izolovaném vodiči. Na desku jde jen sekundár (bu
 
 ![Sestava het68](docs/img/sestava.png)
 
-## HAT — 94 × 96 mm, 2 vrstvy
+## HAT — 100 × 100 mm, 4 vrstvy (rev E)
 
-Pico Plus 2 uprostřed, šest RJ45, převodníky I²S, budič čtyř piez, DPS310, SHT40 a INA3221.
+Pico Plus 2 leží naplocho v západní polovině na dvou zásuvkových lištách 8,5 mm, USB-C na hraně desky. Šest RJ45 je ve dvou řadách otvorem ven: MIC1–MIC3 na severní hraně, MIC4–MIC6 na jižní. Za každým jackem jsou ESD diody, sériové odpory a pull-down na SD. U2 a U3 budí SCK/WS po řadách, U4 převádí šest SD z 1,8 V na 3,3 V. Vlevo nahoře je vstup VSYS a INA3221, vlevo dole UART, DPS310 + SHT40, DRV8837 a čtyři piezo konektory.
 
-**Návrh PCB** (vrchní měď, potisk, maska):
+Vrstvy: F.Cu signál, In1 plná zem, In2 3V3 s ostrovem `+3V3_MIC` pod jacky, B.Cu signál. DRC 0, nepřipojené 0, parita schéma ↔ deska 0. Výrobní data včetně STEP jsou v [`kicad/het68-hat/fab/`](kicad/het68-hat/fab/).
 
-![Návrh HAT](docs/img/hat-pcb.png)
+| Signál | GPIO (MIC1 … MIC6) |
+|---|---|
+| SD | GP18, GP17, GP16, GP13, GP14, GP15 |
+| LED_DIN | GP21, GP20, GP19, GP10, GP11, GP12 |
+| SCK / WS | GP9 / GP8 (beze změny) |
 
-**Osazená deska:**
+**Sestava** (Pico Plus 2 na zásuvkových lištách):
+
+![HAT se zasunutým Pico Plus 2](docs/img/hat-osazeno-iso.png)
+
+**Osazená deska shora:**
 
 ![Osazený HAT](docs/img/hat-osazeno.png)
+
+**Vrchní měď, potisk, maska:**
+
+![Návrh HAT, vrchní strana](docs/img/hat-pcb.png)
+
+**Spodní měď** (zrcadleně, při pohledu zespodu):
+
+![Návrh HAT, spodní strana](docs/img/hat-pcb-bot.png)
+
+**In1 — zem** a **In2 — 3V3 s ostrovem `+3V3_MIC`:**
+
+![HAT In1 GND](docs/img/hat-in1-gnd.png)
+
+![HAT In2 3V3](docs/img/hat-in2-3v3.png)
 
 ## Satelit — 28 × 52 mm, 2 vrstvy
 
