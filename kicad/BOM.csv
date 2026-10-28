@@ -37,12 +37,16 @@ sat,12,1u,CL05A105KA5NQNC,,C1 C2,LCSC kod pro toto presne MPN neni overeny
 sat,12,100n,CL05B104KB5NNNC,,C3 C4,LCSC kod pro toto presne MPN neni overeny
 sat,6,33,RC0402FR-0733RL,C138002,R1,
 sat,6,100k,RC0402FR-07100KL,,R2,LCSC kod pro toto presne MPN neni overeny
-pwr,1,AC_IN,"sekundar split-core, NE sit 230 V",,J1,LCSC kod pro toto presne MPN neni overeny
+pwr,1,AC_IN,"sekundar CT / split-core, NE sit 230 V ani 22 kV",,J1,LCSC kod pro toto presne MPN neni overeny
+pwr,1,100,100R THT burden,,R4,LCSC kod pro toto presne MPN neni overeny
+pwr,1,470uH,470uH radial,,L1,LCSC kod pro toto presne MPN neni overeny
+pwr,1,1u/100V,1uF 100V X7R LC,,C4,LCSC kod pro toto presne MPN neni overeny
 pwr,1,0.5A,polyfuse 1812 0.5 A,,F1,LCSC kod pro toto presne MPN neni overeny
-pwr,1,100,RC1206FR-07100RL,,R4,LCSC kod pro toto presne MPN neni overeny
 pwr,4,SS14,SS14,,D1 D2 D3 D4,LCSC kod pro toto presne MPN neni overeny
-pwr,1,470u/25V,electrolytic 470u 25V,,C1,LCSC kod pro toto presne MPN neni overeny
-pwr,1,SMBJ15A,SMBJ15A,C49435193,D5,
+pwr,1,470u/50V,electrolytic 470u 50V,,C1,LCSC kod pro toto presne MPN neni overeny
+pwr,1,X0202MN,X0202MN,,Q1,LCSC kod pro toto presne MPN neni overeny
+pwr,1,BZX84-C24,BZX84-C24,,D5,LCSC kod pro toto presne MPN neni overeny
+pwr,1,1k,RC0805FR-071KL,,R5,LCSC kod pro toto presne MPN neni overeny
 pwr,2,SS34,SS34,,D6 D7,"pouzdro SMC, ne SMA"
 pwr,1,USB_C,TYPE-C-31-M-12,C165948,J2,
 pwr,2,5.1k,RC0402FR-075K1L,,R1 R2,LCSC kod pro toto presne MPN neni overeny
@@ -52,7 +56,7 @@ pwr,1,10u,CL21A106KOQNNNE,,C3,LCSC kod pro toto presne MPN neni overeny
 pwr,1,2.2k,RC0402FR-072K2L,,R3,LCSC kod pro toto presne MPN neni overeny
 pwr,1,LED,LED 0805,,D8,LCSC kod pro toto presne MPN neni overeny
 pwr,1,VSYS_OUT,PinHeader 1x2,,J3,LCSC kod pro toto presne MPN neni overeny
-zdroj,1,SCT-013-000,YHDC SCT-013-000,,CT1,"kleště na 1 izolovaný vodič, není na nakreslené desce"
+zdroj,1,SCT-013-000,YHDC SCT-013-000,,CT1,"kleště / CT na izolovaný vodič, není SMT na desce"
 zdroj,1,CN3791,CN3791,C154992,U_MPPT,"MPPT do 1S, není na nakreslené desce"
 zdroj,1,BQ25895,BQ25895RTWR,C80200,U_CHG,"I2C power-path a 5 V, není na nakreslené desce"
 zdroj,1,21700 holder,BH-21700-B1BJ001,C20606791,BT1,"SMT držák, článek musí mít ochranu"

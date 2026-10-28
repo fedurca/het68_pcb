@@ -2,7 +2,7 @@
 
 Zadání a KiCad návrh PCB pro **het68** (akustická detekce dronů).
 
-Aktuální verze: **[v1.9.0](https://github.com/fedurca/het68_pcb/releases/tag/v1.9.0)** — viz [CHANGELOG.md](CHANGELOG.md). Kusovník: [kicad/BOM.csv](kicad/BOM.csv).
+Aktuální verze: **[v1.10.0](https://github.com/fedurca/het68_pcb/releases/tag/v1.10.0)** — viz [CHANGELOG.md](CHANGELOG.md). Kusovník: [kicad/BOM.csv](kicad/BOM.csv).
 
 Firmware a geometrie pole: [fedurca/het68](https://github.com/fedurca/het68). Zadání pro návrháře: [docs/ZADANI_PCB.md](docs/ZADANI_PCB.md). Projekty v KiCadu: [kicad/README.md](kicad/README.md).
 
@@ -10,7 +10,7 @@ Firmware a geometrie pole: [fedurca/het68](https://github.com/fedurca/het68). Za
 
 Tři desky.
 
-**Power deska** bere tři zdroje: kleště na jednom izolovaném vodiči 230 V (jen sekundár, síť na desku nejde), malý panel a jeden článek 21700. Na nakreslené desce je zatím jen usměrnění sekundáru a USB-C. MPPT, nabíječka a měření V/I/T jsou v kusovníku, ve schématu ještě ne.
+**Power deska** (100 × 58 mm) bere sekundár CT / kleští (ne 230 V ani 22 kV na desku), USB-C jako laboratorní vstup, a později panel + 21700. Na nakreslené desce je teď: THT burden 100 Ω trvale na J1, LC filtr před usměrňovačem, můstek, crowbar ~25 V (SCR X0202MN + Zener BZX84-C24) a výstup přes ferit. MPPT, nabíječka a PAC1934 jsou v kusovníku, ve schématu ještě ne.
 
 **Akustická deska** je HAT pod Pimoroni Pico Plus 2. Nese šest RJ45, převodníky I²S, budič čtyř piezoměničů, DPS310, SHT40 a INA3221. Piezoměniče jsou signalizace na téhle desce, ne v satelitech.
 
@@ -18,22 +18,25 @@ Tři desky.
 
 ## Co je ještě potřeba vyřešit
 
-Stav po v1.7.0. Schémata mají ERC 0. Gerbery jsou dvouvrstvé, 1,6 mm. Do výroby je neposílat.
+Schémata mají ERC 0. Gerbery jsou dvouvrstvé, 1,6 mm.
 
-1. **HAT, 27 nepřipojených padů.** Deska je 94 × 96 mm. Zkraty, vůle, zakázané zóny a překryv děr s jacky DRC nehlásí. Chybí část napájení, I²S a LED mezi převodníky a jacky.
-2. **Power, dvě mezery na VBUS.** CC1 a CC2 jsou spojené. Spojnice pinů VBUS pod USB-C křížila CC, proto v desce není. Kondenzátor a piny konektoru pořád nejsou jeden net.
-3. **Power deska není ta ze zadání.** CN3791, BQ25895, držák 21700 a PAC1934 nejsou ve schématu.
-4. **Stínění satelitu.** Plášť je na GND jen na HAT. Na satelitu je `SH` nezapojený, ať po stínění neteče proud LED.
-5. **LED a I²S sdílejí země v kabelu.** Mapa T568B je zmrazená, v téhle verzi se nemění. Proud diody pořád jede po zemích hodin.
-6. **RGB na 3,3 V.** Šest bílých diod se nevejde do 3,3 V z Pica. Stopa počítá s SK6812, footprint je 5050 a běžný WS2812 chce 5 V.
-7. **DPS310.** Land pattern je z BMP280. Před výrobou se musí srovnat s pouzdrem C130156. T5848 chce ENIG a díru pod portem. SS34 je na pouzdru SMC, v kusovníku je poznámka ať se nekoupí SMA.
-8. **Layout je autorouter.** Satelit je elektricky uzavřený. HAT pořád nemá všechny sítě.
+1. **HAT — pořád neobjednávat.** Zkraty a vůle DRC nehlásí, ale zbývají nepřipojené sítě (I²S, LED, část napájení a piezo mezi převodníky a jacky). Autorouter na 94 × 96 mm s šesti jacky a třemi TSSOP nestačí.
+2. **Power — harvest front-end je DRC 0.** Burden, LC a crowbar jsou na desce. CN3791, BQ25895, držák 21700 a PAC1934 ve schématu ještě nejsou; bez nich to není kompletní napájení ze zadání.
+3. **Stínění satelitu.** Plášť je na GND jen na HAT. Na satelitu je `SH` nezapojený.
+4. **LED a I²S sdílejí země v kabelu.** Mapa T568B je zmrazená. Proud diody pořád jede po zemích hodin.
+5. **RGB na 3,3 V.** Šest bílých diod se nevejde do 3,3 V z Pica. Footprint je 5050.
+6. **DPS310.** Land pattern je z BMP280 — před výrobou HAT srovnat s C130156. T5848 chce ENIG. SS34 je SMC.
+7. **Satelit** je elektricky uzavřený (DRC 0). Objednat s ENIG.
 
 ## Vyrobitelnost
 
-Proces je běžný. Všechny tři desky jsou dvouvrstvé, 1,6 mm, menší než 100 × 100 mm. Jedna strana SMT, druhá zemní plocha. RJ45, hřebínky, Pico a radiální kondenzátory jsou vývodové. QFN, LGA a DFN potřebují rentgen. Satelit kvůli mikrofonu chce ENIG, HAT a power stačí HASL.
+Proces je běžný. Všechny tři desky jsou dvouvrstvé, do 100 × 100 mm. Jedna strana SMT, druhá zemní plocha. RJ45, hřebínky, Pico, THT burden, tlumivka a radiální kondenzátory jsou vývodové. QFN, LGA, DFN a SOT-223 crowbaru potřebují běžné SMT / rentgen podle pouzdra. Satelit chce ENIG, HAT a power stačí HASL.
 
-Továrna by desky podle dnešních Gerberů vyrobila. Osazený kus by nefungoval: na HAT chybí spoje a power deska nemá obvod ze zadání.
+| Deska | DRC error | Unconnected | Objednat Gerbery? |
+|---|---|---|---|
+| Satelit | 0 | 0 | ano, ENIG, 6× |
+| Power | 0 | 0 | ano jen pro harvest front-end; bez MPPT/BQ |
+| HAT | 0 (zkraty/vůle) | ano, desítky | ne |
 
 ## Odhad výrobní ceny
 
@@ -82,7 +85,7 @@ Bez rádia, jen vlastní náhrada Pico Plus 2 (RP2350B, flash, PSRAM, bez CYW434
 
 ## Sestava
 
-Kleště jsou na jednom izolovaném vodiči obvodu 230 V. Na desku jde jen sekundár. Panel a článek 21700 jsou u power desky, výstup 5 V jde na HAT, šest satelitů je na RJ45.
+Kleště / CT jsou na jednom izolovaném vodiči. Na desku jde jen sekundár (burden, LC, crowbar). Panel a článek 21700 jsou u power desky, výstup 5 V jde na HAT, šest satelitů je na RJ45.
 
 ![Sestava het68](docs/img/sestava.png)
 
@@ -110,9 +113,9 @@ Jeden mikrofon T5848, LDO 1,8 V a adresovatelná RGB dioda. Stejná mapa RJ45 ja
 
 ![Osazený satelit](docs/img/sat-osazeno.png)
 
-## Napájení — 90 × 50 mm, 2 vrstvy
+## Napájení — 100 × 58 mm, 2 vrstvy
 
-Sekundár split-core, můstek, TVS a diodové OR s USB-C. Na desce není 230 V. Specifikace další revize (panel, 21700, výstup 5 V) je v zadání a v `kicad/het68-pwr/BOM_ZDROJE.csv`; na obrázku je pořád jen usměrnění.
+Sekundár CT → THT burden 100 Ω → LC → můstek → crowbar ~25 V, plus USB-C laboratoř. Na desku nejde 230 V ani 22 kV. Panel, 21700 a BQ25895 jsou v `kicad/het68-pwr/BOM_ZDROJE.csv`, ve schématu ještě ne.
 
 **Návrh PCB:**
 

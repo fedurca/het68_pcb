@@ -1,4 +1,4 @@
-# het68 — KiCad (v1.9.0)
+# het68 — KiCad (v1.10.0)
 
 Náhledy návrhu i osazených desek jsou v [README](../README.md) repozitáře.
 
@@ -8,7 +8,7 @@ Tři desky podle zmrazeného zadání (Pimoroni Pico Plus 2 + HAT, 6× RJ45, 4×
 |---|---|---|---|
 | [het68-hat](het68-hat/het68-hat.kicad_pro) | HAT pod Pico Plus 2 / Plus 2 W | 2 (signál / GND) | 94 × 96 mm |
 | [het68-sat](het68-sat/het68-sat.kicad_pro) | satelit, 6× stejný | 2, ENIG | 28 × 52 mm |
-| [het68-pwr](het68-pwr/het68-pwr.kicad_pro) | napájení ze sekundáru split-core | 2 | 90 × 50 mm |
+| [het68-pwr](het68-pwr/het68-pwr.kicad_pro) | napájení ze sekundáru CT (burden, LC, crowbar) | 2 | 100 × 58 mm |
 
 Schémata prošla ERC bez chyb (KiCad 10). Otevři `*.kicad_pro` v KiCadu.
 
@@ -31,21 +31,18 @@ Generátor (umístění i routování): `kicad/tools/gen_boards.py` (Python z Ki
 
 **Power**
 
-- Kleště **YHDC SCT-013-000** na jeden izolovaný vodič 230 V / 10 A. Sekundár je 50 mA při 100 A, při 10 A asi 5 mA. Na desku nepřijde 230 V.
-- Dál: panel (MPPT **CN3791**), jeden článek **21700**, výstup 5 V přes **BQ25895**. Měření V/I čtyř větví je **PAC1934**, teploty NTC přes **ADS1115**. Kusovník: [het68-pwr/BOM_ZDROJE.csv](het68-pwr/BOM_ZDROJE.csv).
-- Starý návrh v KiCadu je pořád jen usměrnění a USB-C. PMIC, MPPT a 21700 v něm ještě nejsou.
+- Kleště / CT (**YHDC SCT-013-000** nebo VN ekvivalent) na izolovaný vodič. Na desku jen sekundár — ne 230 V ani 22 kV.
+- Na desce: THT **burden 100 Ω** trvale na J1, **LC** (470 µH + 1 µF) před můstkem, **crowbar ~25 V** (X0202MN + BZX84-C24), USB-C laboratoř.
+- Ještě dokreslit: panel (MPPT **CN3791**), **21700**, výstup 5 V (**BQ25895**), **PAC1934** / NTC. Kusovník: [het68-pwr/BOM_ZDROJE.csv](het68-pwr/BOM_ZDROJE.csv).
 
 ## Výroba
 
-V `*/fab/` jsou Gerbery RS-274X, Excellon (PTH a NPTH zvlášť), mapy děr a CSV pozic. `bom.csv` má MPN.
+V `*/fab/` jsou Gerbery RS-274X, Excellon (PTH a NPTH zvlášť), mapy děr a CSV pozic. Souhrnný kusovník je [`BOM.csv`](BOM.csv).
 
-**Tyto Gerbery zatím neposílej do výroby.** Satelit v DRC prošel. Power nemá zkraty a CC jsou spojené, na VBUS zbývá jedna mezera. HAT nemá zkraty ani vůle, ale část sítí není spojená. Souhrnný kusovník je [`BOM.csv`](BOM.csv).
-
-Až DRC projde:
-
-- HAT: JLCPCB nebo printed.cz, 2 vrstvy, 1,6 mm, HASL. Obrys je těsně pod 100 × 100 mm.
-- Satelit: 2 vrstvy, ENIG (MEMS). Objednat 6 kusů na jedno zařízení.
-- Power: 2 vrstvy, 1,6 mm, HASL.
-- SMT: LCSC kódy v `bom.csv` doplnit (soubor má výrobní označení). RJ45 a hřebínky jsou THT.
+| Deska | Stav |
+|---|---|
+| Satelit | DRC 0 — ENIG, 6× |
+| Power | DRC 0 pro nakreslený harvest front-end; bez MPPT/BQ |
+| HAT | nepřipojené sítě — **neobjednávat** |
 
 Před panelem zkontroluj v 3D náhledu footprint T5848 (DS-000479, obr. 3 a 33) a DPS310. DPS310 sedí na pouzdru LGA-8 2,0 × 2,5 mm se stejným číslováním pinů jako BMP280 (GND, CSB, SDA, SCL, SDO, VDDIO, GND, VDD).

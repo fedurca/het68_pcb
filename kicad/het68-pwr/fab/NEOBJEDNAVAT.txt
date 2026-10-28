@@ -1,3 +1,5 @@
-Gerbery jsou export dvouvrstvého layoutu v1.9.0.
-Žádné zkraty. Na VBUS zbývají dvě mezery mezi piny USB-C a zbytkem sítě.
-Nakreslené je usměrnění sekundáru a USB-C. CN3791, BQ25895 a 21700 v tomto layoutu nejsou.
+Gerbery power desky v1.10.0: 100 × 58 mm, 2 vrstvy, 1,6 mm.
+DRC error 0, nepřipojené 0, ERC 0.
+Na desce: sekundár CT → THT burden 100 Ω → LC → můstek → crowbar ~25 V a USB-C laboratoř.
+MPPT CN3791, BQ25895, držák 21700 a PAC1934 na této desce ještě nejsou.
+Na desku nepřiváděj 230 V ani 22 kV — jen sekundár CT.

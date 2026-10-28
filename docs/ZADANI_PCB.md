@@ -180,9 +180,15 @@ Samostatná deska. Na HAT už není usměrnění ani nabíjení. Tři vstupy, je
 
 Výstup: **BQ25895** (I²C, power-path, boost 5 V) na Pico a HAT. I²C na HAT (GP4/GP5): napětí a proud čtyř větví (panel, článek, harvest, výstup 5 V) přes **PAC1934**, teplota článku na TS pinu BQ25895, teploty panelu, kleští a výstupu přes NTC a **ADS1115**.
 
-Split-core je **SCT-013-000** (100 A : 50 mA, bez vnitřního bočníku, dielektrikum jednotky kV, okno 13 mm). Ne SCT-013-010: ten má bočník uvnitř a je jen voltový senzor 10 A / 1 V. Při 10 A dává SCT-013-000 asi 5 mA, tedy jednotky miliwattů. HAT z něj sám nepojede. Na desce je zátěž 100 Ω ještě před pojistkou, ať vinutí nezůstane naprázdno.
+Split-core / CT je typicky **SCT-013-000** (100 A : 50 mA, bez vnitřního bočníku, dielektrikum jednotky kV, okno 13 mm), nebo robustnější CT u VN harvestingu. Ne SCT-013-010: ten má bočník uvnitř a je jen voltový senzor 10 A / 1 V. Při 10 A dává SCT-013-000 asi 5 mA, tedy jednotky miliwattů. HAT z něj sám nepojede.
 
-Mimo rozsah: vlastní jádro, VN izolace, 22 kV, síť 230 V přivedená na desku.
+Na power desce musí být tři ochrany sekundáru (síť 230 V / 22 kV na desku nejde):
+
+1. **Burden** 100 Ω trvale na svorkách J1 (THT), ještě před LC a pojistkou — CT je zdroj proudu, otevřený sekundár prorazí izolaci.
+2. **LC filtr** (tlumivka + kondenzátor) před usměrňovačem proti harmoniím a rušení z vedení / měničů.
+3. **Tyristorový crowbar** na usměrněném sekundáru (~25 V, SCR + Zener). TVS sám neunese odražený zkrat na lince; SCR zkratuje stejnosměrnou stranu (přes můstek i sekundár) a drží, dokud proud neklesne. U zdroje proudu je zkrat bezpečný stav.
+
+Mimo rozsah: vlastní jádro, VN izolace, 22 kV nebo 230 V přivedené na desku.
 
 ### 3.3 Satelit mikrofonu × 6
 

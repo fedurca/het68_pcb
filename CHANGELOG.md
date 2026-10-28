@@ -2,7 +2,24 @@
 
 Formát podle [Keep a Changelog](https://keepachangelog.com/cs/1.1.0/), verze podle [SemVer](https://semver.org/lang/cs/).
 
-Historie gitu je přepsaná; veřejné tagy `v1.1.1` až `v1.9.0`.
+Historie gitu je přepsaná; veřejné tagy `v1.1.1` až `v1.10.0`.
+
+## [1.10.0] — 2026-10-28
+
+### Added
+
+- Power deska: trvalý THT burden 100 Ω na J1, LC filtr (470 µH + 1 µF) před usměrňovačem, tyristorový crowbar ~25 V (X0202MN + BZX84-C24) na usměrněném sekundáru.
+- Zadání §3.2 doplněné o tyto tři ochrany pro VN / CT harvest.
+
+### Changed
+
+- Power deska 100 × 58 mm (rev B). C1 je 470 µF / 50 V. SMBJ15A nahrazený crowbarem.
+- Satelit a power: DRC error 0, nepřipojené 0. HAT pořád nemá všechny sítě.
+- Obnovené náhledy PCB a osazených desek, Gerbery satelitu a power.
+
+### Fixed
+
+- VBUS u USB-C: sběrnice nad konektorem, ať stopy nejdou mezi VBUS a GND piny 0,8 mm od sebe.
 
 ## [1.9.0] — 2026-10-28
 

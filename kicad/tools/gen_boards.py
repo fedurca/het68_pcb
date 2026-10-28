@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import csv
 import heapq
+import os
 import re
 import uuid
 from array import array
@@ -972,6 +973,8 @@ def base_libs(sch: Sch):
         ("Device.kicad_sym", "LED", "Device"),
         ("Device.kicad_sym", "FerriteBead", "Device"),
         ("Device.kicad_sym", "Polyfuse", "Device"),
+        ("Device.kicad_sym", "L", "Device"),
+        ("Triac_Thyristor.kicad_sym", "X0202MN", "Triac_Thyristor"),
         ("Logic_LevelTranslator.kicad_sym", "SN74LVC8T245", "Logic_LevelTranslator"),
         ("Driver_Motor.kicad_sym", "DRV8837C", "Driver_Motor"),
         ("Power_Management.kicad_sym", "INA3221", "Power_Management"),
@@ -1240,8 +1243,8 @@ def build_hat(sch: Sch):
         "INA3221",
         "Package_DFN_QFN:Texas_RGV0016A_VQFN-16-1EP_4x4mm_P0.65mm_EP2.1x2.1mm",
         {
-            "1": "GND",
-            "2": "GND",
+            "1": "GND",  # IN-3, unused channel tied off
+            "2": "GND",  # IN+3, unused channel tied off
             "3": "GND",
             "4": "+3V3",
             "5": "GND",  # A0 -> 0x40
@@ -1344,25 +1347,51 @@ def build_sat(sch: Sch):
 
 
 def build_pwr(sch: Sch):
+    # CT secondary only. Line voltage (230 V / 22 kV) must never reach the PCB.
     sch.add(
         "het68:Conn_1x02",
         "J1",
         "AC_IN",
         "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical",
         {"1": "AC1", "2": "AC2"},
-        "sekundar split-core, NE sit 230 V",
+        "sekundar CT / split-core, NE sit 230 V ani 22 kV",
+    )
+    # Permanent burden on the connector. CT is a current source: an open
+    # secondary would destroy the winding. THT so a bad solder joint on SMD
+    # cannot leave the clamp unloaded.
+    R(
+        sch,
+        "R4",
+        ("AC1", "AC2"),
+        "100",
+        "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal",
+        "100R THT burden",
+    )
+    # LC ahead of the bridge: harmonics and inverter noise from HV lines.
+    sch.add(
+        "Device:L",
+        "L1",
+        "470uH",
+        "Inductor_THT:L_Radial_D10.0mm_P5.00mm_Fastron_07P",
+        {"1": "AC1", "2": "AC1L"},
+        "470uH radial",
+    )
+    C(
+        sch,
+        "C4",
+        ("AC1L", "AC2"),
+        "1u/100V",
+        "Capacitor_SMD:C_1206_3216Metric",
+        "1uF 100V X7R LC",
     )
     sch.add(
         "Device:Polyfuse",
         "F1",
         "0.5A",
         "Fuse:Fuse_1812_4532Metric",
-        {"1": "AC1", "2": "AC1F"},
+        {"1": "AC1L", "2": "AC1F"},
         "polyfuse 1812 0.5 A",
     )
-    # Always across the CT secondary, ahead of the fuse, so an open fuse
-    # cannot leave the winding unloaded.
-    R(sch, "R4", ("AC1", "AC2"), "100", "Resistor_SMD:R_1206_3216Metric", "RC1206FR-07100RL")
     # bridge: SS14
     sch.add("Device:D", "D1", "SS14", "Diode_SMD:D_SMA", {"1": "DC", "2": "AC1F"}, "SS14")
     sch.add("Device:D", "D2", "SS14", "Diode_SMD:D_SMA", {"1": "AC1F", "2": "GND"}, "SS14")
@@ -1371,12 +1400,32 @@ def build_pwr(sch: Sch):
     sch.add(
         "Device:C_Polarized",
         "C1",
-        "470u/25V",
+        "470u/50V",
         "Capacitor_THT:CP_Radial_D10.0mm_P5.00mm",
         {"1": "DC", "2": "GND"},
-        "electrolytic 470u 25V",
+        "electrolytic 470u 50V",
     )
-    sch.add("Device:D", "D5", "SMBJ15A", "Diode_SMD:D_SMB", {"1": "DC", "2": "GND"}, "SMBJ15A")
+    # Crowbar ~25 V on the rectified secondary. A TVS alone cannot carry a
+    # reflected line fault; the SCR latches a short across DC (safe for a CT)
+    # until primary current falls. Bridge diodes then short the secondary.
+    sch.add(
+        "Triac_Thyristor:X0202MN",
+        "Q1",
+        "X0202MN",
+        "Package_TO_SOT_SMD:SOT-223",
+        {"1": "GND", "2": "DC", "3": "SCR_G", "4": "DC"},
+        "X0202MN",
+    )
+    # Device:D pin 1 = cathode. Zener cathode on gate node, anode on GND.
+    sch.add(
+        "Device:D",
+        "D5",
+        "BZX84-C24",
+        "Diode_SMD:D_SOD-323",
+        {"1": "SCR_G", "2": "GND"},
+        "BZX84-C24",
+    )
+    R(sch, "R5", ("DC", "SCR_G"), "1k", "Resistor_SMD:R_0805_2012Metric", "RC0805FR-071KL")
     sch.add("Device:D", "D6", "SS34", "Diode_SMD:D_SMC", {"1": "VSYS_RAW", "2": "DC"}, "SS34")
     # USB-C power only
     usb = {p: None for p in [
@@ -1518,26 +1567,31 @@ def place_sat(board: Board, sch: Sch):
 
 def place_pwr(board: Board, sch: Sch):
     by = {p["ref"]: p for p in sch.parts}
-    board.place(by["J2"], 18, 28, 0)
-    board.place(by["R1"], 32, 36, 90)
-    board.place(by["R2"], 32, 32, 90)
-    board.place(by["C3"], 32, 24, 0)
-    board.place(by["D7"], 38, 38, 0)
-    board.place(by["J1"], 70, 40, 0)
+    # Left: USB-C lab supply. Right: CT secondary, burden, LC, bridge, crowbar.
+    board.place(by["J2"], 16, 28, 0)
+    board.place(by["R1"], 30, 36, 90)
+    board.place(by["R2"], 30, 32, 90)
+    board.place(by["C3"], 24, 22, 0)
+    board.place(by["D7"], 32, 42, 0)
+    board.place(by["J1"], 92, 42, 0)
+    board.place(by["R4"], 78, 48, 0)
+    board.place(by["L1"], 68, 42, 0)
+    board.place(by["C4"], 58, 48, 0)
     board.place(by["F1"], 58, 40, 0)
-    board.place(by["R4"], 64, 44, 0)
-    board.place(by["D1"], 48, 34, 0)
-    board.place(by["D2"], 48, 28, 180)
-    board.place(by["D3"], 56, 34, 0)
-    board.place(by["D4"], 56, 28, 180)
-    board.place(by["C1"], 40, 16, 0)
-    board.place(by["D5"], 52, 16, 0)
-    board.place(by["D6"], 62, 22, 0)
-    board.place(by["FB1"], 62, 14, 90)
-    board.place(by["C2"], 72, 16, 0)
-    board.place(by["R3"], 78, 28, 90)
-    board.place(by["D8"], 78, 34, 0)
-    board.place(by["J3"], 78, 22, 0)
+    board.place(by["D1"], 48, 36, 0)
+    board.place(by["D2"], 48, 30, 180)
+    board.place(by["D3"], 56, 36, 0)
+    board.place(by["D4"], 56, 30, 180)
+    board.place(by["C1"], 34, 16, 0)
+    board.place(by["Q1"], 52, 14, 0)
+    board.place(by["R5"], 60, 14, 90)
+    board.place(by["D5"], 60, 20, 0)
+    board.place(by["D6"], 70, 20, 0)
+    board.place(by["FB1"], 76, 14, 90)
+    board.place(by["C2"], 86, 16, 0)
+    board.place(by["R3"], 92, 28, 90)
+    board.place(by["D8"], 92, 34, 0)
+    board.place(by["J3"], 92, 22, 0)
 
 
 def finish(board: Board, sch: Sch, out: Path, power_nets=None):
@@ -1587,7 +1641,6 @@ LCSC = {
     "TYPE-C-31-M-12": "C165948",
     "RJHSE-5380": "C464586",
     "RJHSE-5380 (8P8C, bez magnetik)": "C464586",
-    "SMBJ15A": "C49435193",
 }
 
 
@@ -1621,7 +1674,7 @@ def order_bom(path: Path, sheets):
                 w.writerow([board, len(refs) * mult, value, mpn, LCSC.get(mpn, ""), " ".join(refs), note])
         # Specified sources. Not placed on the drawn power sheet yet.
         extras = [
-            ("zdroj", 1, "SCT-013-000", "YHDC SCT-013-000", "", "CT1", "kleště na 1 izolovaný vodič, není na nakreslené desce"),
+            ("zdroj", 1, "SCT-013-000", "YHDC SCT-013-000", "", "CT1", "kleště / CT na izolovaný vodič, není SMT na desce"),
             ("zdroj", 1, "CN3791", "CN3791", "C154992", "U_MPPT", "MPPT do 1S, není na nakreslené desce"),
             ("zdroj", 1, "BQ25895", "BQ25895RTWR", "C80200", "U_CHG", "I2C power-path a 5 V, není na nakreslené desce"),
             ("zdroj", 1, "21700 holder", "BH-21700-B1BJ001", "C20606791", "BT1", "SMT držák, článek musí mít ochranu"),
@@ -1643,17 +1696,23 @@ def main():
     hat = Sch("het68-hat", "het68 HAT pro Pimoroni Pico Plus 2")
     base_libs(hat)
     build_hat(hat)
-    hb = Board("het68-hat", 94, 96, 2)
-    place_hat(hb, hat)
-    hb.text("het68 HAT rev C  2L", 64, 23.2, size=0.7)
-    hb.text("MIC1 sever", 64, 81, size=0.7)
-    hb.text("T568B 1=SCK 3=WS 4=SD 7=3V3 8=LED", 64, 25.2, size=0.45)
-    hb.text("PZ pin1 = +", 86, 56, size=0.6)
-    out = ROOT / "het68-hat"
-    out.mkdir(exist_ok=True)
-    miss = finish(hb, hat, out, None)
-    bom(hat, out / "bom.csv")
-    print("HAT unrouted", len(miss), miss[:30])
+    if not os.environ.get("SKIP_HAT"):
+        hb = Board("het68-hat", 94, 96, 2)
+        place_hat(hb, hat)
+        hb.text("het68 HAT rev C  2L", 64, 23.2, size=0.7)
+        hb.text("MIC1 sever", 64, 81, size=0.7)
+        hb.text("T568B 1=SCK 3=WS 4=SD 7=3V3 8=LED", 64, 25.2, size=0.45)
+        hb.text("PZ pin1 = +", 86, 56, size=0.6)
+        out = ROOT / "het68-hat"
+        out.mkdir(exist_ok=True)
+        miss = finish(hb, hat, out, None)
+        bom(hat, out / "bom.csv")
+        print("HAT unrouted", len(miss), miss[:30])
+        if os.environ.get("HAT_ONLY"):
+            print("done")
+            return
+    else:
+        print("HAT skipped", flush=True)
 
     sat = Sch("het68-sat", "het68 satelit mikrofonu + LED")
     base_libs(sat)
@@ -1669,20 +1728,22 @@ def main():
     bom(sat, out / "bom.csv")
     print("SAT unrouted", len(miss), miss)
 
-    pwr = Sch("het68-pwr", "het68 napajeni — jen sekundar split-core")
+    pwr = Sch("het68-pwr", "het68 napajeni — sekundar CT, burden, LC, crowbar")
     base_libs(pwr)
     build_pwr(pwr)
-    pb = Board("het68-pwr", 90, 50, 2)
+    pb = Board("het68-pwr", 100, 58, 2)
     place_pwr(pb, pwr)
-    pb.text("het68 PWR rev A", 45, 46, size=1.2)
-    pb.text("JEN SEKUNDAR SPLIT-CORE", 45, 6, size=1.0)
-    pb.text("NE 230 V", 45, 3.5, size=1.0)
+    pb.text("het68 PWR rev B", 50, 51, size=1.1)
+    pb.text("JEN SEKUNDAR CT", 50, 6, size=1.0)
+    pb.text("NE 230 V / NE 22 kV", 50, 3.5, size=0.9)
+    pb.text("burden+LC+crowbar ~25 V", 50, 8.5, size=0.7)
     out = ROOT / "het68-pwr"
     out.mkdir(exist_ok=True)
-    miss = finish(pb, pwr, out, {"GND", "VSYS", "VSYS_RAW", "VBUS", "DC"})
+    miss = finish(pb, pwr, out, {"GND", "VSYS", "VSYS_RAW", "VBUS", "DC", "AC1", "AC2"})
     bom(pwr, out / "bom.csv")
     print("PWR unrouted", len(miss), miss)
-    order_bom(ROOT / "BOM.csv", [("hat", hat, 1), ("sat", sat, 6), ("pwr", pwr, 1)])
+    if not os.environ.get("HAT_ONLY"):
+        order_bom(ROOT / "BOM.csv", [("hat", hat, 1), ("sat", sat, 6), ("pwr", pwr, 1)])
     print("done")
 
 

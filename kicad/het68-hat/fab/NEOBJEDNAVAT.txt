@@ -1,3 +1,3 @@
-Gerbery jsou export dvouvrstvého layoutu v1.9.0, obrys 94 × 96 mm.
-Zkraty a vůle DRC nehlásí. Nepřipojených padů je 27.
-Do výroby je neposílej.
+Gerbery HAT v1.10.0, obrys 94 × 96 mm, 2 vrstvy.
+Zkraty a vůle DRC nehlásí. Pořád chybí spoje (desítky nepřipojených padů).
+Do výroby HAT neposílej.

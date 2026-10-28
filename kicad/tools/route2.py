@@ -306,7 +306,7 @@ def route_board(board) -> list:
             return False
         return True
 
-    def via_ok(ix, iy, myid, lattice=True):
+    def via_ok(ix, iy, myid, lattice=True, ring=True):
         # Signal vias sit on a 0.4 mm lattice. Dedicated GND vias may use any cell.
         if lattice and (ix & 1 or iy & 1):
             return False
@@ -316,16 +316,23 @@ def route_board(board) -> list:
         i = idx(ix, iy)
         if via_keep[i]:
             return False
-        for layer in (0, 1):
-            for oy in range(-2, 3):
-                for ox in range(-2, 3):
-                    if ox * ox + oy * oy > 5:
-                        continue
-                    if not walkable(layer, ix + ox, iy + oy, myid):
-                        return False
+        if ring:
+            for layer in (0, 1):
+                for oy in range(-2, 3):
+                    for ox in range(-2, 3):
+                        if ox * ox + oy * oy > 5:
+                            continue
+                        if not walkable(layer, ix + ox, iy + oy, myid):
+                            return False
+        else:
+            for layer in (0, 1):
+                c = copper[layer][i]
+                b = block[layer][i]
+                if c not in (0, myid) or b == EDGE and c != myid:
+                    return False
         # A 0.6 mm via needs more room than a 0.25 mm track. The track halo
         # is not enough next to a 0.65 mm TSSOP pad.
-        need = VIA_R + CLEAR + 0.06
+        need = VIA_R + CLEAR + TRACK_W / 2 + 0.08
         for q in pads:
             if q["id"] == myid:
                 continue
@@ -451,7 +458,55 @@ def route_board(board) -> list:
                 return False
         return True
 
-    def segment_clear(x1, y1, x2, y2, myid):
+    def foreign_tracks(layer_mm=None):
+        segs = []
+        for t in board.b.GetTracks():
+            if t.GetClass() == "PCB_VIA":
+                pos = t.GetPosition()
+                try:
+                    rw = pcbnew.ToMM(t.GetWidth(pcbnew.F_Cu)) / 2
+                except Exception:
+                    rw = VIA_R
+                segs.append(
+                    (
+                        pcbnew.ToMM(pos.x),
+                        pcbnew.ToMM(pos.y),
+                        pcbnew.ToMM(pos.x),
+                        pcbnew.ToMM(pos.y),
+                        rw,
+                        t.GetNetname(),
+                        None,
+                    )
+                )
+                continue
+            if t.GetClass() != "PCB_TRACK":
+                continue
+            layer = 0 if t.GetLayer() == pcbnew.F_Cu else 1
+            if layer_mm is not None and layer != layer_mm:
+                continue
+            a = t.GetStart()
+            b = t.GetEnd()
+            segs.append(
+                (
+                    pcbnew.ToMM(a.x),
+                    pcbnew.ToMM(a.y),
+                    pcbnew.ToMM(b.x),
+                    pcbnew.ToMM(b.y),
+                    pcbnew.ToMM(t.GetWidth()) / 2,
+                    t.GetNetname(),
+                    layer,
+                )
+            )
+        return segs
+
+    def point_seg_dist(px, py, x1, y1, x2, y2):
+        dx, dy = x2 - x1, y2 - y1
+        if dx == 0 and dy == 0:
+            return math.hypot(px - x1, py - y1)
+        t = max(0.0, min(1.0, ((px - x1) * dx + (py - y1) * dy) / (dx * dx + dy * dy)))
+        return math.hypot(px - (x1 + t * dx), py - (y1 + t * dy))
+
+    def segment_clear(x1, y1, x2, y2, myid, layer=0, netname=None):
         need = CLEAR + TRACK_W / 2 + 0.02
         steps = int(math.hypot(x2 - x1, y2 - y1) / 0.05) + 1
         for s in range(steps + 1):
@@ -467,6 +522,19 @@ def route_board(board) -> list:
                 dx = max(abs(x - ox) - hw, 0.0)
                 dy = max(abs(y - oy) - hh, 0.0)
                 if dx * dx + dy * dy < need * need:
+                    return False
+        for sx1, sy1, sx2, sy2, rw, other, olayer in foreign_tracks(layer):
+            if netname and other == netname:
+                continue
+            if olayer is not None and olayer != layer:
+                continue
+            # Sample along the candidate and keep centre-to-track clearance.
+            need_t = CLEAR + TRACK_W / 2 + rw + 0.02
+            for s in range(steps + 1):
+                t = s / max(steps, 1)
+                x = x1 + (x2 - x1) * t
+                y = y1 + (y2 - y1) * t
+                if point_seg_dist(x, y, sx1, sy1, sx2, sy2) < need_t:
                     return False
         return True
 
@@ -484,7 +552,7 @@ def route_board(board) -> list:
         for sign in (primary, -primary):
             if placed_escape:
                 break
-            for extra in (1.7, 0.9):
+            for extra in (1.2, 0.7, 0.4):
                 if long_x:
                     ex = p["x"] + sign * (p["hw"] + extra)
                     ey = p["y"]
@@ -493,7 +561,7 @@ def route_board(board) -> list:
                     ey = p["y"] + sign * (p["hh"] + extra)
                 if not (1.2 < ex < board.w - 1.2 and 1.2 < ey < board.h - 1.2):
                     continue
-                if not segment_clear(p["x"], p["y"], ex, ey, p["id"]):
+                if not segment_clear(p["x"], p["y"], ex, ey, p["id"], 0, p["net"]):
                     continue
                 ix, iy = cell(ex, ey)
                 i = idx(ix, iy)
@@ -529,7 +597,7 @@ def route_board(board) -> list:
                 x2, y2 = b["tip_mm"]
                 if abs(x2 - x1) < 0.2:
                     continue
-                if not segment_clear(x1, y1, x2, y2, a["id"]):
+                if not segment_clear(x1, y1, x2, y2, a["id"], 0, net):
                     continue
                 if not line_cells_ok(x1, y1, x2, y2, 0, a["id"]):
                     continue
@@ -538,12 +606,61 @@ def route_board(board) -> list:
                 cells = [(*cell(x1 + (x2 - x1) * (s / max(steps, 1)), y1), 0) for s in range(steps + 1)]
                 paint_path_cells(cells, a["id"])
 
+    def place_vbus_bus():
+        """USB-C VBUS cannot squeeze past adjacent GND. Bus them north first."""
+        if board.name != "het68-pwr" or "VBUS" not in by_net:
+            return False
+        group = [p for p in by_net["VBUS"] if p["y"] < 26]
+        if len(group) < 2:
+            return False
+        myid = group[0]["id"]
+        bus_y = 21.4
+        xs = sorted({round(p["x"], 2) for p in group})
+        for x in xs:
+            src = next(p for p in group if abs(p["x"] - x) < 0.05)
+            if abs(src["y"] - bus_y) > 0.05:
+                if not segment_clear(src["x"], src["y"], x, bus_y, myid, 0, "VBUS"):
+                    return False
+                add_track(src["x"], src["y"], x, bus_y, 0, "VBUS")
+                steps = int(abs(src["y"] - bus_y) / G) + 1
+                cells = [
+                    (*cell(x, src["y"] + (bus_y - src["y"]) * (s / max(steps, 1))), 0)
+                    for s in range(steps + 1)
+                ]
+                paint_path_cells(cells, myid)
+        for x1, x2 in zip(xs, xs[1:]):
+            if not segment_clear(x1, bus_y, x2, bus_y, myid, 0, "VBUS"):
+                return False
+            add_track(x1, bus_y, x2, bus_y, 0, "VBUS")
+            steps = int(abs(x2 - x1) / G) + 1
+            cells = [
+                (*cell(x1 + (x2 - x1) * (s / max(steps, 1)), bus_y), 0)
+                for s in range(steps + 1)
+            ]
+            paint_path_cells(cells, myid)
+        print(f"  {board.name} early VBUS bus y={bus_y}", flush=True)
+        return True
+
+    by_net = {}
+    for p in pads:
+        by_net.setdefault(p["net"], []).append(p)
+    place_vbus_bus()
+
     # One via per SMD GND pad, outward from the part, onto the bottom pour.
     gnd_id = ids.get("GND")
     failed_gnd = []
     if gnd_id and "GND" in board.nets:
         for p in pads:
             if p["net"] != "GND" or not p["smd"]:
+                continue
+            sx, sy = p["x"], p["y"]
+            ix, iy = cell(sx, sy)
+            if min(p["hw"], p["hh"]) > 0.4 and via_ok(ix, iy, gnd_id, lattice=False, ring=False):
+                x, y = mm(ix, iy)
+                add_via(x, y, "GND")
+                copper[0][idx(ix, iy)] = gnd_id
+                copper[1][idx(ix, iy)] = gnd_id
+                paint_disc(x, y, gnd_id, VIA_R + CLEAR + TRACK_W / 2 + MARGIN)
                 continue
             sx, sy = p.get("tip_mm", (p["x"], p["y"]))
             dx, dy = p["x"] - p["fx"], p["y"] - p["fy"]
@@ -563,7 +680,7 @@ def route_board(board) -> list:
                     (-0.7, -0.7),
                 )
             placed = False
-            for dist in (1.5, 2.0, 2.6, 3.2):
+            for dist in (0.9, 1.2, 1.6, 2.2, 3.0, 4.2):
                 for ux, uy in dirs:
                     scale = math.hypot(ux, uy) or 1
                     vx = sx + ux / scale * dist
@@ -593,55 +710,55 @@ def route_board(board) -> list:
             if not placed:
                 failed_gnd.append(p)
 
-    by_net = {}
-    for p in pads:
-        by_net.setdefault(p["net"], []).append(p)
-
-    def bfs(starts, targets, myid):
+    def bfs(starts, targets, myid, via_cost=20, limit=500000, back_cost=3):
         if not starts or not targets:
             return None
         target_set = set(targets)
+        sx0, sy0, _sl0 = starts[0]
+        tx, ty, _tl = min(targets, key=lambda t: abs(t[0] - sx0) + abs(t[1] - sy0))
         heap = []
         prev = {}
-        seen = set()
-        tx, ty, _tl = targets[0]
+        best_cost = {}
         for sx, sy, sl in starts:
             if (sx, sy, sl) in target_set:
                 return [(sx, sy, sl)]
+            key = (sx, sy, sl)
             heapq.heappush(heap, (0, 0, sx, sy, sl))
-            prev[(sx, sy, sl)] = None
+            best_cost[key] = 0
+            prev[key] = None
         expands = 0
         best = None
         while heap:
             _f, cost, ix, iy, layer = heapq.heappop(heap)
             key = (ix, iy, layer)
-            if key in seen:
+            if cost != best_cost.get(key):
                 continue
-            seen.add(key)
             if cost > 0 and key in target_set:
                 best = key
                 break
             expands += 1
-            if expands > 600000:
+            if expands > limit:
                 return None
             for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
                 jx, jy = ix + dx, iy + dy
                 if not walkable(layer, jx, jy, myid):
                     continue
                 nk = (jx, jy, layer)
-                if nk in seen or nk in prev:
+                step = cost + (1 if layer == 0 else back_cost)
+                if step >= best_cost.get(nk, 1 << 30):
                     continue
-                step = cost + (1 if layer == 0 else 3)
                 h = abs(jx - tx) + abs(jy - ty)
                 prev[nk] = key
+                best_cost[nk] = step
                 heapq.heappush(heap, (step + h, step, jx, jy, layer))
             ol = 1 - layer
             if via_ok(ix, iy, myid) and walkable(ol, ix, iy, myid):
                 nk = (ix, iy, ol)
-                if nk not in seen and nk not in prev:
-                    step = cost + 25
+                step = cost + via_cost
+                if step < best_cost.get(nk, 1 << 30):
                     h = abs(ix - tx) + abs(iy - ty)
                     prev[nk] = key
+                    best_cost[nk] = step
                     heapq.heappush(heap, (step + h, step, ix, iy, ol))
         if best is None:
             return None
@@ -683,6 +800,12 @@ def route_board(board) -> list:
         paint_path_cells(path, myid)
 
     unrouted = []
+    if failed_gnd:
+        print(
+            "  gnd via fail "
+            + ", ".join(f"{p['x']:.1f},{p['y']:.1f}" for p in failed_gnd),
+            flush=True,
+        )
     # GND pads that did not get a via still need a copper path to a PTH pad.
     if failed_gnd:
         group = by_net.get("GND", [])
@@ -724,34 +847,169 @@ def route_board(board) -> list:
         else:
             add_track(p["x"], p["y"], p["x"], p["y"] + dy, layer, netname)
 
-    nets.sort(key=span)
+    power_names = {
+        "+3V3", "+1V8", "+3V3A", "+3V3_MIC",
+        "VSYS", "VSYS_IN", "VSYS_RAW", "VBUS", "DC", "AC1", "AC1F", "AC2",
+    }
+    power = [n for n in nets if n in power_names or n.startswith("+")]
+    signal = [n for n in nets if n not in power]
+    power.sort(key=span)
+    signal.sort(key=span)
 
-    print(f"route {board.name}: {len(nets)} nets, {len(pads)} pads, gnd vias missing {len(failed_gnd)}", flush=True)
-    for ni, n in enumerate(nets):
-        if ni % 20 == 0:
-            print(f"  {board.name} {ni}/{len(nets)} {n}", flush=True)
-        group = by_net[n]
+    def route_nets(names, via_cost, limit, back_cost):
+        failed = []
+        for ni, n in enumerate(names):
+            if ni % 15 == 0:
+                print(f"  {board.name} {ni}/{len(names)} {n}", flush=True)
+            group = list(by_net[n])
+            myid = group[0]["id"]
+            c_snap = (copper[0][:], copper[1][:])
+            b_snap = (block[0][:], block[1][:])
+            before = {id(t) for t in board.b.GetTracks()}
+            seed = max(group, key=lambda p: len(copper_cells(p)))
+            targets = copper_cells(seed)
+            if not targets:
+                failed.append(n)
+                continue
+            stitch(seed, targets[0][0], targets[0][1], targets[0][2], n)
+            pending = [p for p in group if p is not seed]
+            while pending:
+                def score(p, targets=targets):
+                    cells = copper_cells(p)
+                    if not cells:
+                        return 10 ** 9
+                    step_t = max(1, len(targets) // 30)
+                    step_s = max(1, len(cells) // 3)
+                    best = 10 ** 9
+                    for sx, sy, _sl in cells[::step_s]:
+                        for tx, ty, _tl in targets[::step_t]:
+                            d = abs(sx - tx) + abs(sy - ty)
+                            if d < best:
+                                best = d
+                    return best
+
+                pending.sort(key=score)
+                progressed = False
+                still = []
+                for i, p in enumerate(pending):
+                    starts = copper_cells(p)
+                    if not starts:
+                        still.append(p)
+                        continue
+                    path = bfs(starts, targets, myid, via_cost, limit, back_cost)
+                    if not path:
+                        still.append(p)
+                        continue
+                    if any(copper[layer][idx(ix, iy)] != myid for ix, iy, layer in path):
+                        draw(path, n, myid)
+                        stitch(p, path[0][0], path[0][1], path[0][2], n)
+                    targets.extend(path)
+                    targets.extend(starts)
+                    progressed = True
+                    still.extend(pending[i + 1 :])
+                    break
+                pending = still
+                if not progressed:
+                    break
+            if pending:
+                pts = ", ".join(
+                    f"{p['x']:.1f},{p['y']:.1f}" for p in pending[:8]
+                )
+                print(f"  open {n} {len(pending)}/{len(group)} {pts}", flush=True)
+                for t in list(board.b.GetTracks()):
+                    if id(t) not in before:
+                        board.b.Remove(t)
+                copper[0][:] = c_snap[0]
+                copper[1][:] = c_snap[1]
+                block[0][:] = b_snap[0]
+                block[1][:] = b_snap[1]
+                failed.append(n)
+        return failed
+
+    print(
+        f"route {board.name}: {len(nets)} nets, {len(pads)} pads, gnd vias missing {len(failed_gnd)}",
+        flush=True,
+    )
+    # Local nets first, while the top is still open. Power then uses the back.
+    sig_miss = route_nets(signal, 22, 100000, 6)
+    if sig_miss:
+        print(f"  {board.name} signal retry {sig_miss}", flush=True)
+        sig_miss = route_nets(sig_miss, 10, 220000, 2)
+    missed = route_nets(power, 5, 150000, 1)
+    if missed:
+        print(f"  {board.name} power retry {missed}", flush=True)
+        missed = route_nets(missed, 4, 300000, 1)
+    unrouted.extend(missed)
+    unrouted.extend(sig_miss)
+
+    # USB-C VBUS pads sit 0.8 mm from GND. Escape north to a bus under C3.
+    if "VBUS" in by_net and board.name == "het68-pwr":
+        group = [p for p in by_net["VBUS"] if p["y"] < 26]
+        if len(group) >= 2:
+            myid = group[0]["id"]
+            bus_y = 21.4
+            xs = sorted({round(p["x"], 2) for p in group})
+            ok = True
+            for x in xs:
+                src = next(p for p in group if abs(p["x"] - x) < 0.05)
+                if abs(src["y"] - bus_y) > 0.05:
+                    if not segment_clear(src["x"], src["y"], x, bus_y, myid, 0, "VBUS"):
+                        ok = False
+                        break
+                    add_track(src["x"], src["y"], x, bus_y, 0, "VBUS")
+            if ok and len(xs) >= 2:
+                for x1, x2 in zip(xs, xs[1:]):
+                    if not segment_clear(x1, bus_y, x2, bus_y, myid, 0, "VBUS"):
+                        ok = False
+                        break
+                    add_track(x1, bus_y, x2, bus_y, 0, "VBUS")
+            if ok:
+                print(f"  {board.name} VBUS bus y={bus_y}", flush=True)
+                unrouted = [n for n in unrouted if n != "VBUS"]
+            else:
+                print(f"  {board.name} VBUS bus failed", flush=True)
+
+    # Direct L-stitch for leftover nets with track clearance.
+    still = []
+    for n in list(dict.fromkeys(unrouted)):
+        if n == "GND":
+            still.append(n)
+            continue
+        group = list(by_net.get(n, []))
+        if len(group) < 2:
+            still.append(n)
+            continue
         myid = group[0]["id"]
-        # Seed is the pad with the most copper cells (usually a PTH pad).
-        group = sorted(group, key=lambda p: -len(copper_cells(p)))
-        targets = copper_cells(group[0])
-        if targets:
-            stitch(group[0], targets[0][0], targets[0][1], targets[0][2], n)
-        ok = bool(targets) or len(group) == 1
-        for p in group[1:]:
-            starts = copper_cells(p)
-            if not starts:
+        hub = max(group, key=lambda p: p["hw"] * p["hh"])
+        ok = True
+        for p in group:
+            if p is hub:
+                continue
+            paths = [
+                [(p["x"], p["y"]), (hub["x"], p["y"]), (hub["x"], hub["y"])],
+                [(p["x"], p["y"]), (p["x"], hub["y"]), (hub["x"], hub["y"])],
+                [(p["x"], p["y"]), (hub["x"], hub["y"])],
+            ]
+            drawn = False
+            for pts in paths:
+                clear = True
+                for (x1, y1), (x2, y2) in zip(pts, pts[1:]):
+                    if abs(x1 - x2) < 1e-9 and abs(y1 - y2) < 1e-9:
+                        continue
+                    if not segment_clear(x1, y1, x2, y2, myid, 0, n):
+                        clear = False
+                        break
+                if not clear:
+                    continue
+                for (x1, y1), (x2, y2) in zip(pts, pts[1:]):
+                    add_track(x1, y1, x2, y2, 0, n)
+                drawn = True
+                break
+            if not drawn:
                 ok = False
                 break
-            path = bfs(starts, targets, myid)
-            if not path:
-                ok = False
-                break
-            draw(path, n, myid)
-            stitch(p, path[0][0], path[0][1], path[0][2], n)
-            targets.extend(path)
-            targets.extend(starts)
-        if not ok:
-            unrouted.append(n)
-
-    return unrouted
+        if ok:
+            print(f"  {board.name} direct stitch {n}", flush=True)
+        else:
+            still.append(n)
+    return still
