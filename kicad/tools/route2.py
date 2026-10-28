@@ -753,4 +753,5 @@ def route_board(board) -> list:
             targets.extend(starts)
         if not ok:
             unrouted.append(n)
+
     return unrouted

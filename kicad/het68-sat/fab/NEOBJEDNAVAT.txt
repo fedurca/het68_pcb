@@ -1,2 +1,2 @@
-Gerbery jsou export dvouvrstvého layoutu v1.7.0.
-Satelit v DRC prošel (žádné chyby, žádné nepřipojené pady).
+Gerbery jsou export dvouvrstvého layoutu v1.9.0.
+Satelit v DRC prošel. Plášť RJ45 není spojený s GND, stínění se zemí jen na HAT.

@@ -2,7 +2,20 @@
 
 Formát podle [Keep a Changelog](https://keepachangelog.com/cs/1.1.0/), verze podle [SemVer](https://semver.org/lang/cs/).
 
-Historie gitu je přepsaná; veřejné tagy `v1.1.1` až `v1.8.0`.
+Historie gitu je přepsaná; veřejné tagy `v1.1.1` až `v1.9.0`.
+
+## [1.9.0] — 2026-10-28
+
+### Changed
+
+- Akustická deska je 94 × 96 mm. Pravý pár RJ45 je posunutý, ať montážní díry nesedí v courtyardu jacku.
+- Stínění RJ45 na satelitu není na GND. Plášť zůstává na GND jen na HAT.
+- Z README je pryč úvaha o řízení LED z power desky.
+- Odhad, o kolik vyjde vlastní deska místo koupeného Pico Plus 2, s rádiem CYW43439 i bez něj.
+
+### Fixed
+
+- SS34 v kusovníku má poznámku, že pouzdro na desce je SMC.
 
 ## [1.8.0] — 2026-10-28
 
@@ -88,6 +101,7 @@ Historie gitu je přepsaná; veřejné tagy `v1.1.1` až `v1.8.0`.
 - Předpoklady objednatele k posouzení: UTP k mikrofonům, nové MEMS a převodníky úrovní, compute A = Pimoroni Pico Plus 2, compute B = vlastní deska s IPEX a SX1262.
 - GPIO tabulka [`docs/PINOUT.csv`](docs/PINOUT.csv) a checklist [`docs/CHECKLIST_NAVRHAR.md`](docs/CHECKLIST_NAVRHAR.md).
 
+[1.9.0]: https://github.com/fedurca/het68_pcb/releases/tag/v1.9.0
 [1.8.0]: https://github.com/fedurca/het68_pcb/releases/tag/v1.8.0
 [1.7.0]: https://github.com/fedurca/het68_pcb/releases/tag/v1.7.0
 [1.6.0]: https://github.com/fedurca/het68_pcb/releases/tag/v1.6.0

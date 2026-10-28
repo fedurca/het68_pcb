@@ -1298,7 +1298,7 @@ def build_sat(sch: Sch):
             "6": "GND",
             "7": "+3V3",
             "8": "LED",
-            "SH": "GND",
+            "SH": None,
         },
         "RJHSE-5380",
     )
@@ -1441,10 +1441,10 @@ def place_hat(board: Board, sch: Sch):
     W, H = board.w, board.h
     board.place(by["U1"], 40, 26, 0)
     # top jacks MIC3 MIC1 MIC2 (MIC1 = north, center)
-    top_x = [16.5, 46.0, 75.5]
+    top_x = [16.5, 46.0, 69.0]
     for ref, x in zip(("J3", "J1", "J2"), top_x):
         board.place(by[ref], x, H - 10.5, 0)
-    bot_x = [23.5, 53.0, 82.5]
+    bot_x = [23.5, 53.0, 75.0]
     for ref, x in zip(("J4", "J5", "J6"), bot_x):
         board.place(by[ref], x, 10.5, 180)
     # translators on the right
@@ -1459,7 +1459,7 @@ def place_hat(board: Board, sch: Sch):
     board.place(by["C3"], 46, 21.4, 0)
     board.place(by["C4"], 52, 21.4, 0)
     for i, ref in enumerate(("C5", "C6", "C7", "C8", "C9", "C10")):
-        board.place(by[ref], 88, 62 + i * 2.4, 90)
+        board.place(by[ref], 83, 62 + i * 2.4, 90)
     rs = [p for p in sch.parts if p["ref"].startswith("R") and p["ref"][1:].isdigit() and int(p["ref"][1:]) < 40]
     for i, part in enumerate(rs):
         board.place(part, 64 + (i % 6) * 2.4, 67 + (i // 6) * 2.8, 90)
@@ -1471,7 +1471,7 @@ def place_hat(board: Board, sch: Sch):
     board.place(by["R40"], 80, 46, 90)
     board.place(by["R41"], 80, 52, 90)
     for i, ref in enumerate(("J11", "J12", "J13", "J14")):
-        board.place(by[ref], 94, 28 + i * 8, 0)
+        board.place(by[ref], 89, 28 + i * 8, 0)
     # sensors left
     board.place(by["U7"], 18, 55, 0)
     board.place(by["U8"], 18, 48, 0)
@@ -1612,7 +1612,9 @@ def order_bom(path: Path, sheets):
                 g.append(p["ref"])
             for (value, mpn, _fp), refs in groups.items():
                 note = ""
-                if not LCSC.get(mpn, "") and mpn:
+                if mpn == "SS34":
+                    note = "pouzdro SMC, ne SMA"
+                elif not LCSC.get(mpn, "") and mpn:
                     note = "LCSC kod pro toto presne MPN neni overeny"
                 if mpn.startswith("Pimoroni"):
                     note = "koupit u Pimoroni, neni na LCSC"
@@ -1641,7 +1643,7 @@ def main():
     hat = Sch("het68-hat", "het68 HAT pro Pimoroni Pico Plus 2")
     base_libs(hat)
     build_hat(hat)
-    hb = Board("het68-hat", 99, 96, 2)
+    hb = Board("het68-hat", 94, 96, 2)
     place_hat(hb, hat)
     hb.text("het68 HAT rev C  2L", 64, 23.2, size=0.7)
     hb.text("MIC1 sever", 64, 81, size=0.7)

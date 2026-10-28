@@ -1,4 +1,4 @@
-# het68 — KiCad (v1.8.0)
+# het68 — KiCad (v1.9.0)
 
 Náhledy návrhu i osazených desek jsou v [README](../README.md) repozitáře.
 
@@ -6,7 +6,7 @@ Tři desky podle zmrazeného zadání (Pimoroni Pico Plus 2 + HAT, 6× RJ45, 4×
 
 | Projekt | Deska | Vrstvy | Obrys |
 |---|---|---|---|
-| [het68-hat](het68-hat/het68-hat.kicad_pro) | HAT pod Pico Plus 2 / Plus 2 W | 2 (signál / GND) | 99 × 96 mm |
+| [het68-hat](het68-hat/het68-hat.kicad_pro) | HAT pod Pico Plus 2 / Plus 2 W | 2 (signál / GND) | 94 × 96 mm |
 | [het68-sat](het68-sat/het68-sat.kicad_pro) | satelit, 6× stejný | 2, ENIG | 28 × 52 mm |
 | [het68-pwr](het68-pwr/het68-pwr.kicad_pro) | napájení ze sekundáru split-core | 2 | 90 × 50 mm |
 

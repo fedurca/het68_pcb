@@ -2,7 +2,7 @@
 
 Zadání a KiCad návrh PCB pro **het68** (akustická detekce dronů).
 
-Aktuální verze: **[v1.8.0](https://github.com/fedurca/het68_pcb/releases/tag/v1.8.0)** — viz [CHANGELOG.md](CHANGELOG.md). Kusovník: [kicad/BOM.csv](kicad/BOM.csv).
+Aktuální verze: **[v1.9.0](https://github.com/fedurca/het68_pcb/releases/tag/v1.9.0)** — viz [CHANGELOG.md](CHANGELOG.md). Kusovník: [kicad/BOM.csv](kicad/BOM.csv).
 
 Firmware a geometrie pole: [fedurca/het68](https://github.com/fedurca/het68). Zadání pro návrháře: [docs/ZADANI_PCB.md](docs/ZADANI_PCB.md). Projekty v KiCadu: [kicad/README.md](kicad/README.md).
 
@@ -20,20 +20,14 @@ Tři desky.
 
 Stav po v1.7.0. Schémata mají ERC 0. Gerbery jsou dvouvrstvé, 1,6 mm. Do výroby je neposílat.
 
-1. **HAT, 29 nepřipojených padů.** Zkraty, vůle a měď v zakázané zóně už DRC nehlásí. Chybí část napájení, I²S a LED mezi převodníky a jacky.
-2. **Power, jedna mezera na VBUS.** CC1 a CC2 jsou spojené. Dva piny VBUS na USB-C a kondenzátor za nimi ještě nejsou jeden net.
+1. **HAT, 27 nepřipojených padů.** Deska je 94 × 96 mm. Zkraty, vůle, zakázané zóny a překryv děr s jacky DRC nehlásí. Chybí část napájení, I²S a LED mezi převodníky a jacky.
+2. **Power, dvě mezery na VBUS.** CC1 a CC2 jsou spojené. Spojnice pinů VBUS pod USB-C křížila CC, proto v desce není. Kondenzátor a piny konektoru pořád nejsou jeden net.
 3. **Power deska není ta ze zadání.** CN3791, BQ25895, držák 21700 a PAC1934 nejsou ve schématu.
-4. **Stínění je na GND na obou koncích.** Konektor je stíněný RJHSE-5380. U STP patří plášť na GND jen na HAT. Na satelitu se `SH` odpojí.
-5. **LED a I²S sdílejí země v kabelu.** Proud diody a hrany dat jedou ve stejných párech jako hodiny mikrofonu.
-6. **RGB na 3,3 V.** Šest bílých diod se nevejde do 3,3 V z Pica. Stopa na satelitu počítá s SK6812, footprint je 5050 a běžný WS2812 chce 5 V.
-7. **Pár pouzder v kusovníku nesedí na stopu.** SS34 je ve schématu na pouzdru SMC. DPS310 používá land pattern BMP280 a před výrobou se musí srovnat s C130156. T5848 chce ENIG a díru pod portem.
-8. **Layout je autorouter.** Satelit je elektricky uzavřený. HAT a VBUS ne.
-
-## Mají se LED řídit z power desky?
-
-Ne jako náhrada dat z akustické desky. Směr zná Pico na HAT. Dioda sedí na satelitu a jediný kabel k němu je RJ45 z HAT. Když data vyrobí power deska, musí je stejně dostat na ten kabel: šest vodičů navíc z power desky na HAT a dál do jacku. Hluk dat a zpětný proud diody v párech mikrofonu zůstanou.
-
-Co dává smysl: napájení diod z power desky, data nechat na HAT. Boost 5 V přijde na HAT a na pin 7 jen tehdy, když dioda 5 V potřebuje. Pin 7 se pak nesmí spojit s 3,3 V Pica. Zem diody nemá jezdit po zemích párů SCK, WS a SD. Plášť STP na to není zpětný vodič. Data `LED_DIN` zůstanou GPIO na HAT (GP10–14 a GP22), protože tam vzniká rozhodnutí o směru.
+4. **Stínění satelitu.** Plášť je na GND jen na HAT. Na satelitu je `SH` nezapojený, ať po stínění neteče proud LED.
+5. **LED a I²S sdílejí země v kabelu.** Mapa T568B je zmrazená, v téhle verzi se nemění. Proud diody pořád jede po zemích hodin.
+6. **RGB na 3,3 V.** Šest bílých diod se nevejde do 3,3 V z Pica. Stopa počítá s SK6812, footprint je 5050 a běžný WS2812 chce 5 V.
+7. **DPS310.** Land pattern je z BMP280. Před výrobou se musí srovnat s pouzdrem C130156. T5848 chce ENIG a díru pod portem. SS34 je na pouzdru SMC, v kusovníku je poznámka ať se nekoupí SMA.
+8. **Layout je autorouter.** Satelit je elektricky uzavřený. HAT pořád nemá všechny sítě.
 
 ## Vyrobitelnost
 
@@ -65,7 +59,26 @@ U 1–4 sad se stejně objedná minimum desek (5 + 5 + 10), proto prvních pár 
 | 100 | 4900 | 49 |
 | 1000 | 43300 | 43 |
 
-U jednoho kusu je zhruba 16 USD desky, 140 USD osazení (skoro celé jsou to jednorázové poplatky) a 50 USD součástky včetně Pica. Od dvaceti sad začne cenu táhnout Pico, šest mikrofonů a dvanáct stíněných jacků. Rozptyl je klidně ±30 %, dokud není košík: poplatek za feeder závisí na tom, co JLCPCB vede jako Basic.
+U jednoho kusu je zhruba 16 USD desky, 140 USD osazení (skoro celé jsou to jednorázové poplatky) a 50 USD součástky včetně Pica. Od dvaceti sad začne cenu táhnout Pico, šest mikrofonů a dvanáct stíněných jacků. Rozptyl je klidně ±30 %, dokud není košík: poplatek za feeder závisí na tom, co JLCPCB vede jako Basic. Akustická deska je v téhle verzi 94 × 96 mm místo 99 × 96 mm. U JLCPCB je do 100 × 100 mm stejná cena, takže zmenšení samo o sobě tabulku nemění.
+
+## Vlastní deska místo Pico Plus 2 W
+
+Dnešní odhad počítá s koupeným Pico Plus 2 bez rádia, asi 14 USD v malém množství. Vlastní deska ve třídě Pico Plus 2 W znamená RP2350B, 16 MB flash, 8 MB PSRAM a CYW43439.
+
+| Dílek | 1 ks | od 100 ks | od 1000 ks | Zdroj |
+|---|---:|---:|---:|---|
+| RP2350B | 1,20 | 1,00 | 0,90 | Raspberry Pi, ceník čipu |
+| CYW43439KUBGT | 5,78 | 4,01 | 4,01 | LCSC C5359496, dál než 100 ks není uvedeno |
+| flash 16 MB | 3,42 | 2,14 | 2,10 | LCSC, W25Q128JVPIQ |
+| PSRAM 8 MB | 1,93 | 1,58 | 1,52 | LCSC C5360304, APS6404L |
+| LDO, krystal, anténa, pasiva | 1,00 | 0,70 | 0,50 | odhad |
+| **čipy celkem** | **13,30** | **9,40** | **9,00** | |
+
+Proti 14 USD za koupený modul bez Wi-Fi jsou čipy při jednom kusu skoro stejně drahé a při tisíci kusech asi o 5 USD levnější. K tomu přibude osazení QFN-80 a rádia, rentgen a nejspíš čtyři vrstvy pod CYW43439. Čtyři vrstvy na desce 100 × 100 mm stály v srpnu 2026 u deseti kusů kolem 96 USD proti 5 USD za dvě vrstvy, tedy řádově +9 USD na kus v malé sérii. Když rádio sedí na vlastní malé desce a akustická deska zůstane dvouvrstvá, plošný spoj rádia spadne do stejného prototypového minima 2 USD za pět kusů a na kus vyjde levněji než přepočet celé akustické desky na čtyři vrstvy.
+
+Nová anténa k CYW43439 nemá certifikaci modulů Pimoroni. Jednorázová zkouška rádia se běžně počítá v tisících USD. Při sto kusech je to desítky USD na sadu, při tisíci pořád víc než úspora na čipech.
+
+Bez rádia, jen vlastní náhrada Pico Plus 2 (RP2350B, flash, PSRAM, bez CYW43439), jsou čipy asi 7,50 USD při jednom kusu a asi 5 USD při tisíci. Proti koupeným 14 USD je to úspora kolem 5–6 USD na sadu ještě před osazením QFN-80. Dvouvrstvá deska na to stačí. Rádio z té úspory udělá v malé sérii prodělek.
 
 ## Sestava
 
@@ -73,7 +86,7 @@ Kleště jsou na jednom izolovaném vodiči obvodu 230 V. Na desku jde jen sekun
 
 ![Sestava het68](docs/img/sestava.png)
 
-## HAT — 99 × 96 mm, 2 vrstvy
+## HAT — 94 × 96 mm, 2 vrstvy
 
 Pico Plus 2 uprostřed, šest RJ45, převodníky I²S, budič čtyř piez, DPS310, SHT40 a INA3221.
 

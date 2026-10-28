@@ -1,3 +1,3 @@
-Gerbery jsou export dvouvrstvého layoutu v1.7.0.
-Žádné zkraty ani vůle. CC1 a CC2 jsou spojené. Zbývá jedna mezera na VBUS.
+Gerbery jsou export dvouvrstvého layoutu v1.9.0.
+Žádné zkraty. Na VBUS zbývají dvě mezery mezi piny USB-C a zbytkem sítě.
 Nakreslené je usměrnění sekundáru a USB-C. CN3791, BQ25895 a 21700 v tomto layoutu nejsou.
