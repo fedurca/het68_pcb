@@ -2,7 +2,20 @@
 
 Formát podle [Keep a Changelog](https://keepachangelog.com/cs/1.1.0/), verze podle [SemVer](https://semver.org/lang/cs/).
 
-Historie gitu je přepsaná; veřejné tagy `v1.1.1`, `v1.2.0`, `v1.3.0`, `v1.4.0`.
+Historie gitu je přepsaná; veřejné tagy `v1.1.1`, `v1.2.0`, `v1.3.0`, `v1.4.0`, `v1.5.0`.
+
+## [1.5.0] — 2026-10-28
+
+### Changed
+
+- HAT, satelit i napájení jsou dvouvrstvé: signál na vrchní mědi, GND zóna na spodní. Gerbery v `kicad/*/fab/` jsou z tohoto layoutu. DRC pořád není čisté, do výroby je neposílat.
+- T5848: zemní pady dál od akustické díry.
+- Na sekundáru proudového transformátoru je zátěž 100 Ω ještě před pojistkou. Piezo budič v kusovníku je `DRV8837CDSGR`.
+
+### Added
+
+- Napájecí deska ve specifikaci: kleště **YHDC SCT-013-000** (jeden izolovaný vodič 230 V / 10 A, na desku jen sekundár), malý panel s MPPT `CN3791`, jeden článek **21700**, výstup 5 V přes `BQ25895`, měření napětí a proudu `PAC1934`, teploty přes NTC a `ADS1115`. Kusovník: [`kicad/het68-pwr/BOM_ZDROJE.csv`](kicad/het68-pwr/BOM_ZDROJE.csv).
+- Tyto obvody v KiCadu ještě nejsou. Nakreslené napájení je pořád usměrnění sekundáru a USB-C.
 
 ## [1.4.0] — 2026-10-28
 
@@ -42,6 +55,7 @@ Historie gitu je přepsaná; veřejné tagy `v1.1.1`, `v1.2.0`, `v1.3.0`, `v1.4.
 - Předpoklady objednatele k posouzení: UTP k mikrofonům, nové MEMS a převodníky úrovní, compute A = Pimoroni Pico Plus 2, compute B = vlastní deska s IPEX a SX1262.
 - GPIO tabulka [`docs/PINOUT.csv`](docs/PINOUT.csv) a checklist [`docs/CHECKLIST_NAVRHAR.md`](docs/CHECKLIST_NAVRHAR.md).
 
+[1.5.0]: https://github.com/fedurca/het68_pcb/releases/tag/v1.5.0
 [1.4.0]: https://github.com/fedurca/het68_pcb/releases/tag/v1.4.0
 [1.3.0]: https://github.com/fedurca/het68_pcb/releases/tag/v1.3.0
 [1.2.0]: https://github.com/fedurca/het68_pcb/releases/tag/v1.2.0

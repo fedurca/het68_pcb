@@ -2,13 +2,13 @@
 
 Zadání a KiCad návrh PCB pro **het68** (akustická detekce dronů).
 
-Aktuální verze: **[v1.4.0](https://github.com/fedurca/het68_pcb/releases/tag/v1.4.0)** — viz [CHANGELOG.md](CHANGELOG.md).
+Aktuální verze: **[v1.5.0](https://github.com/fedurca/het68_pcb/releases/tag/v1.5.0)** — viz [CHANGELOG.md](CHANGELOG.md).
 
 Firmware a geometrie pole: [fedurca/het68](https://github.com/fedurca/het68). Zadání pro návrháře: [docs/ZADANI_PCB.md](docs/ZADANI_PCB.md). Projekty v KiCadu: [kicad/README.md](kicad/README.md).
 
-Tři desky: HAT k Pimoroni Pico Plus 2, satelit mikrofonu (6×) a napájení ze sekundáru split-core. Schémata prošla ERC. Layout rev A je první autorout — před objednávkou desek je potřeba dočistit DRC.
+Tři desky: HAT k Pimoroni Pico Plus 2, satelit mikrofonu (6×) a napájení ze sekundáru split-core. Schémata prošla ERC. Layout je dvouvrstvý autorout a DRC není čisté — před objednávkou desek je potřeba ho dočistit.
 
-## HAT — 99 × 96 mm, 4 vrstvy
+## HAT — 99 × 96 mm, 2 vrstvy
 
 Pico Plus 2 uprostřed, šest RJ45, převodníky I²S, budič čtyř piez, DPS310, SHT40 a INA3221.
 
@@ -34,7 +34,7 @@ Jeden mikrofon T5848, LDO 1,8 V a adresovatelná RGB dioda. Stejná mapa RJ45 ja
 
 ## Napájení — 90 × 50 mm, 2 vrstvy
 
-Sekundár split-core, můstek, TVS a diodové OR s USB-C. Na desce není 230 V.
+Sekundár split-core, můstek, TVS a diodové OR s USB-C. Na desce není 230 V. Specifikace další revize (panel, 21700, výstup 5 V) je v zadání a v `kicad/het68-pwr/BOM_ZDROJE.csv`; na obrázku je pořád jen usměrnění.
 
 **Návrh PCB:**
 

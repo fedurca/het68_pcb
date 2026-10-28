@@ -511,13 +511,13 @@ def write_t5848_fp(path: Path):
             f'''  (pad "{num}" smd rect (at {x} {y}) (size {w} {h}) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.15) (uuid "{uid()}"))'''
         )
     # GND ring as four paste pads + copper circle, number 3. NPTH in the middle, no paste on the hole.
-    r = 0.62
+    r = 0.85
     for dx, dy, w, h in ((0, r, 0.28, 0.32), (0, -r, 0.28, 0.32), (r, 0, 0.32, 0.28), (-r, 0, 0.32, 0.28)):
         lines.append(
             f'''  (pad "3" smd rect (at {port[0]+dx} {port[1]+dy}) (size {w} {h}) (layers "F.Cu" "F.Paste" "F.Mask") (uuid "{uid()}"))'''
         )
     lines.append(
-        f'  (fp_circle (center {port[0]} {port[1]}) (end {port[0]+0.75} {port[1]}) (stroke (width 0.15) (type solid)) (fill no) (layer "F.Cu") (uuid "{uid()}"))'
+        f'  (fp_circle (center {port[0]} {port[1]}) (end {port[0]+0.55} {port[1]}) (stroke (width 0.1) (type solid)) (fill no) (layer "F.CrtYd") (uuid "{uid()}"))'
     )
     lines.append(
         f'''  (pad "" np_thru_hole circle (at {port[0]} {port[1]}) (size 0.8 0.8) (drill 0.8) (layers "*.Cu" "*.Mask") (uuid "{uid()}"))'''
@@ -615,7 +615,7 @@ class Board:
         z.SetIslandRemovalMode(pcbnew.ISLAND_REMOVAL_MODE_NEVER)
         ol = z.Outline()
         ol.NewOutline()
-        m = 0.3
+        m = 0.8
         for x, y in ((m, m), (self.w - m, m), (self.w - m, self.h - m), (m, self.h - m)):
             ol.Append(pcbnew.FromMM(x), pcbnew.FromMM(y))
         self.b.Add(z)
@@ -1162,7 +1162,7 @@ def build_hat(sch: Sch):
     sch.add(
         "Driver_Motor:DRV8837C",
         "U6",
-        "DRV8837",
+        "DRV8837C",
         "Package_SON:Texas_DSG0008A_WSON-8-1EP_2x2mm_P0.5mm_EP0.9x1.6mm",
         {
             "1": "VSYS",
@@ -1175,7 +1175,7 @@ def build_hat(sch: Sch):
             "8": "+3V3",
             "9": "GND",
         },
-        "DRV8837DSGR",
+        "DRV8837CDSGR",
     )
     C(sch, "C11", ("VSYS", "GND"), "100n")
     R(sch, "R40", ("PIEZO_P", "PIEZO_A"), "10", "Resistor_SMD:R_1206_3216Metric", "RC1206FR-0710RL")
@@ -1359,6 +1359,9 @@ def build_pwr(sch: Sch):
         {"1": "AC1", "2": "AC1F"},
         "polyfuse 1812 0.5 A",
     )
+    # Always across the CT secondary, ahead of the fuse, so an open fuse
+    # cannot leave the winding unloaded.
+    R(sch, "R4", ("AC1", "AC2"), "100", "Resistor_SMD:R_1206_3216Metric", "RC1206FR-07100RL")
     # bridge: SS14
     sch.add("Device:D", "D1", "SS14", "Diode_SMD:D_SMA", {"1": "DC", "2": "AC1F"}, "SS14")
     sch.add("Device:D", "D2", "SS14", "Diode_SMD:D_SMA", {"1": "AC1F", "2": "GND"}, "SS14")
@@ -1535,9 +1538,10 @@ def place_pwr(board: Board, sch: Sch):
     board.place(by["R1"], 32, 36, 90)
     board.place(by["R2"], 32, 32, 90)
     board.place(by["C3"], 32, 24, 0)
-    board.place(by["D7"], 42, 36, 0)
+    board.place(by["D7"], 28, 22, 0)
     board.place(by["J1"], 70, 40, 0)
     board.place(by["F1"], 58, 40, 0)
+    board.place(by["R4"], 64, 44, 0)
     board.place(by["D1"], 48, 34, 0)
     board.place(by["D2"], 48, 28, 180)
     board.place(by["D3"], 56, 34, 0)
@@ -1552,17 +1556,13 @@ def place_pwr(board: Board, sch: Sch):
     board.place(by["J3"], 78, 22, 0)
 
 
-def finish(board: Board, sch: Sch, out: Path, power_nets):
+def finish(board: Board, sch: Sch, out: Path, power_nets=None):
     board.outline()
     board.assign_nets()
     design_rules(board)
-    if board.layers == 4:
-        board.add_zone("GND", pcbnew.In1_Cu)
-        if "+3V3" in board.nets:
-            board.add_zone("+3V3", pcbnew.In2_Cu)
-    else:
-        board.add_zone("GND", pcbnew.B_Cu)
-    missing = route(board, power_nets)
+    board.add_zone("GND", pcbnew.B_Cu)
+    from route2 import route_board
+    missing = route_board(board)
     board.fill()
     pcb_path = out / f"{board.name}.kicad_pcb"
     board.save(pcb_path)
@@ -1605,15 +1605,15 @@ def main():
     hat = Sch("het68-hat", "het68 HAT pro Pimoroni Pico Plus 2")
     base_libs(hat)
     build_hat(hat)
-    hb = Board("het68-hat", 99, 96, 4)
+    hb = Board("het68-hat", 99, 96, 2)
     place_hat(hb, hat)
-    hb.text("het68 HAT rev A", 40, 78, size=1.4)
-    hb.text("MIC1 = sever", 46, 90, size=1.0)
-    hb.text("T568B 1 SCK 3 WS 4 SD 7 3V3 8 LED", 50, 8, size=0.7)
-    hb.text("Pico Plus 2", 48, 70, size=0.8)
+    hb.text("het68 HAT rev B  2L", 62, 74, size=1.0)
+    hb.text("MIC1 sever", 46, 80, size=0.9)
+    hb.text("T568B 1=SCK 3=WS 4=SD 7=3V3 8=LED", 50, 18, size=0.6)
+    hb.text("PZ pin1 = +", 86, 28, size=0.7)
     out = ROOT / "het68-hat"
     out.mkdir(exist_ok=True)
-    miss = finish(hb, hat, out, {"GND", "+3V3", "+3V3A", "+3V3_MIC", "+1V8", "VSYS", "VSYS_IN"})
+    miss = finish(hb, hat, out, None)
     bom(hat, out / "bom.csv")
     print("HAT unrouted", len(miss), miss[:30])
 

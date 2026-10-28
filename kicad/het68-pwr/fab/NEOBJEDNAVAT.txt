@@ -1,2 +1,3 @@
-Gerbery jsou export z autoroutovaného návrhu rev A.
+Gerbery jsou export dvouvrstvého autoroutu v1.5.0.
 DRC stále hlásí zkraty a vůle. Do výroby je neposílej, dokud v KiCadu DRC neprojde a Gerbery se znovu nevyexportují.
+Nakreslené je usměrnění sekundáru a USB-C. CN3791, BQ25895 a 21700 v tomto layoutu nejsou.

@@ -1,4 +1,4 @@
-# het68 — KiCad rev A (v1.4.0)
+# het68 — KiCad (v1.5.0)
 
 Náhledy návrhu i osazených desek jsou v [README](../README.md) repozitáře.
 
@@ -6,7 +6,7 @@ Tři desky podle zmrazeného zadání (Pimoroni Pico Plus 2 + HAT, 6× RJ45, 4×
 
 | Projekt | Deska | Vrstvy | Obrys |
 |---|---|---|---|
-| [het68-hat](het68-hat/het68-hat.kicad_pro) | HAT pod Pico Plus 2 / Plus 2 W | 4 (signál / GND / 3V3 / signál) | 99 × 96 mm |
+| [het68-hat](het68-hat/het68-hat.kicad_pro) | HAT pod Pico Plus 2 / Plus 2 W | 2 (signál / GND) | 99 × 96 mm |
 | [het68-sat](het68-sat/het68-sat.kicad_pro) | satelit, 6× stejný | 2, ENIG | 28 × 52 mm |
 | [het68-pwr](het68-pwr/het68-pwr.kicad_pro) | napájení ze sekundáru split-core | 2 | 90 × 50 mm |
 
@@ -31,7 +31,9 @@ Generátor (umístění i routování): `kicad/tools/gen_boards.py` (Python z Ki
 
 **Power**
 
-- Jen sekundár split-core, ne 230 V na desce. Pojistka, můstek ze čtyř SS14, 470 µF, TVS SMBJ15A, diodové OR s USB-C (CC 5,1 kΩ). Výstup `J3` = VSYS.
+- Kleště **YHDC SCT-013-000** na jeden izolovaný vodič 230 V / 10 A. Sekundár je 50 mA při 100 A, při 10 A asi 5 mA. Na desku nepřijde 230 V.
+- Dál: panel (MPPT **CN3791**), jeden článek **21700**, výstup 5 V přes **BQ25895**. Měření V/I čtyř větví je **PAC1934**, teploty NTC přes **ADS1115**. Kusovník: [het68-pwr/BOM_ZDROJE.csv](het68-pwr/BOM_ZDROJE.csv).
+- Starý návrh v KiCadu je pořád jen usměrnění a USB-C. PMIC, MPPT a 21700 v něm ještě nejsou.
 
 ## Výroba
 
@@ -41,7 +43,7 @@ V `*/fab/` jsou Gerbery RS-274X, Excellon (PTH a NPTH zvlášť), mapy děr a CS
 
 Až DRC projde:
 
-- HAT: JLCPCB nebo printed.cz, 4 vrstvy, 1,6 mm, HASL. Obrys je těsně pod 100 × 100 mm.
+- HAT: JLCPCB nebo printed.cz, 2 vrstvy, 1,6 mm, HASL. Obrys je těsně pod 100 × 100 mm.
 - Satelit: 2 vrstvy, ENIG (MEMS). Objednat 6 kusů na jedno zařízení.
 - Power: 2 vrstvy, 1,6 mm, HASL.
 - SMT: LCSC kódy v `bom.csv` doplnit (soubor má výrobní označení). RJ45 a hřebínky jsou THT.

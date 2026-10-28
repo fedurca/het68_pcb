@@ -1,6 +1,7 @@
 Ref,Value,Footprint,MPN
 J1,AC_IN,Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical,sekundar split-core, NE sit 230 V
 F1,0.5A,Fuse:Fuse_1812_4532Metric,polyfuse 1812 0.5 A
+R4,100,Resistor_SMD:R_1206_3216Metric,RC1206FR-07100RL
 D1,SS14,Diode_SMD:D_SMA,SS14
 D2,SS14,Diode_SMD:D_SMA,SS14
 D3,SS14,Diode_SMD:D_SMA,SS14

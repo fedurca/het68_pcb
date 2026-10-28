@@ -1,2 +1,4 @@
 *.lck
 ~*.lck
+__pycache__/
+*.pyc

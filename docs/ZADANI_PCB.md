@@ -4,8 +4,8 @@
 **Firmware a mechanika:** [github.com/fedurca/het68](https://github.com/fedurca/het68)
 **Tento dokument:** [github.com/fedurca/het68_pcb](https://github.com/fedurca/het68_pcb)
 **Stav:** proof-of-concept běží; toto je zadání další hardwarové iterace
-**Verze zadání:** 1.3.0 · 28. 10. 2026 (Europe/Prague)
-**Git tag:** `v1.3.0`
+**Verze zadání:** 1.5.0 · 28. 10. 2026 (Europe/Prague)
+**Git tag:** `v1.5.0`
 **Jazyk:** čeština (k odeslání návrháři)
 
 Dokument vychází z provozu prototypu, z firmware v `fedurca/het68`, z vazby na pouzdro a z **zmrazeného compute + HAT v §1**.
@@ -170,14 +170,19 @@ Power se nemíchá s I²S. Compute je vždy Pico modul + HAT.
 
 ### 3.2 Power PCB
 
-Samostatně, tvar volný. Na HAT je jen měření (INA), ne usměrnění harvestu.
+Samostatná deska. Na HAT už není usměrnění ani nabíjení. Tři vstupy, jeden výstup 5 V na Pico VSYS a HAT (`J10`).
 
-- Vstup sekundár split-core, usměrnění, bulk, TVS podle 230 V lab, pojistka.
-- Lab USB-C / 5 V na Pico, diodový OR s harvestem (na Power PCB nebo na HAT — návrhář).
-- VSYS 3,3–5,5 V na Pico VSYS, stíněný kablík.
-- LC/CM na výstupu, ať 50 Hz a buck neleze do 1V8 mikrofonů.
+| Vstup | Dílek | Co z něj jde |
+|---|---|---|
+| Indukce | **YHDC SCT-013-000**, kleště na jeden izolovaný vodič obvodu 230 V / do 10 A | usměrněný sekundár, jen trickle a měření proudu. Na desku nepřijde 230 V |
+| Slunce | malý panel, Voc 6–18 V (CN3791 je snižující MPPT, panel musí být výš než článek) | nabíjení 21700 |
+| Baterie | 1× **21700** s ochranou článku, držák na desce | zdroj, když vedení a slunce nestačí |
 
-Mimo rozsah: vlastní split-core, VN izolace, 22 kV.
+Výstup: **BQ25895** (I²C, power-path, boost 5 V) na Pico a HAT. I²C na HAT (GP4/GP5): napětí a proud čtyř větví (panel, článek, harvest, výstup 5 V) přes **PAC1934**, teplota článku na TS pinu BQ25895, teploty panelu, kleští a výstupu přes NTC a **ADS1115**.
+
+Split-core je **SCT-013-000** (100 A : 50 mA, bez vnitřního bočníku, dielektrikum jednotky kV, okno 13 mm). Ne SCT-013-010: ten má bočník uvnitř a je jen voltový senzor 10 A / 1 V. Při 10 A dává SCT-013-000 asi 5 mA, tedy jednotky miliwattů. HAT z něj sám nepojede. Na desce je zátěž 100 Ω ještě před pojistkou, ať vinutí nezůstane naprázdno.
+
+Mimo rozsah: vlastní jádro, VN izolace, 22 kV, síť 230 V přivedená na desku.
 
 ### 3.3 Satelit mikrofonu × 6
 
@@ -371,8 +376,8 @@ Počet RJ45 je daný (6). Volba jacku, shifteru, piezo budiče a env čipu je so
 3. Tvar HAT vs. tisk pouzdra (STEP), strana osazení Pico.
 4. DPS310+SHT4x, nebo BME280?
 5. Piezo budič: jaký čip, napájení 3V3 vs VSYS?
-6. INA219 vs INA3221; je změřený split-core (V, I)?
-7. Power PCB: jen harvest + USB, nebo i LiPo?
+6. Na HAT je INA3221 (VSYS a 3V3). Split-core a V/I/T vstupů jsou na power desce, §3.2.
+7. Power PCB: panel, 21700 a indukce, §3.2. USB-C na nakreslené desce je laboratorní vstup.
 8. Plus 2, nebo Plus 2 W (BLE)? HAT musí sedět na oba.
 
 ---
@@ -381,4 +386,4 @@ Počet RJ45 je daný (6). Volba jacku, shifteru, piezo budiče a env čipu je so
 
 Technický obsah zadání pochází z provozu prototypu, z firmware het68 (`wiring_and_bom.md`, `buzzer.c`, `dps310.c`, pinout, 48 kHz/24 bit) a ze zmrazeného HAT v §1. Osoby, kontakty, nabídky a pracnosti v tomto dokumentu **nejsou**.
 
-Konec zadání v1.3.0.
+Konec zadání v1.5.0.
