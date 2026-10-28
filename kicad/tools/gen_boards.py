@@ -1486,61 +1486,86 @@ def build_pwr(sch: Sch):
 
 
 def place_hat(board: Board, sch: Sch):
+    """120×100 mm: Pico horizontal, six RJ45 on the south edge (17 mm pitch)."""
     by = {p["ref"]: p for p in sch.parts}
     W, H = board.w, board.h
-    board.place(by["U1"], 40, 26, 0)
-    # top jacks MIC3 MIC1 MIC2 (MIC1 = north, center)
-    top_x = [16.5, 46.0, 69.0]
-    for ref, x in zip(("J3", "J1", "J2"), top_x):
-        board.place(by[ref], x, H - 10.5, 0)
-    bot_x = [23.5, 53.0, 75.0]
-    for ref, x in zip(("J4", "J5", "J6"), bot_x):
-        board.place(by[ref], x, 10.5, 180)
-    # translators on the right
-    # Right of the Pico. Jacks and the module leave no strip between them,
-    # so series resistors and ESD sit in the side channels, not on the Pico.
-    board.place(by["U4"], 70, 32, 0)
-    board.place(by["U3"], 70, 46, 0)
-    board.place(by["U2"], 70, 60, 0)
-    board.place(by["U5"], 82, 28, 0)
-    board.place(by["C1"], 82, 24, 0)
-    board.place(by["C2"], 86, 24, 0)
-    board.place(by["C3"], 46, 21.4, 0)
-    board.place(by["C4"], 52, 21.4, 0)
-    for i, ref in enumerate(("C5", "C6", "C7", "C8", "C9", "C10")):
-        board.place(by[ref], 83, 62 + i * 2.4, 90)
-    rs = [p for p in sch.parts if p["ref"].startswith("R") and p["ref"][1:].isdigit() and int(p["ref"][1:]) < 40]
-    for i, part in enumerate(rs):
-        board.place(part, 64 + (i % 6) * 2.4, 67 + (i // 6) * 2.8, 90)
-    ds = [p for p in sch.parts if p["ref"].startswith("D") and p["value"].startswith("PESD")]
-    for i, part in enumerate(ds):
-        board.place(part, 10 + (i % 6) * 4.0, 64.5 + (i // 6) * 2.7, 0)
-    board.place(by["U6"], 82, 36, 0)
-    board.place(by["C11"], 86, 36, 0)
-    board.place(by["R40"], 80, 46, 90)
-    board.place(by["R41"], 80, 52, 90)
+
+    # 17 mm pitch keeps Amphenol shield tabs inside a 120 mm board.
+    jacks = (
+        ("J3", 18.0),
+        ("J1", 35.0),
+        ("J2", 52.0),
+        ("J4", 69.0),
+        ("J5", 86.0),
+        ("J6", 103.0),
+    )
+    for ref, x in jacks:
+        board.place(by[ref], x, H - 11.0, 0)
+
+    # Pack series R + ESD under the jack bodies to free the mid band.
+    jack_pass = {
+        "J1": (10, 1),
+        "J2": (13, 5),
+        "J3": (16, 9),
+        "J4": (19, 13),
+        "J5": (22, 17),
+        "J6": (25, 21),
+    }
+    for ref, x in jacks:
+        r0, d0 = jack_pass[ref]
+        for k, rref in enumerate((r0, r0 + 1, r0 + 2)):
+            board.place(by[f"R{rref}"], x - 3.6 + k * 2.8, H - 20.5, 90)
+        for k in range(4):
+            board.place(by[f"D{d0 + k}"], x - 4.5 + k * 3.0, H - 25.0, 0)
+
+    # Pico left-of-centre; leaves an east corridor for translators + piezo.
+    board.place(by["U1"], 48, 36, 90)
+
+    # U4 (SD) east next to SD GPIOs; U2/U3 mid-band for short jack fan-out.
+    board.place(by["U4"], 110, 24, 90)
+    board.place(by["U3"], 52, 56, 0)
+    board.place(by["U2"], 78, 56, 0)
+
+    board.place(by["C3"], 32, 16, 0)
+    board.place(by["C4"], 38, 16, 0)
+    board.place(by["U5"], 116, 40, 0)
+    board.place(by["C1"], 116, 35, 0)
+    board.place(by["C2"], 116, 45, 0)
+    board.place(by["C5"], 52, 50, 0)
+    board.place(by["C6"], 78, 50, 0)
+    board.place(by["C7"], 102, 24, 0)
+    board.place(by["C10"], 102, 30, 0)
+    board.place(by["C9"], 52, 62, 0)
+    board.place(by["C8"], 78, 62, 0)
+
+    # Piezo east of Pico courtyard (~x99) and south of U4.
+    board.place(by["U6"], 105, 44, 0)
+    board.place(by["C11"], 110, 44, 0)
+    board.place(by["R40"], 105, 50, 90)
+    board.place(by["R41"], 109, 50, 90)
     for i, ref in enumerate(("J11", "J12", "J13", "J14")):
-        board.place(by[ref], 89, 28 + i * 8, 0)
-    # sensors left
-    board.place(by["U7"], 18, 55, 0)
-    board.place(by["U8"], 18, 48, 0)
-    board.place(by["FB1"], 12, 48, 90)
-    board.place(by["C12"], 24, 48, 0)
-    board.place(by["C13"], 24, 52, 0)
-    board.place(by["R42"], 12, 58, 90)
-    board.place(by["R43"], 15, 58, 90)
-    board.place(by["R44"], 12, 62, 90)
-    board.place(by["R45"], 15, 62, 90)
-    board.place(by["R46"], 22, 62, 90)
-    board.place(by["U9"], 18, 36, 0)
-    board.place(by["R47"], 10, 36, 90)
-    board.place(by["R48"], 10, 40, 90)
-    board.place(by["C14"], 33, 36, 0)
-    board.place(by["J10"], 10, 28, 0)
-    board.place(by["J17"], 33, 44, 0)
-    # holes
+        board.place(by[ref], 70 + i * 7, 8, 0)
+
+    board.place(by["J10"], 48, 8, 0)
+    board.place(by["J17"], 60, 8, 0)
+    # Sensors north-west above Pico.
+    board.place(by["U9"], 12, 8, 0)
+    board.place(by["R47"], 18, 6, 90)
+    board.place(by["R48"], 21, 6, 90)
+    board.place(by["C14"], 18, 10, 0)
+    board.place(by["U8"], 28, 8, 0)
+    board.place(by["U7"], 36, 8, 0)
+    board.place(by["FB1"], 12, 14, 90)
+    board.place(by["C12"], 16, 14, 0)
+    board.place(by["C13"], 20, 14, 0)
+    board.place(by["R42"], 24, 14, 90)
+    board.place(by["R43"], 27, 14, 90)
+    board.place(by["R44"], 30, 14, 90)
+    board.place(by["R45"], 33, 14, 90)
+    board.place(by["R46"], 36, 14, 90)
+
     hole_fp = "MountingHole:MountingHole_3.2mm_M3"
-    for i, (x, y) in enumerate(((4, 4), (W - 4, 4), (4, H - 4), (W - 4, H - 4)), start=1):
+    for i, (x, y) in enumerate(((4, 4), (W - 4, 4), (4, 72), (W - 4, 72)), start=1):
         dummy = {
             "ref": f"H{i}",
             "value": "M3",
@@ -1697,12 +1722,12 @@ def main():
     base_libs(hat)
     build_hat(hat)
     if not os.environ.get("SKIP_HAT"):
-        hb = Board("het68-hat", 94, 96, 2)
+        hb = Board("het68-hat", 120, 100, 2)
         place_hat(hb, hat)
-        hb.text("het68 HAT rev C  2L", 64, 23.2, size=0.7)
-        hb.text("MIC1 sever", 64, 81, size=0.7)
-        hb.text("T568B 1=SCK 3=WS 4=SD 7=3V3 8=LED", 64, 25.2, size=0.45)
-        hb.text("PZ pin1 = +", 86, 56, size=0.6)
+        hb.text("het68 HAT rev E  2L 120x100", 60, 82, size=0.7)
+        hb.text("6x RJ45 jih  pitch 17 mm", 60, 84.5, size=0.5)
+        hb.text("T568B 1=SCK 3=WS 4=SD 7=3V3 8=LED", 60, 86.5, size=0.45)
+        hb.text("PZ pin1 = +", 105, 80, size=0.6)
         out = ROOT / "het68-hat"
         out.mkdir(exist_ok=True)
         miss = finish(hb, hat, out, None)

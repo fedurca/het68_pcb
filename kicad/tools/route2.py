@@ -370,7 +370,10 @@ def route_board(board) -> list:
         t = pcbnew.PCB_TRACK(board.b)
         t.SetStart(pcbnew.VECTOR2I(pcbnew.FromMM(x1), pcbnew.FromMM(y1)))
         t.SetEnd(pcbnew.VECTOR2I(pcbnew.FromMM(x2), pcbnew.FromMM(y2)))
-        t.SetWidth(pcbnew.FromMM(TRACK_W))
+        wide = netname in {
+            "+3V3", "+1V8", "+3V3A", "+3V3_MIC", "VSYS", "VSYS_IN", "VSYS_RAW", "VBUS", "DC",
+        }
+        t.SetWidth(pcbnew.FromMM(0.4 if wide else TRACK_W))
         t.SetLayer(pcbnew.F_Cu if layer == 0 else pcbnew.B_Cu)
         t.SetNet(board.nets[netname])
         board.b.Add(t)
@@ -680,7 +683,7 @@ def route_board(board) -> list:
                     (-0.7, -0.7),
                 )
             placed = False
-            for dist in (0.9, 1.2, 1.6, 2.2, 3.0, 4.2):
+            for dist in (0.9, 1.2, 1.6, 2.2, 3.0, 4.2, 5.5, 7.0):
                 for ux, uy in dirs:
                     scale = math.hypot(ux, uy) or 1
                     vx = sx + ux / scale * dist
@@ -865,7 +868,9 @@ def route_board(board) -> list:
             myid = group[0]["id"]
             c_snap = (copper[0][:], copper[1][:])
             b_snap = (block[0][:], block[1][:])
-            before = {id(t) for t in board.b.GetTracks()}
+            # KiCad returns a fresh Python wrapper per GetTracks() call, so id(t)
+            # is unstable — rip-up by UUID or every prior net's copper vanishes.
+            before = {t.m_Uuid.AsString() for t in board.b.GetTracks()}
             seed = max(group, key=lambda p: len(copper_cells(p)))
             targets = copper_cells(seed)
             if not targets:
@@ -891,20 +896,30 @@ def route_board(board) -> list:
                 pending.sort(key=score)
                 progressed = False
                 still = []
+                target_set = set(targets)
                 for i, p in enumerate(pending):
                     starts = copper_cells(p)
                     if not starts:
                         still.append(p)
                         continue
+                    # Pad copper already touches the grown net — only skip drawing
+                    # when a start cell is literally already a target cell.
+                    if any(s in target_set for s in starts):
+                        targets.extend(starts)
+                        progressed = True
+                        still.extend(pending[i + 1 :])
+                        break
                     path = bfs(starts, targets, myid, via_cost, limit, back_cost)
                     if not path:
                         still.append(p)
                         continue
-                    if any(copper[layer][idx(ix, iy)] != myid for ix, iy, layer in path):
-                        draw(path, n, myid)
-                        stitch(p, path[0][0], path[0][1], path[0][2], n)
+                    # Always materialize the path. Skipping draw when the grid is
+                    # already painted myid left HAT with "routed" nets and no copper.
+                    draw(path, n, myid)
+                    stitch(p, path[0][0], path[0][1], path[0][2], n)
                     targets.extend(path)
                     targets.extend(starts)
+                    target_set = set(targets)
                     progressed = True
                     still.extend(pending[i + 1 :])
                     break
@@ -917,7 +932,7 @@ def route_board(board) -> list:
                 )
                 print(f"  open {n} {len(pending)}/{len(group)} {pts}", flush=True)
                 for t in list(board.b.GetTracks()):
-                    if id(t) not in before:
+                    if t.m_Uuid.AsString() not in before:
                         board.b.Remove(t)
                 copper[0][:] = c_snap[0]
                 copper[1][:] = c_snap[1]
@@ -930,15 +945,76 @@ def route_board(board) -> list:
         f"route {board.name}: {len(nets)} nets, {len(pads)} pads, gnd vias missing {len(failed_gnd)}",
         flush=True,
     )
-    # Local nets first, while the top is still open. Power then uses the back.
-    sig_miss = route_nets(signal, 22, 100000, 6)
-    if sig_miss:
-        print(f"  {board.name} signal retry {sig_miss}", flush=True)
-        sig_miss = route_nets(sig_miss, 10, 220000, 2)
-    missed = route_nets(power, 5, 150000, 1)
-    if missed:
-        print(f"  {board.name} power retry {missed}", flush=True)
-        missed = route_nets(missed, 4, 300000, 1)
+    if "hat" in board.name:
+        sig_lim, sig_retry, pwr_lim, pwr_retry = 220000, 550000, 280000, 650000
+    else:
+        sig_lim, sig_retry, pwr_lim, pwr_retry = 100000, 220000, 150000, 300000
+
+    def early_hat_bus(netname, bus_y, x0=8.0, x1=94.0):
+        """Reserve a horizontal power spine before signal routing fills F.Cu."""
+        if netname not in by_net or netname not in board.nets:
+            return False
+        group = by_net[netname]
+        myid = group[0]["id"]
+        if not segment_clear(x0, bus_y, x1, bus_y, myid, 0, netname):
+            print(f"  {board.name} {netname} bus blocked y={bus_y}", flush=True)
+            return False
+        add_track(x0, bus_y, x1, bus_y, 0, netname)
+        steps = int(abs(x1 - x0) / G) + 1
+        cells = [
+            (*cell(x0 + (x1 - x0) * (s / max(steps, 1)), bus_y), 0)
+            for s in range(steps + 1)
+        ]
+        paint_path_cells(cells, myid)
+        # Stub every pad within 6 mm of the bus onto it when the stub is clear.
+        for p in group:
+            if abs(p["y"] - bus_y) > 6.0:
+                continue
+            if abs(p["x"] - x0) < 0.05 and abs(p["y"] - bus_y) < 0.05:
+                continue
+            if not segment_clear(p["x"], p["y"], p["x"], bus_y, myid, 0, netname):
+                continue
+            if abs(p["y"] - bus_y) > 0.05:
+                add_track(p["x"], p["y"], p["x"], bus_y, 0, netname)
+                stub_steps = int(abs(p["y"] - bus_y) / G) + 1
+                stub = [
+                    (*cell(p["x"], p["y"] + (bus_y - p["y"]) * (s / max(stub_steps, 1))), 0)
+                    for s in range(stub_steps + 1)
+                ]
+                paint_path_cells(stub, myid)
+        print(f"  {board.name} {netname} bus y={bus_y}", flush=True)
+        return True
+
+    # HAT: power spines and power nets first — signals then fill the rest.
+    if "hat" in board.name:
+        # Keep the Pico↔translator band (y≈48–56) free for SD_*_3V3.
+        early_hat_bus("+3V3", 54.4, x0=10.0, x1=114.0)
+        early_hat_bus("+3V3", 20.0, x0=10.0, x1=90.0)
+        early_hat_bus("+1V8", 42.0, x0=100.0, x1=116.0)
+        early_hat_bus("+3V3A", 10.0, x0=8.0, x1=40.0)
+        early_hat_bus("+3V3_MIC", 78.0, x0=12.0, x1=110.0)
+        missed = route_nets(power, 4, pwr_lim, 1)
+        if missed:
+            print(f"  {board.name} power retry {missed}", flush=True)
+            missed = route_nets(missed, 2, pwr_retry, 1)
+        # Cheap vias so signals can wrap the Pico on B.Cu.
+        sig_miss = route_nets(signal, 6, sig_lim, 1)
+        if sig_miss:
+            print(f"  {board.name} signal retry {sig_miss}", flush=True)
+            sig_miss = route_nets(sig_miss, 4, sig_retry, 1)
+        if sig_miss:
+            print(f"  {board.name} signal retry2 {sig_miss}", flush=True)
+            sig_miss = route_nets(sig_miss, 3, sig_retry * 2, 1)
+    else:
+        # Local nets first, while the top is still open. Power then uses the back.
+        sig_miss = route_nets(signal, 22, sig_lim, 6)
+        if sig_miss:
+            print(f"  {board.name} signal retry {sig_miss}", flush=True)
+            sig_miss = route_nets(sig_miss, 8, sig_retry, 1)
+        missed = route_nets(power, 5, pwr_lim, 1)
+        if missed:
+            print(f"  {board.name} power retry {missed}", flush=True)
+            missed = route_nets(missed, 3, pwr_retry, 1)
     unrouted.extend(missed)
     unrouted.extend(sig_miss)
 
