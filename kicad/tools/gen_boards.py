@@ -1019,11 +1019,11 @@ def design_rules(board: Board):
     for attr in ("SetBoardThickness",):
         fn = getattr(ds, attr, None)
         if callable(fn):
-            fn(pcbnew.FromMM(1.5))
+            fn(pcbnew.FromMM(1.6))
             break
     else:
         if hasattr(ds, "m_BoardThickness"):
-            ds.m_BoardThickness = pcbnew.FromMM(1.5)
+            ds.m_BoardThickness = pcbnew.FromMM(1.6)
     try:
         nc = ds.m_NetSettings.m_DefaultNetClass
         nc.SetClearance(pcbnew.FromMM(0.2))

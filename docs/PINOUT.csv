@@ -36,6 +36,10 @@ psram_so,GP33,in,PSRAM_SO,APS6404L
 psram_si,GP34,out,PSRAM_SI,APS6404L
 psram_sclk,GP35,out,PSRAM_SCLK,APS6404L
 pg_5v,GP36,in,PG_5V,J_PWR pin 14
+status_led,GP37,out,STATUS_DIN,one SK6812 on Core; +3V3_DIG; DOUT NC
+user_btn,GP38,in,BTN_USER,active low; 10k to +3V3_DIG; SW_USR to GND
+reset_btn,,,RUN,SW_RST to GND; 10k R_RUN already on RUN
+boot_btn,,,QSPI_SS,SW_BOOT to GND; 10k R_CS; hold with reset for USB bootloader
 wake_dsp,,in,WAKE_DSP,not an MCU GPIO; Heltec GPIO7 -> EN of +3V3_DIG and +1V8_AUDIO LDOs
 qspi_flash,,bus,QSPI,dedicated RP2350B QSPI pins to W25Q128
 usb_cdc,,,USB,console; replaces v3 debug UART on GP0/GP1

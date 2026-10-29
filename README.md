@@ -2,7 +2,7 @@
 
 Zadání a KiCad návrh PCB pro **het68** (akustická detekce dronů).
 
-Aktuální verze: **[v4.1.0](https://github.com/fedurca/het68_pcb/releases/tag/v4.1.0)** — viz [CHANGELOG.md](CHANGELOG.md). Kusovník sady: [kicad/BOM_KIT.csv](kicad/BOM_KIT.csv). Po deskách: [kicad/BOM_v4.csv](kicad/BOM_v4.csv).
+Aktuální verze: **[v4.2.0](https://github.com/fedurca/het68_pcb/releases/tag/v4.2.0)** — viz [CHANGELOG.md](CHANGELOG.md). Kusovník sady: [kicad/BOM_KIT.csv](kicad/BOM_KIT.csv). Po deskách: [kicad/BOM_v4.csv](kicad/BOM_v4.csv).
 
 Firmware a geometrie pole: [fedurca/het68](https://github.com/fedurca/het68). Zadání: [docs/ZADANI_PCB.md](docs/ZADANI_PCB.md). Projekty v KiCadu: [kicad/README.md](kicad/README.md).
 
@@ -10,15 +10,17 @@ Firmware a geometrie pole: [fedurca/het68](https://github.com/fedurca/het68). Za
 
 v4 je sada **Core 6L + vyměnitelná silová deska + šest satelitů**. Na měď nepřijde 230 V, 22 kV ani 110 kV.
 
-**Core** (`kicad/het68-core`) nese nativní RP2350B, flash, PSRAM, USB-C, šest RJ45 s LVDS, piezo, env senzor, ADXL355 a `J_MESH` na Heltec WiFi LoRa 32 V3 (868 MHz). MeshCore běží na Heltecu, takže uzel v síti žije, i když DSP spí. `WAKE_DSP` zapíná `+3V3_DIG`.
+**Core** (`kicad/het68-core`) nese nativní RP2350B, flash, PSRAM, USB-C, šest RJ45 s LVDS, piezo, env senzor, ADXL355, stavovou SK6812, tlačítka RESET / BOOT / USER a `J_MESH` na Heltec WiFi LoRa 32 V3 (868 MHz). MeshCore běží na Heltecu, takže uzel v síti žije, i když DSP spí. `WAKE_DSP` zapíná `+3V3_DIG`.
 
-**Silová deska** má tři SKU se stejným interconnectem 2×10: NN (multiplex CT), VN (silnější GDT/TVS), VVN (harvest CT + Rogowski). Společný front-end je jen sekundár: GDT, TVS, LC, burden, crowbar, MPPT, LiFePO4/LTO, 5 V a vždyživý `+3V3_RF`.
+**Silová deska** má tři SKU se stejným interconnectem 2×10: NN (multiplex CT), VN (silnější GDT/TVS), VVN (harvest CT + Rogowski). Společný front-end je jen sekundár: GDT, TVS, LC, burden, crowbar, MPPT, článek 21700 (LiFePO4/LTO), 5 V a vždyživý `+3V3_RF`.
 
 **Satelit** je šest destiček 6L: T5848 uprostřed, **8× SK6812** v kruhu, na kabelu LVDS. SD z mikrofonu jede párem (`SN65LVDS1` na satelitu, `SN65LVDS32` na Core, 100 Ω u přijímače). Mapa [`docs/PINOUT_SAT_v4.csv`](docs/PINOUT_SAT_v4.csv).
 
-## Prototyp (v4.1.0)
+## Prototyp (v4.2.0)
 
 ![Core 6L](docs/img/core-3d.png)
+
+Maska a schéma: [Core](docs/img/core-mask.svg) · [schéma](docs/img/core-sch.pdf) · [satelit](docs/img/sat-mask.svg) · [silová](docs/img/pwr-nn-mask.svg). Gerbery pro osazení: [`kicad/jlc/`](kicad/jlc/).
 
 ![Satelit 6L, 8× SK6812](docs/img/sat-3d.png)
 

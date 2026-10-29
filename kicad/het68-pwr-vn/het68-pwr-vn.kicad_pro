@@ -1,5 +1,5 @@
 {
-  "board": {"design_settings": {"rules": {"min_clearance": 0.2, "min_track_width": 0.2, "min_via_diameter": 0.8, "min_via_drill": 0.5, "min_through_hole_diameter": 0.5, "min_hole_clearance": 0.2, "min_copper_edge_clearance": 0.3}, "rule_severities": {"lib_footprint_mismatch": "ignore"}}},
+  "board": {"design_settings": {"rules": {"min_clearance": 0.2, "min_track_width": 0.2, "min_via_diameter": 1.0, "min_via_drill": 0.5, "min_through_hole_diameter": 0.5, "min_hole_clearance": 0.2, "min_copper_edge_clearance": 0.3}, "rule_severities": {"lib_footprint_mismatch": "ignore"}}},
   "meta": {"filename": "het68-pwr-vn.kicad_pro", "version": 3},
   "sheets": [["het68-pwr-vn.kicad_sch", ""]],
   "text_variables": {}

@@ -12,6 +12,7 @@ import os
 import re
 import subprocess
 import sys
+import zipfile
 from pathlib import Path
 
 import pcbnew
@@ -53,7 +54,7 @@ DVDD_PADS = ("10", "32", "51")
 
 
 class SchV4(Sch):
-    def __init__(self, name, title, rails, rev="4.1.0"):
+    def __init__(self, name, title, rails, rev="4.2.0"):
         super().__init__(name, title)
         self.rails = rails
         self.rev = rev
@@ -167,6 +168,10 @@ def v4_libs(sch: Sch, extra_rails):
         pass
     try:
         load_std(sch, "Device.kicad_sym", "Battery", "Device")
+    except SystemExit:
+        pass
+    try:
+        load_std(sch, "Switch.kicad_sym", "SW_Push", "Switch")
     except SystemExit:
         pass
 
@@ -563,6 +568,8 @@ def rp_nets():
         GPIO_PAD[32]: "PSRAM_CE", GPIO_PAD[33]: "PSRAM_SO",
         GPIO_PAD[34]: "PSRAM_SI", GPIO_PAD[35]: "PSRAM_SCLK",
         GPIO_PAD[36]: "PG_5V",
+        GPIO_PAD[37]: "STATUS_DIN",
+        GPIO_PAD[38]: "BTN_USER",
     })
     return n
 
@@ -602,6 +609,23 @@ def build_core(sch: Sch):
     C(sch, "C18B", ("+1V8_AUDIO", "GND"), "100n")
     R(sch, "R_RUN", ("RUN", "+3V3_DIG"), "10k", mpn="RC0603FR-0710KL")
     R(sch, "R_WK", ("WAKE_DSP", "GND"), "100k", mpn="RC0603FR-07100KL")
+    R(sch, "R_CS", ("QSPI_SS", "+3V3_DIG"), "10k", mpn="RC0603FR-0710KL")
+    R(sch, "R_USR", ("BTN_USER", "+3V3_DIG"), "10k", mpn="RC0603FR-0710KL")
+    # Momentary, active low. BOOT shorts flash CS (RP2350 USB bootloader).
+    sch.add("Switch:SW_Push", "SW_RST", "RESET",
+            "Button_Switch_SMD:SW_SPST_PTS645Sx43SMTR92",
+            {"1": "RUN", "2": "GND"}, "PTS645SM43SMTR92")
+    sch.add("Switch:SW_Push", "SW_BOOT", "BOOT",
+            "Button_Switch_SMD:SW_SPST_PTS645Sx43SMTR92",
+            {"1": "QSPI_SS", "2": "GND"}, "PTS645SM43SMTR92")
+    sch.add("Switch:SW_Push", "SW_USR", "USER",
+            "Button_Switch_SMD:SW_SPST_PTS645Sx43SMTR92",
+            {"1": "BTN_USER", "2": "GND"}, "PTS645SM43SMTR92")
+    sch.add("LED:WS2812B", "D_STAT", "SK6812",
+            "LED_SMD:LED_WS2812B_PLCC4_5.0x5.0mm_P3.2mm",
+            {"1": "+3V3_DIG", "2": None, "3": "GND", "4": "STATUS_DIN"},
+            "SK6812 (5050, 3.3 V)")
+    C(sch, "C_STAT", ("+3V3_DIG", "GND"), "100n")
 
     usb_c(sch, "J_USB", "VBUS")
     R(sch, "R_CC1", ("CC1", "GND"), "5.1k", mpn="RC0603FR-075K1L")
@@ -880,9 +904,9 @@ def build_pwr(sch: Sch, sku: str):
     sch.add("Device:D", "D_HV", "SS34", "Diode_SMD:D_SMC", {"1": "BAT", "2": "VHARV"}, "SS34")
 
     if "Device:Battery" in sch.symbols:
-        sch.add("Device:Battery", "BT1", "LiFePO4_1S",
-                "Battery:BatteryHolder_Keystone_1042_1x18650",
-                {"1": "BAT", "2": "GND"}, "LiFePO4 / LTO 1S")
+        sch.add("Device:Battery", "BT1", "21700",
+                "het68:Keystone_1122_21700",
+                {"1": "BAT", "2": "GND"}, "Keystone 1122")
     else:
         sch.add("het68:Conn_1x02", "BT1", "BAT",
                 "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical",
@@ -940,17 +964,18 @@ def build_pwr(sch: Sch, sku: str):
             {"1": "+5V_ALWAYS", "2": "GND"}, "5V lab")
 
 
-def place_remaining(board: Board, sch: Sch, placed: set, x0=8.0, y0=20.0, dx=5.0, dy=6.0):
+def place_remaining(board: Board, sch: Sch, placed: set, x0=8.0, y0=20.0, dx=5.0, dy=6.0, ymax=None):
     x, y = x0, y0
+    y_lim = (board.h - 6) if ymax is None else ymax
     for p in sch.parts:
         if p["ref"] in placed:
             continue
         if x > board.w - 8:
             x = x0
             y += dy
-        if y > board.h - 6:
-            y = y0 + 3
-            x0 += 2
+        if y > y_lim:
+            y = y0
+            x0 = min(x0 + 12, board.w - 16)
             x = x0
         board.place(p, x, y, 0)
         placed.add(p["ref"])
@@ -984,10 +1009,10 @@ def place_core(board: Board, sch: Sch):
         P(f"FB{i}", x + 4, 36, 90)
     P("R_SD1", 28, 80, 0)
     P("R_SD2", 28, 86, 0)
-    P("R_SD3", 32, 86, 0)
-    P("R_SD4", 48, 86, 0)
-    P("R_SD5", 70, 80, 0)
-    P("R_SD6", 70, 86, 0)
+    P("R_SD3", 46, 66, 0)
+    P("R_SD4", 52, 66, 0)
+    P("R_SD5", 8, 60, 0)
+    P("R_SD6", 8, 66, 0)
     P("U1", 80, 58, 0)
     P("U2", 96, 58, 0)
     P("U3", 64, 58, 0)
@@ -1004,10 +1029,14 @@ def place_core(board: Board, sch: Sch):
     P("C_VBUS", 32, 78, 0)
     P("R_CC1", 22, 62, 90)
     P("R_CC2", 26, 62, 90)
-    P("J_MESH", 80, 92, 0)
-    P("J_STAMP", 102, 92, 0)
-    P("J_PWR", 16, 92, 0)
-    P("J_SWD", 50, 92, 0)
+    # Pin 1 is the footprint origin and the row grows in +Y.
+    # KiCad +90° sends that row east; 270° sends it west, clear of the outline.
+    # 270° grows the pin row west. Y is pulled in so the 3D pin body
+    # stays several millimetres inside the outline.
+    P("J_PWR", 42, 92, 270)
+    P("J_MESH", 146, 86, 270)
+    P("J_STAMP", 146, 76, 270)
+    P("J_SWD", 8, 48, 0)
     P("U10", 40, 48, 0)
     P("U11", 120, 48, 0)
     P("U12", 140, 48, 0)
@@ -1028,8 +1057,8 @@ def place_core(board: Board, sch: Sch):
     P("D_RX", 66, 84, 0)
     P("R_SDA0", 8, 86, 0)
     P("R_SCL0", 12, 86, 0)
-    P("R_SDA1", 122, 64, 0)
-    P("R_SCL1", 126, 64, 0)
+    P("R_SDA1", 96, 40, 0)
+    P("R_SCL1", 100, 40, 0)
     P("R_PT", 20, 80, 90)
     P("R_PT2", 96, 70, 0)
     P("R_RUN", 72, 64, 0)
@@ -1040,13 +1069,23 @@ def place_core(board: Board, sch: Sch):
     P("U7", 130, 70, 0)
     P("U8", 138, 70, 0)
     P("U9", 80, 70, 0)
-    for ref, x in (("J11", 118), ("J12", 126), ("J13", 134), ("J14", 142)):
-        P(ref, x, 92, 0)
-    holes(board, ((4, 4), (4, 96), (156, 4), (156, 96)))
-    place_remaining(board, sch, placed, 148, 55, 3.5, 5)
-    board.text("het68 CORE rev A  6L Faraday", 80, 98, size=1.0)
-    board.text("J_MESH Heltec V3 868  pin1 GND", 80, 2, size=0.7)
-    board.text("USB Heltec odpojit po flash", 50, 98, size=0.6)
+    P("SW_RST", 152, 28, 0)
+    P("SW_BOOT", 152, 44, 0)
+    P("SW_USR", 152, 60, 0)
+    P("D_STAT", 152, 74, 0)
+    P("C_STAT", 144, 60, 90)
+    P("R_USR", 100, 96, 0)
+    P("R_CS", 108, 96, 0)
+    board.text("RST", 144, 28, size=1.0)
+    board.text("BOOT", 144, 44, size=1.0)
+    board.text("USER", 144, 52, size=1.0)
+    for ref, x in (("J11", 108), ("J12", 116), ("J13", 124), ("J14", 132)):
+        P(ref, x, 64, 0)
+    holes(board, ((6, 6), (6, 94), (154, 6), (154, 94)))
+    place_remaining(board, sch, placed, 8, 40, 4.5, 5)
+    board.text("het68 CORE rev A  6L Faraday", 80, 6, size=1.0)
+    board.text("J_MESH Heltec V3 868  pin1 GND", 80, 9, size=1.0)
+    board.text("USB Heltec odpojit po flash", 50, 12, size=1.0)
     board.text("LVDS 1/2 SCK  3/6 WS  4/5 SD  7 3V3  8 LED", 80, 42, size=0.55)
 
 
@@ -1089,7 +1128,7 @@ def place_sat(board: Board, sch: Sch):
         P(f"D{4 + i}", x, y, i * 45)
         cap_r = led_r + 5.2
         P(f"C_L{i + 1}", cx + cap_r * math.sin(phi), cy - cap_r * math.cos(phi), i * 45)
-    holes(board, ((4, 4), (46, 4), (4, 76), (46, 76)))
+    holes(board, ((42, 12), (8, 40), (42, 66), (8, 74)))
     place_remaining(board, sch, placed, 8, 22, 4, 5)
     board.text("het68 SAT v4 6L LVDS", 25, 4, size=0.8)
     board.text("1/2 SCK  3/6 WS  4/5 SD  8x SK6812", 25, 8, size=0.45)
@@ -1167,34 +1206,36 @@ def place_pwr(board: Board, sch: Sch, sku: str):
             board.place(by[ref], x, y, rot)
             placed.add(ref)
 
-    P("J2", 16, 40, 0)
-    P("J1", 128, 50, 0)
-    P("R4", 114, 56, 0)
-    P("GDT1", 114, 44, 0)
-    P("GDT2", 114, 38, 0)
-    P("L1", 100, 50, 0)
-    P("C4", 90, 56, 0)
-    P("F1", 90, 48, 0)
-    P("D1", 78, 44, 0)
-    P("D2", 78, 38, 180)
-    P("D3", 86, 44, 0)
-    P("D4", 86, 38, 180)
-    P("C1", 64, 22, 0)
-    P("Q1", 78, 20, 0)
-    P("DTVS", 70, 20, 0)
-    P("U_MPPT", 40, 22, 0)
-    P("BT1", 40, 50, 0)
-    P("U_BST", 54, 40, 0)
-    P("U_RF", 54, 56, 0)
-    P("U_INA", 28, 22, 0)
-    P("J_CORE", 16, 70, 0)
-    P("J_SOL", 40, 70, 0)
-    P("J_RTD", 54, 70, 0)
-    P("J3", 128, 22, 0)
-    P("J_ROGO", 128, 70, 0)
-    P("U_INT", 100, 70, 0)
+    P("J2", 16, 28, 0)
+    P("J1", 128, 22, 0)
+    P("R4", 118, 22, 0)
+    P("GDT1", 118, 14, 0)
+    P("GDT2", 126, 14, 0)
+    P("L1", 104, 22, 0)
+    P("C4", 104, 14, 0)
+    P("F1", 112, 14, 0)
+    P("D1", 90, 18, 0)
+    P("D2", 90, 12, 180)
+    P("D3", 98, 18, 0)
+    P("D4", 98, 12, 180)
+    P("C1", 78, 16, 0)
+    P("Q1", 70, 16, 0)
+    P("DTVS", 62, 16, 0)
+    P("U_MPPT", 48, 16, 0)
+    # Keystone 1122 body is 91.2 × 23.1 mm. Centre (78, 62) keeps the
+    # pads inside 140 × 80 mm, south of the CT front-end.
+    P("BT1", 78, 62, 0)
+    P("U_BST", 16, 48, 0)
+    P("U_RF", 24, 48, 0)
+    P("U_INA", 36, 16, 0)
+    P("J_CORE", 18, 48, 0)
+    P("J_SOL", 124, 48, 0)
+    P("J_RTD", 132, 48, 0)
+    P("J3", 132, 36, 0)
+    P("J_ROGO", 124, 36, 0)
+    P("U_INT", 108, 48, 0)
     holes(board, ((4, 4), (4, 76), (136, 4), (136, 76)))
-    place_remaining(board, sch, placed, 70, 8, 4.2, 5.5)
+    place_remaining(board, sch, placed, 48, 8, 4.2, 5.0, ymax=46)
     board.text(f"het68 PWR {sku}  JEN SEKUNDAR", 70, 4, size=0.9)
     board.text("NE 230 V / NE 22 kV / NE 110 kV", 70, 77, size=0.7)
 
@@ -1204,19 +1245,23 @@ def finish_v4(board: Board, sch: Sch, out: Path, power_nets, six=False, skip_rou
     board.outline()
     board.assign_nets()
     if six:
-        board.via_d, board.via_drill = 0.45, 0.2
+        # JLCPCB 6L, 1 oz: annular ring ≥ 0.15 mm (0.20 recommended).
+        # 0.60 / 0.20 → 0.20 mm ring, no small-via surcharge.
+        board.via_d, board.via_drill = 0.60, 0.20
         ds = board.b.GetDesignSettings()
         ds.m_MinClearance = pcbnew.FromMM(0.1)
         ds.m_TrackMinWidth = pcbnew.FromMM(0.1)
-        ds.m_ViasMinSize = pcbnew.FromMM(0.4)
-        ds.m_ViasMinDrill = pcbnew.FromMM(0.2)
+        ds.m_ViasMinSize = pcbnew.FromMM(0.50)
+        ds.m_ViasMinDrill = pcbnew.FromMM(0.20)
         ds.m_CopperEdgeClearance = pcbnew.FromMM(0.3)
+        if hasattr(ds, "m_BoardThickness"):
+            ds.m_BoardThickness = pcbnew.FromMM(1.6)
         try:
             nc = ds.m_NetSettings.m_DefaultNetClass
             nc.SetClearance(pcbnew.FromMM(0.1))
             nc.SetTrackWidth(pcbnew.FromMM(0.15))
-            nc.SetViaDiameter(pcbnew.FromMM(0.45))
-            nc.SetViaDrill(pcbnew.FromMM(0.2))
+            nc.SetViaDiameter(pcbnew.FromMM(0.60))
+            nc.SetViaDrill(pcbnew.FromMM(0.20))
         except Exception:
             pass
         set_stackup(board)
@@ -1279,6 +1324,40 @@ def finish_v4(board: Board, sch: Sch, out: Path, power_nets, six=False, skip_rou
     return missing
 
 
+def write_21700_fp(path: Path):
+    """Keystone 1122, one 21700 cell, SMT.
+
+    Body 91.2 × 23.1 mm and the 55.2 mm hole pitch are the catalog K75
+    callouts (3.592 in, 0.908 in, 2.175 in). End pads are 7.5 × 6.4 mm;
+    6.4 mm is the catalog minimum pad width. Pin 1 is the positive button,
+    pin 2 the spring (negative).
+    """
+    body_l, body_w = 45.6, 11.55
+    pad_l, pad_w = 7.5, 6.4
+    pad_x = body_l - pad_l / 2
+    lines = [
+        f'''(footprint "Keystone_1122_21700"
+  (version 20241229)
+  (generator "het68-gen")
+  (layer "F.Cu")
+  (descr "Keystone 1122 SMT holder, one 21700 cell. Body and hole pitch from catalog K75. Pin 1 = positive.")
+  (tags "21700 Keystone 1122 battery")
+  (property "Reference" "BT" (at 0 {body_w + 1.2} 0) (layer "F.SilkS") (uuid "{uid()}") (effects (font (size 1 1) (thickness 0.15))))
+  (property "Value" "21700" (at 0 -{body_w + 1.2} 0) (layer "F.Fab") (uuid "{uid()}") (effects (font (size 1 1) (thickness 0.15))))
+  (attr smd)
+  (fp_rect (start -{body_l} -{body_w}) (end {body_l} {body_w}) (stroke (width 0.12) (type solid)) (fill no) (layer "F.Fab") (uuid "{uid()}"))
+  (fp_rect (start -{body_l + 0.5} -{body_w + 0.5}) (end {body_l + 0.5} {body_w + 0.5}) (stroke (width 0.05) (type solid)) (fill no) (layer "F.CrtYd") (uuid "{uid()}"))
+  (fp_text user "+" (at -{pad_x} -4.2 0) (layer "F.SilkS") (uuid "{uid()}") (effects (font (size 1 1) (thickness 0.15))))
+  (pad "1" smd roundrect (at -{pad_x} 0) (size {pad_l} {pad_w}) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.08) (uuid "{uid()}"))
+  (pad "2" smd roundrect (at {pad_x} 0) (size {pad_l} {pad_w}) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.08) (uuid "{uid()}"))
+  (pad "" np_thru_hole circle (at -27.6 0) (size 3.5 3.5) (drill 3.5) (layers "*.Cu" "*.Mask") (uuid "{uid()}"))
+  (pad "" np_thru_hole circle (at 27.6 0) (size 3.5 3.5) (drill 3.5) (layers "*.Cu" "*.Mask") (uuid "{uid()}"))
+)
+'''
+    ]
+    path.write_text(lines[0])
+
+
 def kicad_cli(*args):
     cmd = [KICAD_CLI, *args]
     return subprocess.run(cmd, capture_output=True, text=True)
@@ -1300,6 +1379,13 @@ def export_fab(pcb: Path, fab: Path, layers):
               "--layers", "F.Cu,F.SilkS,Edge.Cuts", str(pcb))
     kicad_cli("pcb", "export", "svg", "--output", str(fab / (pcb.stem + "-B.svg")),
               "--layers", "B.Cu,B.SilkS,Edge.Cuts", "--mirror", str(pcb))
+    kicad_cli("pcb", "export", "svg", "--output", str(fab / (pcb.stem + "-F_Mask.svg")),
+              "--layers", "F.Mask,Edge.Cuts", str(pcb))
+    kicad_cli("pcb", "export", "svg", "--output", str(fab / (pcb.stem + "-B_Mask.svg")),
+              "--layers", "B.Mask,Edge.Cuts", "--mirror", str(pcb))
+    sch = pcb.with_suffix(".kicad_sch")
+    if sch.exists():
+        kicad_cli("sch", "export", "pdf", "--output", str(fab / (pcb.stem + "-sch.pdf")), str(sch))
 
 
 def sch_erc(sch_path: Path) -> str:
@@ -1324,6 +1410,7 @@ def main():
     PRETTY.mkdir(parents=True, exist_ok=True)
     write_t5848_fp(PRETTY / "T5848.kicad_mod")
     write_rj45_fp(PRETTY / "RJ45_RJHSE5380_het68.kicad_mod")
+    write_21700_fp(PRETTY / "Keystone_1122_21700.kicad_mod")
 
     core_rails = ["GND", "+5V_ALWAYS", "+3V3_DIG", "+3V3_RF", "+1V8_AUDIO", "VBUS", "DVDD"]
     core = SchV4("het68-core", "het68 Core 6L RP2350B + J_MESH Heltec V3", core_rails)
@@ -1331,7 +1418,7 @@ def main():
     build_core(core)
     _drop_self_shorts(core)
     cb = Board("het68-core", 160, 100, 6)
-    cb.via_d, cb.via_drill = 0.45, 0.2
+    cb.via_d, cb.via_drill = 0.60, 0.20
     cb.route_skip_refs = {"U1", "U9", "U7", "U8", "U6"}
     place_core(cb, core)
     cout = ROOT / "het68-core"
@@ -1347,7 +1434,7 @@ def main():
     build_sat(sat)
     _drop_self_shorts(sat)
     sb = Board("het68-sat", 50, 80, 6)
-    sb.via_d, sb.via_drill = 0.45, 0.2
+    sb.via_d, sb.via_drill = 0.60, 0.20
     sb.outer_route = True
     sb.l3_gnd = True
     sb.l4_splits = [("+3V3", 1.2, 48.8)]
@@ -1370,7 +1457,8 @@ def main():
         build_pwr(psch, sku)
         _drop_self_shorts(psch)
         pb = Board(folder, 140, 80, 2)
-        pb.via_d, pb.via_drill = 0.8, 0.5
+        # 2 oz annular ring at JLCPCB is ≥ 0.254 mm → 1.00 / 0.50 mm.
+        pb.via_d, pb.via_drill = 1.0, 0.5
         place_pwr(pb, psch, sku)
         pout = ROOT / folder
         pmiss = finish_v4(
@@ -1383,9 +1471,11 @@ def main():
         (pout / "fab").mkdir(exist_ok=True)
         write_vyroba(
             pout / "fab" / "VYROBA.txt",
-            f"het68 silova {sku} v4.1.0\n140 x 80 mm, 2 vrstvy, mer 70 um. JLC / standardni TPV.\n"
+            f"het68 silova {sku} v4.1.0\n140 x 80 mm, 2 vrstvy, 1.6 mm, med 2 oz (70 um).\n"
             "Jen sekundar CT/Rogowski. NE 230 V / 22 kV / 110 kV na med.\n"
-            "HASL nebo ENIG dle TPV. Stopa >= 0.25 mm, prokovy 0.8/0.5 mm.\n",
+            "ENIG nebo HASL bezolovnaty. Stopa >= 0.20 mm (2 oz chce >= 0.16 mm).\n"
+            "Prokov 1.00/0.50 mm (mezikruzi 0.25 mm). Tloustka 1.6 mm.\n"
+            "POZOR: signalove spoje nejsou doroutovane. Neobjednavat jako funkcni desku.\n",
         )
 
     with (ROOT / "BOM_v4.csv").open("w", newline="") as f:
@@ -1437,14 +1527,15 @@ def main():
         export_fab(pcbp, pcbp.parent / "fab", layers)
 
     write_vyroba(ROOT / "het68-core" / "fab" / "VYROBA.txt",
-                 "het68 Core v4.1.0\n160 x 100 mm, 6 vrstev Faraday, ENIG (QFN-80 + LGA).\n"
-                 "JLC / standardni TPV. Via fence 1.5 mm. LVDS 100R u RX, CMC na SCK/WS/SD.\n"
-                 "J_MESH 1x8 Heltec V3 868. Stamp DNP. USB Heltec odpojit po flash.\n")
+                 "het68 Core v4.1.0\n160 x 100 x 1.6 mm, 6 vrstev, ENIG, vnejsi Cu 1 oz, vnitrni 0.5 oz.\n"
+                 "Prokov 0.60/0.20 mm (mezikruzi 0.20 mm, JLCPCB 6L).\n"
+                 "J_MESH 1x8 Heltec V3 868. Stamp DNP. USB Heltec odpojit po flash.\n"
+                 "POZOR: signálove spoje nejsou doroutovane. Neobjednavat jako funkcni desku.\n")
     write_vyroba(ROOT / "het68-sat" / "fab" / "VYROBA.txt",
                  "het68 satelit v4.1.0 6L Faraday LVDS\n"
-                 "50 x 80 mm, 6 vrstev, ENIG. >= 0603. Ne BGA. JLC / standardni TPV.\n"
-                 "T5848 uprostred. 8x SK6812 kruh (D4=N, daisy CW). SN65LVDS1 = SD sat->Core.\n"
-                 "LVDS RX SCK/WS (SN65LVDS2 + 100R), CMC + TVS + PPTC 0.5 A + ferrite. RGB 3.3 V.\n")
+                 "50 x 80 x 1.6 mm, 6 vrstev, ENIG, vnejsi Cu 1 oz, vnitrni 0.5 oz. >= 0603.\n"
+                 "Prokov 0.60/0.20 mm. T5848 uprostred. 8x SK6812. SN65LVDS1 = SD sat->Core.\n"
+                 "POZOR: signalove spoje nejsou doroutovane. Neobjednavat jako funkcni desku.\n")
 
     img = ROOT.parent / "docs" / "img"
     img.mkdir(parents=True, exist_ok=True)
@@ -1470,7 +1561,108 @@ def main():
             print("render fail", pcb.name, (r.stderr or r.stdout)[-800:], flush=True)
         kicad_cli("pcb", "export", "step", "--output", str(pcb.parent / "fab" / (pcb.stem + ".step")),
                   str(pcb))
+        fab = pcb.parent / "fab"
+        for src_name, dst_name in (
+            (pcb.stem + "-F_Mask.svg", png.stem.replace("-3d", "") + "-mask.svg"),
+            (pcb.stem + "-sch.pdf", png.stem.replace("-3d", "") + "-sch.pdf"),
+        ):
+            src = fab / src_name
+            if src.exists():
+                (img / dst_name).write_bytes(src.read_bytes())
+    pack_jlc()
     print("done")
+
+
+_JLC_EXT = {
+    ".gtl", ".gbl", ".g1", ".g2", ".g3", ".g4",
+    ".gts", ".gbs", ".gto", ".gbo", ".gtp", ".gbp", ".gm1", ".drl",
+}
+
+
+def _cpl_from_pos(pos: Path, out: Path):
+    rows = list(csv.DictReader(pos.open()))
+    with out.open("w", newline="") as f:
+        w = csv.writer(f)
+        w.writerow(["Designator", "Mid X", "Mid Y", "Layer", "Rotation"])
+        for r in rows:
+            side = "Top" if r.get("Side", "top").lower().startswith("t") else "Bottom"
+            w.writerow([r["Ref"], r["PosX"], r["PosY"], side, r["Rot"]])
+
+
+def _bom_jlc(src: Path, out: Path):
+    rows = list(csv.DictReader(src.open()))
+    grouped = {}
+    for r in rows:
+        key = (r.get("Value", ""), r.get("Footprint", ""), r.get("MPN", ""), r.get("LCSC", ""))
+        grouped.setdefault(key, []).append(r.get("Ref", ""))
+    with out.open("w", newline="") as f:
+        w = csv.writer(f)
+        w.writerow(["Comment", "Designator", "Footprint", "MPN", "LCSC"])
+        for (value, fp, mpn, lcsc), refs in grouped.items():
+            w.writerow([value, ",".join(refs), fp, mpn, lcsc])
+
+
+def pack_jlc():
+    """Gerber+drill zip, CPL and BOM in the shape JLCPCB's uploader expects.
+
+    LCSC cells stay empty: codes are not invented. Signal copper is not routed.
+    """
+    out = ROOT / "jlc"
+    out.mkdir(parents=True, exist_ok=True)
+    boards = ["het68-core", "het68-sat", "het68-pwr-nn", "het68-pwr-vn", "het68-pwr-vvn"]
+    for name in boards:
+        fab = ROOT / name / "fab"
+        zpath = out / f"{name}-gerber.zip"
+        with zipfile.ZipFile(zpath, "w", zipfile.ZIP_DEFLATED) as z:
+            for p in sorted(fab.iterdir()):
+                if p.suffix.lower() in _JLC_EXT and "drl_map" not in p.name:
+                    z.write(p, p.name)
+        pos = fab / f"{name}-pos.csv"
+        if pos.exists():
+            _cpl_from_pos(pos, out / f"{name}-cpl.csv")
+        bom_src = ROOT / name / "bom.csv"
+        if bom_src.exists():
+            _bom_jlc(bom_src, out / f"{name}-bom.csv")
+        print("jlc", zpath.name, zpath.stat().st_size, flush=True)
+    (out / "ZAKAZKA.md").write_text(ZAKAZKA)
+
+
+ZAKAZKA = """# JLCPCB — podklady het68 v4.1.0
+
+## Neposílat jako funkční desku
+
+Na všech pěti deskách je **0 signálových spojů**. Napájecí roviny a prokovový plot jsou na 6L deskách, součástky na nich nejsou propojené. QFN-80 (rozteč 0,4 mm) nemá fanout. Objednávka z těchto gerberů vyrobí desku, která se nezapne.
+
+Tyto soubory jsou DFM balíček (obrys, maska, vrtání, roviny, CPL, BOM bez LCSC). Až bude routing hotový, gerber zip se přegeneruje stejným skriptem.
+
+## Košík — až bude měď spojená
+
+Společné: FR-4, tloušťka **1,6 mm**, zelená maska, bílý potisk, obrys frézováním (ne V-cut). Impedance se neobjednává (páry ještě nejsou na mědi).
+
+| Deska | Soubor | Vrstvy | Povrch | Měď | Poznámka v objednávce |
+|---|---|---|---|---|---|
+| Core | `het68-core-gerber.zip` | 6 | ENIG | vnější 1 oz, vnitřní 0,5 oz | Faraday. Prokov 0,60/0,20 mm. QFN thermal via 0,50/0,20 mm (mezikruží 0,15 mm = minimum JLC) |
+| Satelit ×6 | `het68-sat-gerber.zip` | 6 | ENIG | vnější 1 oz, vnitřní 0,5 oz | stejný prokov. Panel 6 ks až při osazení |
+| Silová NN | `het68-pwr-nn-gerber.zip` | 2 | ENIG nebo HASL bezolovnatý | **2 oz** | jen sekundár CT, žádné síťové napětí |
+| Silová VN | `het68-pwr-vn-gerber.zip` | 2 | ENIG nebo HASL bezolovnatý | **2 oz** | |
+| Silová VVN | `het68-pwr-vvn-gerber.zip` | 2 | ENIG nebo HASL bezolovnatý | **2 oz** | |
+
+6 a více vrstev u JLC **nemá HASL** — Core a satelit jen ENIG. 2oz na 2 vrstvách chce stopu ≥ 0,16 mm; pravidla desky jsou 0,20 mm.
+
+Vrtání je rozdělené: `*-PTH.drl` pokovené, `*-NPTH.drl` nepokovené (M3 a akustický otvor T5848). Mapy vrtání v zipu nejsou, ať je JLC neplete s mědí.
+
+## Osazení
+
+`*-cpl.csv` je centroid z KiCadu (osa Y nahoru, mm, Top). `*-bom.csv` má MPN a prázdný sloupec LCSC. Kódy LCSC se nedoplňují odhadem. Bez nich JLC osazení nepřijme. RP2350B, ADXL355, T5848 a LVDS budou nejspíš extended nebo consignment.
+
+## DFM, které tahle revize srovnala
+
+- Lišty mají pin 1 jako počátek pouzdra. Řada roste v +Y a na desce je otočená tak, aby poslední pin zůstal uvnitř obrysu. Držák článku je Keystone 1122 (21700).
+- Prokov 6L byl 0,45/0,20 mm, mezikruží 0,125 mm. JLC u vícevrstvé 1 oz chce ≥ 0,15 mm, doporučuje 0,20 mm. Teď 0,60/0,20 mm.
+- Silová deska 2 oz: prokov pro budoucí router 1,00/0,50 mm (mezikruží 0,25 mm, minimum JLC pro 2 oz je 0,254 mm).
+- Tloušťka 1,6 mm. 1,5 mm JLC v řadě tlouštěk nemá.
+"""
+
 
 
 if __name__ == "__main__":

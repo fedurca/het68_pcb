@@ -66,8 +66,14 @@ def add_via(board, x, y, netname, diameter=0.45, drill=0.2):
     return v
 
 
-def stitch_gnd(board, pitch=1.5, margin=1.6, diameter=0.45, drill=0.2):
-    """Through-via fence L1–L6 on GND, 1.5 mm pitch along the outline."""
+def stitch_gnd(board, pitch=2.0, margin=2.2, diameter=None, drill=None):
+    """Through-via fence L1–L6 on GND.
+
+    0.60 / 0.20 mm meets the JLCPCB multilayer annular ring (0.20 mm) and
+    stays outside the small-via surcharge (diameter must be ≥ 0.45 mm).
+    """
+    diameter = board.via_d if diameter is None else diameter
+    drill = board.via_drill if drill is None else drill
     xs, xe = margin, board.w - margin
     ys, ye = margin, board.h - margin
     n = 0

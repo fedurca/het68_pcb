@@ -278,8 +278,12 @@ Stínění STP na GND **jen na Core**. Na satelitu `SH` NC.
 | BURDEN_EN | GP31 | out | NN/VN multiplex |
 | PSRAM | GP32–35 | SPI | APS6404L |
 | PG_5V | GP36 | in | silová deska |
+| Stavová RGB | GP37 | out | jedna SK6812 na Core, `DOUT` NC, napájení `+3V3_DIG` |
+| Uživatelské tlačítko | GP38 | in | aktivní v nule, 10 kΩ na `+3V3_DIG` |
 
 `WAKE_DSP` není GPIO MCU — je to EN LDO. QSPI flash na dedicated pinech RP2350B.
+
+Na Core jsou tři mikrospínače: **RESET** (`RUN` na GND), **BOOT** (`QSPI_SS` na GND, spolu s resetem USB bootloader) a **USER** (GP38).
 
 ---
 

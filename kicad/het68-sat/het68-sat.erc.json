@@ -1,7 +1,7 @@
 {
     "$schema": "https://schemas.kicad.org/erc.v1.json",
     "coordinate_units": "mm",
-    "date": "2026-10-29T11:22:56",
+    "date": "2026-10-29T11:54:21",
     "ignored_checks": [
         {
             "description": "Global label only appears once in the schematic",
@@ -28,7 +28,7 @@
     "sheets": [
         {
             "path": "/",
-            "uuid_path": "/e74aa0af-2b36-4b07-a360-e8746c2e31b9",
+            "uuid_path": "/06b8cc7e-6c0a-4ecc-b541-a10e56796378",
             "violations": [
                 {
                     "description": "Symbol pin or wire end off connection grid",
@@ -39,7 +39,7 @@
                                 "x": 0.2,
                                 "y": 0.3
                             },
-                            "uuid": "1f76b8b8-3ace-4e80-ae80-a339b3faff0f"
+                            "uuid": "1d12ba23-b5f2-4748-9832-64f3c505b514"
                         }
                     ],
                     "severity": "warning",
@@ -54,7 +54,7 @@
                                 "x": 0.2,
                                 "y": 0.3
                             },
-                            "uuid": "a667933f-9926-4c33-adc7-f431dae8db53"
+                            "uuid": "e67acb44-c00b-4cdf-aa2a-465405fe6f11"
                         }
                     ],
                     "severity": "warning",
@@ -69,26 +69,11 @@
                                 "x": 0.2,
                                 "y": 0.3
                             },
-                            "uuid": "61533551-2f8b-4da7-92a7-9bac431d7099"
+                            "uuid": "225d34df-180b-4fd3-a2cc-c7d2ee952e58"
                         }
                     ],
                     "severity": "warning",
                     "type": "lib_symbol_issues"
-                },
-                {
-                    "description": "Symbol pin or wire end off connection grid",
-                    "items": [
-                        {
-                            "description": "Symbol #PWR01 Pin 1 [+3V3, Power output, Line]",
-                            "pos": {
-                                "x": 0.2,
-                                "y": 0.42
-                            },
-                            "uuid": "84aad778-50a1-4117-9b82-0019840968d2"
-                        }
-                    ],
-                    "severity": "warning",
-                    "type": "endpoint_off_grid"
                 },
                 {
                     "description": "Symbol pin or wire end off connection grid",
@@ -99,7 +84,22 @@
                                 "x": 0.2,
                                 "y": 0.42
                             },
-                            "uuid": "baab6905-2b14-4949-ae15-e2d2f9bb84c8"
+                            "uuid": "2b2a7a0b-5392-466c-9845-bc925c0f34b2"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "endpoint_off_grid"
+                },
+                {
+                    "description": "Symbol pin or wire end off connection grid",
+                    "items": [
+                        {
+                            "description": "Symbol #PWR01 Pin 1 [+3V3, Power output, Line]",
+                            "pos": {
+                                "x": 0.2,
+                                "y": 0.42
+                            },
+                            "uuid": "8d8478b5-be19-44ed-804e-ae494235b584"
                         }
                     ],
                     "severity": "warning",
@@ -114,7 +114,7 @@
                                 "x": 0.2,
                                 "y": 0.42
                             },
-                            "uuid": "88234306-d04b-46ab-b9c9-aa1424bf6b56"
+                            "uuid": "4f5b887e-6c31-463e-bacf-fdba7c6c23ec"
                         }
                     ],
                     "severity": "warning",
@@ -129,7 +129,7 @@
                                 "x": 0.2,
                                 "y": 0.54
                             },
-                            "uuid": "1664454b-4755-4035-b233-6f49459392b9"
+                            "uuid": "939b0e7e-ca76-4be4-bb4b-42c6f6f50f06"
                         }
                     ],
                     "severity": "warning",
@@ -144,7 +144,7 @@
                                 "x": 0.2,
                                 "y": 0.54
                             },
-                            "uuid": "6073c14f-ccd5-455b-8104-95d64330adcf"
+                            "uuid": "b8d5f2b0-f64a-4880-910b-69652764bb34"
                         }
                     ],
                     "severity": "warning",
@@ -159,26 +159,11 @@
                                 "x": 0.2,
                                 "y": 0.54
                             },
-                            "uuid": "abb181d0-b644-4e1a-87cc-c685049ebc04"
+                            "uuid": "1bbfb3d4-5693-4b84-93e4-11f499742d9d"
                         }
                     ],
                     "severity": "warning",
                     "type": "lib_symbol_issues"
-                },
-                {
-                    "description": "Symbol pin or wire end off connection grid",
-                    "items": [
-                        {
-                            "description": "Horizontal Wire, length 0.0127 mm",
-                            "pos": {
-                                "x": 0.2857,
-                                "y": 1.8726
-                            },
-                            "uuid": "68586af5-9536-4510-8719-c455c12b7b5b"
-                        }
-                    ],
-                    "severity": "warning",
-                    "type": "endpoint_off_grid"
                 },
                 {
                     "description": "Symbol pin or wire end off connection grid",
@@ -189,7 +174,22 @@
                                 "x": 0.2857,
                                 "y": 1.8726
                             },
-                            "uuid": "89847350-8bfa-49e8-9d04-a4e2ce98b2a0"
+                            "uuid": "663cf89a-019a-4b5b-af83-8d17c6ee160a"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "endpoint_off_grid"
+                },
+                {
+                    "description": "Symbol pin or wire end off connection grid",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 0.0127 mm",
+                            "pos": {
+                                "x": 0.2857,
+                                "y": 1.8726
+                            },
+                            "uuid": "f8fb17fa-3c5c-4c2d-b06d-a0a140167c9d"
                         }
                     ],
                     "severity": "warning",
@@ -204,7 +204,7 @@
                                 "x": 0.2857,
                                 "y": 1.898
                             },
-                            "uuid": "56456133-8b83-43b8-8c7e-11cf5545c773"
+                            "uuid": "3d5ffec4-05de-40aa-81d5-d17716eeb450"
                         }
                     ],
                     "severity": "warning",
@@ -219,7 +219,7 @@
                                 "x": 0.2857,
                                 "y": 1.9234
                             },
-                            "uuid": "6accbf40-6a9b-44d5-8037-3634ca16cebb"
+                            "uuid": "e699777a-69a2-4d42-b67d-3b93be533c5b"
                         }
                     ],
                     "severity": "warning",
@@ -234,7 +234,7 @@
                                 "x": 0.2857,
                                 "y": 1.9488
                             },
-                            "uuid": "410d0ebf-7db6-43d8-aaf2-01079c27a633"
+                            "uuid": "8e4113dd-397f-4bd6-bdd6-fb3942584806"
                         }
                     ],
                     "severity": "warning",
@@ -249,7 +249,22 @@
                                 "x": 0.2857,
                                 "y": 2.025
                             },
-                            "uuid": "0775c59e-ddf9-4f55-aef0-3310cbf32c0f"
+                            "uuid": "7eec3af5-ec45-425a-9053-cc33f8873246"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "endpoint_off_grid"
+                },
+                {
+                    "description": "Symbol pin or wire end off connection grid",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 0.0127 mm",
+                            "pos": {
+                                "x": 0.2984,
+                                "y": 4.8984
+                            },
+                            "uuid": "b46a7a1a-f5b7-461d-966f-6f2a9abddb2b"
                         }
                     ],
                     "severity": "warning",
@@ -264,22 +279,7 @@
                                 "x": 0.2984,
                                 "y": 4.8984
                             },
-                            "uuid": "c5c3f589-a1ce-412a-9506-2d89d79cbd3f"
-                        }
-                    ],
-                    "severity": "warning",
-                    "type": "endpoint_off_grid"
-                },
-                {
-                    "description": "Symbol pin or wire end off connection grid",
-                    "items": [
-                        {
-                            "description": "Horizontal Wire, length 0.0127 mm",
-                            "pos": {
-                                "x": 0.2984,
-                                "y": 4.8984
-                            },
-                            "uuid": "e615bff6-2f22-4fe4-8689-48af3e377413"
+                            "uuid": "d666515b-9420-4230-81f0-b4d4a7cf15d8"
                         }
                     ],
                     "severity": "warning",
@@ -294,7 +294,7 @@
                                 "x": 0.2984,
                                 "y": 4.9238
                             },
-                            "uuid": "96dc065f-d9f6-472f-ba00-f2dc0e0e8f83"
+                            "uuid": "c59e89a4-ee37-40b1-a7a0-55d07d474fe5"
                         }
                     ],
                     "severity": "warning",
@@ -309,7 +309,7 @@
                                 "x": 0.2984,
                                 "y": 4.9492
                             },
-                            "uuid": "8a86a727-10c8-44ab-8b63-5a5b02770dd1"
+                            "uuid": "4f7b93ca-699e-4d36-b2ad-a23920841280"
                         }
                     ],
                     "severity": "warning",
@@ -324,7 +324,7 @@
                                 "x": 0.2984,
                                 "y": 4.9746
                             },
-                            "uuid": "069f1e02-d274-4fbd-81e1-214452214a3c"
+                            "uuid": "10da7d38-772f-458f-9f58-81ab98cfaf6d"
                         }
                     ],
                     "severity": "warning",
@@ -339,7 +339,7 @@
                                 "x": 0.2984,
                                 "y": 5.0
                             },
-                            "uuid": "28210a36-b7b4-422b-83a0-bb1ea8ca09b4"
+                            "uuid": "91a4ebcd-bb62-46ec-b723-34c794d44973"
                         }
                     ],
                     "severity": "warning",
@@ -354,7 +354,7 @@
                                 "x": 0.2984,
                                 "y": 5.0254
                             },
-                            "uuid": "1ad3118d-9ebd-4cef-9de1-d68aa0cf3657"
+                            "uuid": "a53bc50f-0004-4426-9e55-92b60bc2cf98"
                         }
                     ],
                     "severity": "warning",
@@ -369,7 +369,7 @@
                                 "x": 0.2984,
                                 "y": 5.0508
                             },
-                            "uuid": "571eaded-cd07-454d-b296-17dddf88d86d"
+                            "uuid": "df7279c4-4264-45e4-b5fc-82912c3ec3c4"
                         }
                     ],
                     "severity": "warning",
@@ -384,7 +384,7 @@
                                 "x": 0.2984,
                                 "y": 5.0762
                             },
-                            "uuid": "533d58a0-9c66-41b2-98c7-fd860d477f4e"
+                            "uuid": "e2b67dd0-2290-491e-a25f-34691adf7e3f"
                         }
                     ],
                     "severity": "warning",
@@ -399,7 +399,7 @@
                                 "x": 0.3111,
                                 "y": 1.3348
                             },
-                            "uuid": "4ba34fc1-e23b-41d6-aafa-15e9b0388daa"
+                            "uuid": "8735b158-bc06-4bdc-808a-b0f0cef8328b"
                         }
                     ],
                     "severity": "warning",
@@ -414,7 +414,7 @@
                                 "x": 0.3111,
                                 "y": 1.3348
                             },
-                            "uuid": "80d78963-1b53-40bd-8c58-daf81ac24688"
+                            "uuid": "fff57f66-5773-4598-b391-0c4f2cda0128"
                         }
                     ],
                     "severity": "warning",
@@ -429,7 +429,7 @@
                                 "x": 0.3111,
                                 "y": 1.3602
                             },
-                            "uuid": "68990eab-b53a-4a91-9c65-bcddf0df8778"
+                            "uuid": "fd5a2db3-c5d9-40cc-8f9b-7ee058c82efc"
                         }
                     ],
                     "severity": "warning",
@@ -444,7 +444,7 @@
                                 "x": 0.3111,
                                 "y": 1.3856
                             },
-                            "uuid": "7461fed3-9d19-4df6-843c-0f165df3d8e9"
+                            "uuid": "f74e827a-ff7c-4168-9b20-83c07a174886"
                         }
                     ],
                     "severity": "warning",
@@ -459,7 +459,7 @@
                                 "x": 0.3111,
                                 "y": 1.591
                             },
-                            "uuid": "326fb2d6-caa1-471b-a37e-d1a33072d312"
+                            "uuid": "23945d0a-4e38-4fa0-8e5e-2678ea620c8f"
                         }
                     ],
                     "severity": "warning",
@@ -474,7 +474,7 @@
                                 "x": 0.3111,
                                 "y": 1.591
                             },
-                            "uuid": "9d7501e6-ed50-4443-a6c0-9e593b52fd58"
+                            "uuid": "8ebc2dc2-beb9-4827-b41f-f184c5504f88"
                         }
                     ],
                     "severity": "warning",
@@ -489,7 +489,7 @@
                                 "x": 0.3111,
                                 "y": 1.6164
                             },
-                            "uuid": "85b3cb64-4845-4868-b85b-a4eaee2b74ad"
+                            "uuid": "a675f954-0e61-4f0e-90f0-013387343d16"
                         }
                     ],
                     "severity": "warning",
@@ -504,7 +504,7 @@
                                 "x": 0.3111,
                                 "y": 1.6418
                             },
-                            "uuid": "2a978b01-d960-4470-ac73-6b6374db42e7"
+                            "uuid": "56e66012-de66-410e-879c-e7fa1db65d78"
                         }
                     ],
                     "severity": "warning",
@@ -519,7 +519,7 @@
                                 "x": 0.3111,
                                 "y": 2.1542
                             },
-                            "uuid": "01abad21-5672-4257-a88f-291e0ec51749"
+                            "uuid": "472e489a-fe6b-4f96-ba3e-544881f97ab9"
                         }
                     ],
                     "severity": "warning",
@@ -534,7 +534,7 @@
                                 "x": 0.3111,
                                 "y": 2.1542
                             },
-                            "uuid": "4d7789ce-e7d8-4c6d-8a6a-62a969d79301"
+                            "uuid": "d0534c64-67bd-41b0-bc8d-36a8763d833c"
                         }
                     ],
                     "severity": "warning",
@@ -549,22 +549,7 @@
                                 "x": 0.3111,
                                 "y": 2.1796
                             },
-                            "uuid": "a987f695-5708-454f-812b-9bc42404b124"
-                        }
-                    ],
-                    "severity": "warning",
-                    "type": "endpoint_off_grid"
-                },
-                {
-                    "description": "Symbol pin or wire end off connection grid",
-                    "items": [
-                        {
-                            "description": "Horizontal Wire, length 0.0127 mm",
-                            "pos": {
-                                "x": 0.3111,
-                                "y": 2.385
-                            },
-                            "uuid": "74da586b-5d44-4f6d-b67a-9b1e8026d3ba"
+                            "uuid": "86a184df-7c47-492c-9e2d-ec6fad3d762c"
                         }
                     ],
                     "severity": "warning",
@@ -579,7 +564,22 @@
                                 "x": 0.3111,
                                 "y": 2.385
                             },
-                            "uuid": "c612895c-5fba-46c4-b0dc-cf9232096e17"
+                            "uuid": "3595277e-9ef3-4425-a4e3-b337698235b7"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "endpoint_off_grid"
+                },
+                {
+                    "description": "Symbol pin or wire end off connection grid",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 0.0127 mm",
+                            "pos": {
+                                "x": 0.3111,
+                                "y": 2.385
+                            },
+                            "uuid": "7cc615e5-4f8d-4378-a6e1-10c64b808700"
                         }
                     ],
                     "severity": "warning",
@@ -594,7 +594,7 @@
                                 "x": 0.3111,
                                 "y": 2.4104
                             },
-                            "uuid": "2f63b6a2-052c-4f74-aa50-67de68e8539d"
+                            "uuid": "20489f31-87a2-43c4-b420-96e61e07e39a"
                         }
                     ],
                     "severity": "warning",
@@ -609,7 +609,7 @@
                                 "x": 0.3111,
                                 "y": 2.4358
                             },
-                            "uuid": "fbb8ac7b-4c81-42cc-95a8-a39b936513dd"
+                            "uuid": "8882abb2-39aa-4c90-859a-8715b93a0067"
                         }
                     ],
                     "severity": "warning",
@@ -624,7 +624,7 @@
                                 "x": 0.3111,
                                 "y": 2.6158
                             },
-                            "uuid": "997b74e5-21b3-4775-81de-ecd9ac798f91"
+                            "uuid": "16dba0b6-e3c5-40ed-a601-7776f53092c9"
                         }
                     ],
                     "severity": "warning",
@@ -639,7 +639,7 @@
                                 "x": 0.3111,
                                 "y": 2.6158
                             },
-                            "uuid": "ee1645b2-59e5-44e5-aa62-3d154847646c"
+                            "uuid": "df60ba63-c139-4880-9493-ca4c0bf88ec2"
                         }
                     ],
                     "severity": "warning",
@@ -654,7 +654,7 @@
                                 "x": 0.3111,
                                 "y": 2.6412
                             },
-                            "uuid": "54005571-6166-497e-99ac-35ddcb2f01fe"
+                            "uuid": "360c77f8-5ca1-4f42-9784-db5b6e3e196a"
                         }
                     ],
                     "severity": "warning",
@@ -669,7 +669,7 @@
                                 "x": 0.3111,
                                 "y": 2.6666
                             },
-                            "uuid": "ae24c353-e681-4646-ae97-dd8505f0435d"
+                            "uuid": "89b021a9-78fd-4b60-9809-571bcf4c979e"
                         }
                     ],
                     "severity": "warning",
@@ -684,7 +684,7 @@
                                 "x": 0.3238,
                                 "y": 1.104
                             },
-                            "uuid": "aa987f97-74e0-44f2-8bea-3bc22df86da4"
+                            "uuid": "6bf9b95b-002a-4db1-b3fb-365cf58ff443"
                         }
                     ],
                     "severity": "warning",
@@ -699,7 +699,7 @@
                                 "x": 0.3238,
                                 "y": 4.386
                             },
-                            "uuid": "283d2ddd-ad50-4e89-94bb-fe7cee7c1c06"
+                            "uuid": "d9149b09-264f-4f85-8a2b-4fa7f5d9d805"
                         }
                     ],
                     "severity": "warning",
@@ -714,7 +714,7 @@
                                 "x": 0.3238,
                                 "y": 4.386
                             },
-                            "uuid": "c4cf647e-9234-4a47-bcb2-3e5f25437e0b"
+                            "uuid": "efe02808-308b-4f35-8c27-05d457bb3445"
                         }
                     ],
                     "severity": "warning",
@@ -729,7 +729,22 @@
                                 "x": 0.3238,
                                 "y": 4.4114
                             },
-                            "uuid": "d23c702b-0eb4-49d9-b2f1-797ceaab2f5e"
+                            "uuid": "a5dcf158-68d6-4040-b0ea-013a8f5cb5e9"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "endpoint_off_grid"
+                },
+                {
+                    "description": "Symbol pin or wire end off connection grid",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 0.0127 mm",
+                            "pos": {
+                                "x": 0.3238,
+                                "y": 4.5914
+                            },
+                            "uuid": "4aafb14e-8395-4391-886d-e2916a274fb4"
                         }
                     ],
                     "severity": "warning",
@@ -744,22 +759,7 @@
                                 "x": 0.3238,
                                 "y": 4.5914
                             },
-                            "uuid": "53103588-f54b-417b-b5df-8c57a23c8ea2"
-                        }
-                    ],
-                    "severity": "warning",
-                    "type": "endpoint_off_grid"
-                },
-                {
-                    "description": "Symbol pin or wire end off connection grid",
-                    "items": [
-                        {
-                            "description": "Horizontal Wire, length 0.0127 mm",
-                            "pos": {
-                                "x": 0.3238,
-                                "y": 4.5914
-                            },
-                            "uuid": "761ccf88-ac70-4450-bca8-64fd54f83f8c"
+                            "uuid": "7f3992d9-449f-409d-8dd3-fec953d6b23f"
                         }
                     ],
                     "severity": "warning",
@@ -774,7 +774,7 @@
                                 "x": 0.3238,
                                 "y": 4.6168
                             },
-                            "uuid": "ede96ab1-ffa6-477f-995b-a85fb1a29e9c"
+                            "uuid": "3b325d24-b5d8-4b51-b35c-cf5b22d65a50"
                         }
                     ],
                     "severity": "warning",
@@ -789,7 +789,7 @@
                                 "x": 0.3619,
                                 "y": 3.846
                             },
-                            "uuid": "d634b670-0af5-4bd6-87a4-b68781576c65"
+                            "uuid": "58a04f87-c158-46b3-adf1-b3e165582326"
                         }
                     ],
                     "severity": "warning",
@@ -804,7 +804,22 @@
                                 "x": 0.3619,
                                 "y": 3.846
                             },
-                            "uuid": "d9b7adde-8ddc-4d2d-858f-dd90df1b0d4e"
+                            "uuid": "5aedc94d-977f-4984-b805-cef0bcc538e9"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "endpoint_off_grid"
+                },
+                {
+                    "description": "Symbol pin or wire end off connection grid",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 0.0127 mm",
+                            "pos": {
+                                "x": 0.3619,
+                                "y": 4.026
+                            },
+                            "uuid": "f75f75e2-a33a-4755-916a-e4498a8ad5de"
                         }
                     ],
                     "severity": "warning",
@@ -819,22 +834,7 @@
                                 "x": 0.3619,
                                 "y": 4.026
                             },
-                            "uuid": "110844f0-d15a-4722-bb4b-06f8e99913dc"
-                        }
-                    ],
-                    "severity": "warning",
-                    "type": "endpoint_off_grid"
-                },
-                {
-                    "description": "Symbol pin or wire end off connection grid",
-                    "items": [
-                        {
-                            "description": "Horizontal Wire, length 0.0127 mm",
-                            "pos": {
-                                "x": 0.3619,
-                                "y": 4.026
-                            },
-                            "uuid": "917e0d38-e18d-4993-a157-f5eaa328cbf0"
+                            "uuid": "fb14aa80-8905-4c23-b24c-497ad51af88c"
                         }
                     ],
                     "severity": "warning",
@@ -849,7 +849,7 @@
                                 "x": 0.3619,
                                 "y": 4.206
                             },
-                            "uuid": "21e8a9de-2306-49c1-8f9e-476b044f361f"
+                            "uuid": "1ae35b28-3ca2-4fa7-850b-7089879bc42e"
                         }
                     ],
                     "severity": "warning",
@@ -864,7 +864,7 @@
                                 "x": 0.3619,
                                 "y": 4.206
                             },
-                            "uuid": "46ee9db8-5f65-4a99-a467-59e5ab9a8d37"
+                            "uuid": "630aba73-b733-4571-a100-dfd0153e77e6"
                         }
                     ],
                     "severity": "warning",
@@ -879,7 +879,7 @@
                                 "x": 0.4,
                                 "y": 0.7335
                             },
-                            "uuid": "45b64abb-f86f-4d78-b5b0-d3b92bbadeec"
+                            "uuid": "95479740-7b7d-4b53-92da-baad0e384ba4"
                         }
                     ],
                     "severity": "warning",
@@ -894,7 +894,7 @@
                                 "x": 0.4,
                                 "y": 0.7335
                             },
-                            "uuid": "f4bcaf4a-8d07-40cb-bb55-f5d7edd83004"
+                            "uuid": "95edbbff-4e6a-4a02-819f-56d2625f09ea"
                         }
                     ],
                     "severity": "warning",
@@ -909,7 +909,7 @@
                                 "x": 0.4,
                                 "y": 0.8097
                             },
-                            "uuid": "c2a7aa9d-2853-4c46-9189-fb762e1b2218"
+                            "uuid": "03fc2d7a-23f4-4830-91f2-d96f087db872"
                         }
                     ],
                     "severity": "warning",
@@ -924,7 +924,7 @@
                                 "x": 0.4,
                                 "y": 1.0278
                             },
-                            "uuid": "ee5dde8b-8233-4134-a286-f1dac52cf962"
+                            "uuid": "9b167f45-b3ac-4ea7-8090-9ff20ad1be3e"
                         }
                     ],
                     "severity": "warning",
@@ -939,7 +939,7 @@
                                 "x": 0.4,
                                 "y": 1.0278
                             },
-                            "uuid": "fe83e8b4-225c-4dee-8d93-0c484087a990"
+                            "uuid": "b610d7db-d825-4889-9340-a759cba183c9"
                         }
                     ],
                     "severity": "warning",
@@ -954,7 +954,7 @@
                                 "x": 0.4,
                                 "y": 1.1802
                             },
-                            "uuid": "808493d0-115a-41a7-8a08-c9152b7ab4c7"
+                            "uuid": "2c3d7e70-b289-40cb-af2a-f51209bfa7b5"
                         }
                     ],
                     "severity": "warning",
@@ -969,7 +969,7 @@
                                 "x": 0.4,
                                 "y": 1.3856
                             },
-                            "uuid": "24050308-66ad-4df3-ab2e-9b999fbaf49b"
+                            "uuid": "cb3cfe30-b1ae-48d1-946e-4a425ea61387"
                         }
                     ],
                     "severity": "warning",
@@ -984,7 +984,7 @@
                                 "x": 0.4,
                                 "y": 1.6164
                             },
-                            "uuid": "555149f5-eeb4-4557-994d-3282fded5e05"
+                            "uuid": "da53bf15-ed17-4114-ae8c-706bada85b9b"
                         }
                     ],
                     "severity": "warning",
@@ -999,7 +999,7 @@
                                 "x": 0.4,
                                 "y": 1.9488
                             },
-                            "uuid": "91407fde-70f6-4b7c-bd9d-9085a0fa9542"
+                            "uuid": "988e2507-8374-4335-99f1-3039d64be906"
                         }
                     ],
                     "severity": "warning",
@@ -1014,7 +1014,7 @@
                                 "x": 0.4,
                                 "y": 2.1796
                             },
-                            "uuid": "53b95de3-3893-486e-8007-c7d01b49d69c"
+                            "uuid": "98e9678f-4b2a-43d5-af7f-145c3cda2431"
                         }
                     ],
                     "severity": "warning",
@@ -1029,7 +1029,7 @@
                                 "x": 0.4,
                                 "y": 2.4104
                             },
-                            "uuid": "cf3a7c4a-ffe7-4a56-abba-1cc5b2a6a4ac"
+                            "uuid": "31dae6ca-d665-42ed-b874-8ca95b7be1aa"
                         }
                     ],
                     "severity": "warning",
@@ -1044,7 +1044,7 @@
                                 "x": 0.4,
                                 "y": 2.6412
                             },
-                            "uuid": "f08c3c41-48bf-4e23-b699-09e5bdc093b1"
+                            "uuid": "e3d1088c-2963-4cf4-911f-6f1cd29abe1f"
                         }
                     ],
                     "severity": "warning",
@@ -1059,7 +1059,7 @@
                                 "x": 0.4,
                                 "y": 2.8593
                             },
-                            "uuid": "a9890921-2d4a-4e09-bd68-8888105a1537"
+                            "uuid": "78ef7f61-c1e1-48ec-9cb8-3c328646ef0d"
                         }
                     ],
                     "severity": "warning",
@@ -1074,7 +1074,7 @@
                                 "x": 0.4,
                                 "y": 2.8593
                             },
-                            "uuid": "d5c31531-9622-4bc6-a078-eb1a82856654"
+                            "uuid": "7a75e7ac-cd13-48fd-92f2-5bf790d9c716"
                         }
                     ],
                     "severity": "warning",
@@ -1089,7 +1089,22 @@
                                 "x": 0.4,
                                 "y": 2.9355
                             },
-                            "uuid": "80acfde5-700f-4442-bb4b-3659a8ade4da"
+                            "uuid": "c5aa2474-45f5-4ab3-bc8d-f39969749456"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "endpoint_off_grid"
+                },
+                {
+                    "description": "Symbol pin or wire end off connection grid",
+                    "items": [
+                        {
+                            "description": "Vertical Wire, length 0.0127 mm",
+                            "pos": {
+                                "x": 0.4,
+                                "y": 3.1155
+                            },
+                            "uuid": "0f78f9af-c7db-4bd4-a464-80d38139d687"
                         }
                     ],
                     "severity": "warning",
@@ -1104,22 +1119,7 @@
                                 "x": 0.4,
                                 "y": 3.1155
                             },
-                            "uuid": "13338902-2c45-4c04-b25a-1a2c7edf59c7"
-                        }
-                    ],
-                    "severity": "warning",
-                    "type": "endpoint_off_grid"
-                },
-                {
-                    "description": "Symbol pin or wire end off connection grid",
-                    "items": [
-                        {
-                            "description": "Vertical Wire, length 0.0127 mm",
-                            "pos": {
-                                "x": 0.4,
-                                "y": 3.1155
-                            },
-                            "uuid": "d148d4f8-5628-411b-b760-7ea5a855656c"
+                            "uuid": "b09de26e-6ec7-49b7-b6ef-0f7e729da34b"
                         }
                     ],
                     "severity": "warning",
@@ -1134,7 +1134,7 @@
                                 "x": 0.4,
                                 "y": 3.1917
                             },
-                            "uuid": "ecbd5e03-3ad9-4fab-8c76-38d89dcf9505"
+                            "uuid": "2fdd4906-d84b-4931-8812-7b35e36ae36d"
                         }
                     ],
                     "severity": "warning",
@@ -1149,7 +1149,7 @@
                                 "x": 0.4,
                                 "y": 3.3717
                             },
-                            "uuid": "44088e04-7726-4e67-9c1d-5bd90cd727da"
+                            "uuid": "248772c8-2c08-459e-b85e-3a0b48c4c09d"
                         }
                     ],
                     "severity": "warning",
@@ -1164,7 +1164,7 @@
                                 "x": 0.4,
                                 "y": 3.3717
                             },
-                            "uuid": "6cdbef26-acaa-46e0-a40c-cd1297e86e93"
+                            "uuid": "ce07383d-731b-4523-a861-577c8b62666b"
                         }
                     ],
                     "severity": "warning",
@@ -1179,7 +1179,22 @@
                                 "x": 0.4,
                                 "y": 3.4479
                             },
-                            "uuid": "8817e777-b047-4627-aa60-001e01261765"
+                            "uuid": "f63bf46a-1c9d-4b83-a574-3b3a85c15ba9"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "endpoint_off_grid"
+                },
+                {
+                    "description": "Symbol pin or wire end off connection grid",
+                    "items": [
+                        {
+                            "description": "Vertical Wire, length 0.0127 mm",
+                            "pos": {
+                                "x": 0.4,
+                                "y": 3.6279
+                            },
+                            "uuid": "5efb5356-9c19-44ce-bccd-e1aecdaee088"
                         }
                     ],
                     "severity": "warning",
@@ -1194,22 +1209,7 @@
                                 "x": 0.4,
                                 "y": 3.6279
                             },
-                            "uuid": "048d1bf9-131b-4984-a0fa-c315754255a9"
-                        }
-                    ],
-                    "severity": "warning",
-                    "type": "endpoint_off_grid"
-                },
-                {
-                    "description": "Symbol pin or wire end off connection grid",
-                    "items": [
-                        {
-                            "description": "Vertical Wire, length 0.0127 mm",
-                            "pos": {
-                                "x": 0.4,
-                                "y": 3.6279
-                            },
-                            "uuid": "b045b671-25e3-4376-8a5c-06e3f136dedb"
+                            "uuid": "d610cc63-4019-4722-b7e1-ddd554df1f2f"
                         }
                     ],
                     "severity": "warning",
@@ -1224,7 +1224,7 @@
                                 "x": 0.4,
                                 "y": 3.7041
                             },
-                            "uuid": "6f9d8ebf-e0ca-4854-9388-6bd3c2564d3f"
+                            "uuid": "d8209b5c-7fcb-4b2b-90d4-69a5eeba837a"
                         }
                     ],
                     "severity": "warning",
@@ -1239,7 +1239,7 @@
                                 "x": 0.4,
                                 "y": 4.4114
                             },
-                            "uuid": "ec451a04-252f-4e4c-8365-7f564538caa7"
+                            "uuid": "9b743c6d-97bc-4b27-9c56-68d63dc9cb72"
                         }
                     ],
                     "severity": "warning",
@@ -1254,7 +1254,7 @@
                                 "x": 0.4,
                                 "y": 4.6168
                             },
-                            "uuid": "61a3f892-27f8-4dbc-83bb-59b958a7046b"
+                            "uuid": "3097e98c-44e8-4fdf-88e4-103a7bcaf1c3"
                         }
                     ],
                     "severity": "warning",
@@ -1269,7 +1269,7 @@
                                 "x": 0.4,
                                 "y": 5.0
                             },
-                            "uuid": "39486ead-174d-4bbc-b3fb-d13e86701bf7"
+                            "uuid": "df0eecea-f930-40ee-a067-8b7b92d87017"
                         }
                     ],
                     "severity": "warning",
@@ -1284,7 +1284,7 @@
                                 "x": 0.4381,
                                 "y": 3.846
                             },
-                            "uuid": "137b42e0-58b5-4b56-aa5b-ce8b7a7cfff8"
+                            "uuid": "a02cfa50-be77-4611-81e1-293a35c4f8db"
                         }
                     ],
                     "severity": "warning",
@@ -1299,7 +1299,7 @@
                                 "x": 0.4381,
                                 "y": 4.026
                             },
-                            "uuid": "39802fd6-27f9-4d33-80d8-b81ca6c4ba46"
+                            "uuid": "87a1e3bc-4268-403d-b54f-ee7ec1af945e"
                         }
                     ],
                     "severity": "warning",
@@ -1314,7 +1314,7 @@
                                 "x": 0.4381,
                                 "y": 4.206
                             },
-                            "uuid": "329a06b4-3cd7-400d-9180-afaeb30b1d7f"
+                            "uuid": "8f35671e-4a1f-43fe-8c3b-98cb07a6ec92"
                         }
                     ],
                     "severity": "warning",
@@ -1329,7 +1329,7 @@
                                 "x": 0.4762,
                                 "y": 1.104
                             },
-                            "uuid": "fc3cabd0-c698-43ba-8072-355500a5ac06"
+                            "uuid": "19de43dd-aaaa-4dde-b01c-bac5a9b809bc"
                         }
                     ],
                     "severity": "warning",
@@ -1344,7 +1344,7 @@
                                 "x": 0.4762,
                                 "y": 4.386
                             },
-                            "uuid": "a1dc2ff1-97c0-4da6-a913-adbba46c037f"
+                            "uuid": "4cd08e1a-d9c0-44ab-ae68-a496858247a9"
                         }
                     ],
                     "severity": "warning",
@@ -1359,7 +1359,7 @@
                                 "x": 0.4762,
                                 "y": 4.4114
                             },
-                            "uuid": "6ebb98b5-82f2-45b0-951a-ba04999d789b"
+                            "uuid": "28b687ac-498b-4fee-b9e8-14b40f76bdca"
                         }
                     ],
                     "severity": "warning",
@@ -1374,7 +1374,7 @@
                                 "x": 0.4762,
                                 "y": 4.5914
                             },
-                            "uuid": "eaa72b98-d47f-4ada-9bb2-65030fa37b43"
+                            "uuid": "acace5ab-e634-4081-8ad3-35d8d09647b6"
                         }
                     ],
                     "severity": "warning",
@@ -1389,7 +1389,7 @@
                                 "x": 0.4762,
                                 "y": 4.6168
                             },
-                            "uuid": "e3789f9f-f141-4ae2-8b2d-1ba85441c417"
+                            "uuid": "ce3595d5-5dde-494b-aef7-72bc0c60fb8d"
                         }
                     ],
                     "severity": "warning",
@@ -1404,7 +1404,7 @@
                                 "x": 0.4889,
                                 "y": 1.3348
                             },
-                            "uuid": "f3f602c2-677d-4577-92b3-b1dfd3dd301b"
+                            "uuid": "c97d1ab4-3bfd-47fe-80ca-46698911fba4"
                         }
                     ],
                     "severity": "warning",
@@ -1419,7 +1419,7 @@
                                 "x": 0.4889,
                                 "y": 1.3602
                             },
-                            "uuid": "b586365c-da91-4caf-bba7-2b2e398dd1a9"
+                            "uuid": "7371e76c-0f54-49b2-ad83-54276d9ddc69"
                         }
                     ],
                     "severity": "warning",
@@ -1434,7 +1434,7 @@
                                 "x": 0.4889,
                                 "y": 1.3856
                             },
-                            "uuid": "6169d5bd-d222-4a45-bb4a-5b37ddd47d79"
+                            "uuid": "16f1106a-2cf8-4f05-b57a-74d201aab729"
                         }
                     ],
                     "severity": "warning",
@@ -1449,7 +1449,7 @@
                                 "x": 0.4889,
                                 "y": 1.6164
                             },
-                            "uuid": "49136428-bfe0-47a1-9f9f-c4e003a0fa9d"
+                            "uuid": "3f6fb105-c563-4015-80c9-64a74eea7568"
                         }
                     ],
                     "severity": "warning",
@@ -1464,7 +1464,7 @@
                                 "x": 0.4889,
                                 "y": 2.1542
                             },
-                            "uuid": "36700b1f-29ba-42d7-ab7a-112e4274ce57"
+                            "uuid": "65912622-bd2e-4ca2-bda7-92dfb8a3f81e"
                         }
                     ],
                     "severity": "warning",
@@ -1479,7 +1479,7 @@
                                 "x": 0.4889,
                                 "y": 2.1796
                             },
-                            "uuid": "be3aa344-3467-4dbd-a93b-c5eb15d93774"
+                            "uuid": "15410b57-a63f-456b-b403-0f65b1f1da0d"
                         }
                     ],
                     "severity": "warning",
@@ -1494,7 +1494,7 @@
                                 "x": 0.4889,
                                 "y": 2.205
                             },
-                            "uuid": "cac55e32-4115-463b-b9a5-253e74a26a94"
+                            "uuid": "d24ca183-d8bb-4863-ae39-38b14c6ff426"
                         }
                     ],
                     "severity": "warning",
@@ -1509,7 +1509,7 @@
                                 "x": 0.4889,
                                 "y": 2.385
                             },
-                            "uuid": "dfc0a9a5-1471-4bed-98a1-97c027ae8efe"
+                            "uuid": "b55c214b-c43d-4546-afeb-e15e2a81ab31"
                         }
                     ],
                     "severity": "warning",
@@ -1524,7 +1524,7 @@
                                 "x": 0.4889,
                                 "y": 2.4104
                             },
-                            "uuid": "d2e37252-5f9a-4c90-9b32-e6b94ebf1e1d"
+                            "uuid": "6baf0079-dec1-4920-b158-30f94e21cf40"
                         }
                     ],
                     "severity": "warning",
@@ -1539,7 +1539,7 @@
                                 "x": 0.4889,
                                 "y": 2.6158
                             },
-                            "uuid": "3ea861fc-6350-4216-b548-72f005171fce"
+                            "uuid": "b94ff296-9989-4ae4-9649-c297f5f20b2c"
                         }
                     ],
                     "severity": "warning",
@@ -1554,7 +1554,7 @@
                                 "x": 0.4889,
                                 "y": 2.6412
                             },
-                            "uuid": "59614c7e-025b-4cad-81fa-33c459ca457a"
+                            "uuid": "a58b808f-4cce-444e-b9a5-929044571fb0"
                         }
                     ],
                     "severity": "warning",
@@ -1569,7 +1569,7 @@
                                 "x": 0.5143,
                                 "y": 1.8726
                             },
-                            "uuid": "a59b06cc-b72f-42fd-8a6a-dd9bc77a9ea9"
+                            "uuid": "f35302ff-9b54-43f4-897d-a3b323cc6842"
                         }
                     ],
                     "severity": "warning",
@@ -1584,7 +1584,7 @@
                                 "x": 0.5143,
                                 "y": 1.9234
                             },
-                            "uuid": "5674e63b-f24d-46e6-809a-f65a1f9d0cbf"
+                            "uuid": "97032adb-4883-4284-a2d4-deba8d6ea065"
                         }
                     ],
                     "severity": "warning",
@@ -1599,7 +1599,7 @@
                                 "x": 0.5143,
                                 "y": 1.9488
                             },
-                            "uuid": "9a41c5bb-edca-42ff-a96f-bca55fbc0686"
+                            "uuid": "ea858390-af18-4bab-9df8-42ec41529690"
                         }
                     ],
                     "severity": "warning",
@@ -1614,7 +1614,7 @@
                                 "x": 0.5143,
                                 "y": 1.9742
                             },
-                            "uuid": "a8e8f67a-8875-4ca6-bfcd-ad9f6715041f"
+                            "uuid": "340d0071-0d6b-4a92-a157-7c3dfa868f22"
                         }
                     ],
                     "severity": "warning",
@@ -1629,7 +1629,7 @@
                                 "x": 0.5143,
                                 "y": 2.025
                             },
-                            "uuid": "b4bdf2fc-1246-4c3e-b3fa-8c6fa152479e"
+                            "uuid": "6f636ff6-1ced-4147-b24c-16994114faf0"
                         }
                     ],
                     "severity": "warning",
@@ -1644,7 +1644,7 @@
                                 "x": 1.2238,
                                 "y": 1.4684
                             },
-                            "uuid": "aae6a354-9802-4e19-a9d9-e093232334f4"
+                            "uuid": "0f970953-e2ef-4a3a-b070-0a87324de1c4"
                         }
                     ],
                     "severity": "warning",
@@ -1659,7 +1659,7 @@
                                 "x": 1.2238,
                                 "y": 2.057
                             },
-                            "uuid": "73e7cea3-0560-453e-8073-d81a7b9adeb4"
+                            "uuid": "34f80998-3cfe-411f-9d8c-2d840c95d9d9"
                         }
                     ],
                     "severity": "warning",
@@ -1674,7 +1674,7 @@
                                 "x": 1.2238,
                                 "y": 2.6456
                             },
-                            "uuid": "04098733-9ac3-4648-b32e-951756457dea"
+                            "uuid": "52079db9-b626-47fa-ac27-124558ba8542"
                         }
                     ],
                     "severity": "warning",
@@ -1689,7 +1689,7 @@
                                 "x": 1.2238,
                                 "y": 3.2342
                             },
-                            "uuid": "ceda8934-66b6-4944-a540-76484bfb64c8"
+                            "uuid": "6ab5c806-a958-468b-a62e-d6f8a25c11cf"
                         }
                     ],
                     "severity": "warning",
@@ -1704,7 +1704,7 @@
                                 "x": 1.2238,
                                 "y": 3.8228
                             },
-                            "uuid": "6c62a373-9576-483f-b61b-4555205c6c5d"
+                            "uuid": "e026f2bb-4830-46c1-82c8-2d495ca24a43"
                         }
                     ],
                     "severity": "warning",
@@ -1719,7 +1719,7 @@
                                 "x": 1.2238,
                                 "y": 4.4114
                             },
-                            "uuid": "9ec8aee7-4c19-4b2a-ae83-c00fda7a6b08"
+                            "uuid": "53746923-6425-4000-9baf-b302b1c72772"
                         }
                     ],
                     "severity": "warning",
@@ -1734,7 +1734,7 @@
                                 "x": 1.2238,
                                 "y": 5.0
                             },
-                            "uuid": "52ef0654-8321-4dce-9c1d-9e219b5e7979"
+                            "uuid": "28f834f1-b394-409d-a74c-e5fcc88506ae"
                         }
                     ],
                     "severity": "warning",
@@ -1749,7 +1749,7 @@
                                 "x": 1.3,
                                 "y": 0.5855
                             },
-                            "uuid": "e378cd34-ea12-4b2b-827b-d4ccf831e454"
+                            "uuid": "8bdcf8f2-d548-44e2-a7ed-1eb13b348063"
                         }
                     ],
                     "severity": "warning",
@@ -1764,7 +1764,7 @@
                                 "x": 1.3,
                                 "y": 0.5855
                             },
-                            "uuid": "fef2075c-29cd-457e-a72c-5a5b7b42db3e"
+                            "uuid": "f3b07eb9-7149-465c-9241-35aa229cca57"
                         }
                     ],
                     "severity": "warning",
@@ -1779,7 +1779,22 @@
                                 "x": 1.3,
                                 "y": 0.6617
                             },
-                            "uuid": "3ea7c8e9-4897-46b1-93a2-e42147422914"
+                            "uuid": "0e0272ca-a9a9-46c0-8a3b-73816f502c94"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "endpoint_off_grid"
+                },
+                {
+                    "description": "Symbol pin or wire end off connection grid",
+                    "items": [
+                        {
+                            "description": "Vertical Wire, length 0.0127 mm",
+                            "pos": {
+                                "x": 1.3,
+                                "y": 0.8417
+                            },
+                            "uuid": "3110681a-cc4b-4e07-a926-bad26b57c760"
                         }
                     ],
                     "severity": "warning",
@@ -1794,22 +1809,7 @@
                                 "x": 1.3,
                                 "y": 0.8417
                             },
-                            "uuid": "281eb5c7-20f3-4627-a0c9-328ae3a4dd8c"
-                        }
-                    ],
-                    "severity": "warning",
-                    "type": "endpoint_off_grid"
-                },
-                {
-                    "description": "Symbol pin or wire end off connection grid",
-                    "items": [
-                        {
-                            "description": "Vertical Wire, length 0.0127 mm",
-                            "pos": {
-                                "x": 1.3,
-                                "y": 0.8417
-                            },
-                            "uuid": "5de61ce5-4859-4e2b-85a5-daae857acadf"
+                            "uuid": "62591fb6-5bcc-402c-816a-75bfb2a41883"
                         }
                     ],
                     "severity": "warning",
@@ -1824,22 +1824,7 @@
                                 "x": 1.3,
                                 "y": 0.9179
                             },
-                            "uuid": "676300fd-e55a-4997-be9f-098730e48ce5"
-                        }
-                    ],
-                    "severity": "warning",
-                    "type": "endpoint_off_grid"
-                },
-                {
-                    "description": "Symbol pin or wire end off connection grid",
-                    "items": [
-                        {
-                            "description": "Vertical Wire, length 0.0127 mm",
-                            "pos": {
-                                "x": 1.3,
-                                "y": 1.0979
-                            },
-                            "uuid": "4048b2dd-d202-479c-b1bc-d241d8680544"
+                            "uuid": "348b12cc-89e4-452f-8a49-a78d395686c2"
                         }
                     ],
                     "severity": "warning",
@@ -1854,7 +1839,22 @@
                                 "x": 1.3,
                                 "y": 1.0979
                             },
-                            "uuid": "d52c8231-9806-47ae-8270-30b33e9580f6"
+                            "uuid": "5c8894a7-c4f5-49dd-88b0-0dbd7ba8150d"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "endpoint_off_grid"
+                },
+                {
+                    "description": "Symbol pin or wire end off connection grid",
+                    "items": [
+                        {
+                            "description": "Vertical Wire, length 0.0127 mm",
+                            "pos": {
+                                "x": 1.3,
+                                "y": 1.0979
+                            },
+                            "uuid": "6118adc3-4c2f-4eda-ad9e-4b87e9ce64e1"
                         }
                     ],
                     "severity": "warning",
@@ -1869,7 +1869,7 @@
                                 "x": 1.3,
                                 "y": 1.1741
                             },
-                            "uuid": "c31700f3-b940-40c2-8eca-3db1c96f6e40"
+                            "uuid": "d942f450-d621-419d-a354-128838dbcb4c"
                         }
                     ],
                     "severity": "warning",
@@ -1884,7 +1884,7 @@
                                 "x": 1.3,
                                 "y": 1.3922
                             },
-                            "uuid": "056d625c-555e-4367-81a5-92b4e819bfbf"
+                            "uuid": "1a4c9579-8282-4d36-a179-27ab025cea54"
                         }
                     ],
                     "severity": "warning",
@@ -1899,7 +1899,7 @@
                                 "x": 1.3,
                                 "y": 1.3922
                             },
-                            "uuid": "3b48b601-4c04-4cbe-927f-fd27eef1e8d3"
+                            "uuid": "4be9b874-8794-4d70-875e-ac73e5b5368e"
                         }
                     ],
                     "severity": "warning",
@@ -1914,7 +1914,7 @@
                                 "x": 1.3,
                                 "y": 1.5446
                             },
-                            "uuid": "587125e4-8b66-43e2-ade2-4fccccb5b631"
+                            "uuid": "2ff641b8-c5d6-4a13-9886-ee021da2ba48"
                         }
                     ],
                     "severity": "warning",
@@ -1929,7 +1929,7 @@
                                 "x": 1.3,
                                 "y": 1.6865
                             },
-                            "uuid": "7e5abf54-6192-4663-836a-7c6b134b4c44"
+                            "uuid": "012e59d1-0e73-44a8-b9bf-7215a6eae148"
                         }
                     ],
                     "severity": "warning",
@@ -1944,7 +1944,7 @@
                                 "x": 1.3,
                                 "y": 1.6865
                             },
-                            "uuid": "d1e9c43d-f999-4f13-bb5d-206e3c8b0f37"
+                            "uuid": "f5141274-4ecf-4624-a8c2-58eaf97b6e43"
                         }
                     ],
                     "severity": "warning",
@@ -1959,7 +1959,7 @@
                                 "x": 1.3,
                                 "y": 1.7627
                             },
-                            "uuid": "1dd7453e-4d70-4f54-b41d-2eea448faafe"
+                            "uuid": "517dc3a4-88d9-4cec-bb23-c50948850e93"
                         }
                     ],
                     "severity": "warning",
@@ -1974,7 +1974,7 @@
                                 "x": 1.3,
                                 "y": 1.9808
                             },
-                            "uuid": "d356f51e-d442-4ea7-997c-b9626a455cb9"
+                            "uuid": "10269383-f681-44fb-9c40-4e7d761c8403"
                         }
                     ],
                     "severity": "warning",
@@ -1989,7 +1989,7 @@
                                 "x": 1.3,
                                 "y": 1.9808
                             },
-                            "uuid": "f560fc81-15ce-46c9-9d2b-ab1eda284b0b"
+                            "uuid": "c704a219-fd08-4ac6-8dc2-ab60c833fd9e"
                         }
                     ],
                     "severity": "warning",
@@ -2004,7 +2004,22 @@
                                 "x": 1.3,
                                 "y": 2.1332
                             },
-                            "uuid": "b136722b-f21d-465b-a3e3-300ff5d1081a"
+                            "uuid": "58e1c7ef-1be3-468b-8c35-a770079df1e9"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "endpoint_off_grid"
+                },
+                {
+                    "description": "Symbol pin or wire end off connection grid",
+                    "items": [
+                        {
+                            "description": "Vertical Wire, length 0.0127 mm",
+                            "pos": {
+                                "x": 1.3,
+                                "y": 2.2751
+                            },
+                            "uuid": "7f964c33-63af-4f47-be9e-800da54a11dc"
                         }
                     ],
                     "severity": "warning",
@@ -2019,22 +2034,7 @@
                                 "x": 1.3,
                                 "y": 2.2751
                             },
-                            "uuid": "686c7a1e-268e-4029-9b52-4eceabc46961"
-                        }
-                    ],
-                    "severity": "warning",
-                    "type": "endpoint_off_grid"
-                },
-                {
-                    "description": "Symbol pin or wire end off connection grid",
-                    "items": [
-                        {
-                            "description": "Vertical Wire, length 0.0127 mm",
-                            "pos": {
-                                "x": 1.3,
-                                "y": 2.2751
-                            },
-                            "uuid": "ef95fbff-e193-4c02-a313-d9221732061b"
+                            "uuid": "8c799dc4-6858-47e1-9d8b-c94ce6818efd"
                         }
                     ],
                     "severity": "warning",
@@ -2049,7 +2049,7 @@
                                 "x": 1.3,
                                 "y": 2.3513
                             },
-                            "uuid": "df7ad9ed-bcef-4956-bd05-d23af0cae52a"
+                            "uuid": "74a80b52-7b6c-4fee-b6a8-01f0c2601665"
                         }
                     ],
                     "severity": "warning",
@@ -2064,7 +2064,7 @@
                                 "x": 1.3,
                                 "y": 2.5694
                             },
-                            "uuid": "c9693090-b1ce-44d8-b854-96ad59f7ef7d"
+                            "uuid": "e28d9032-d6ab-4feb-95a3-0ea2496004e0"
                         }
                     ],
                     "severity": "warning",
@@ -2079,7 +2079,7 @@
                                 "x": 1.3,
                                 "y": 2.5694
                             },
-                            "uuid": "ee834ca2-4cf9-40ae-b027-81aee45cc2f7"
+                            "uuid": "f81d8efb-5bbe-4d8b-9ac6-e1c234b146bc"
                         }
                     ],
                     "severity": "warning",
@@ -2094,7 +2094,7 @@
                                 "x": 1.3,
                                 "y": 2.7218
                             },
-                            "uuid": "1219ddff-9cc2-45d8-8f54-11d874cf822f"
+                            "uuid": "990e7790-b7d3-4ccc-b5ae-b71a28756f17"
                         }
                     ],
                     "severity": "warning",
@@ -2109,7 +2109,7 @@
                                 "x": 1.3,
                                 "y": 2.8637
                             },
-                            "uuid": "79b433a3-14bd-4734-92ff-cc7d4d2153d1"
+                            "uuid": "10f395b1-ec0e-4eda-b695-24dbdf0f4f7c"
                         }
                     ],
                     "severity": "warning",
@@ -2124,7 +2124,7 @@
                                 "x": 1.3,
                                 "y": 2.8637
                             },
-                            "uuid": "f8904f72-d1e4-4904-acad-9e4e2ac41e4c"
+                            "uuid": "b3e7e909-4b85-4847-8a31-d79f50c92db7"
                         }
                     ],
                     "severity": "warning",
@@ -2139,7 +2139,7 @@
                                 "x": 1.3,
                                 "y": 2.9399
                             },
-                            "uuid": "7b06f8b1-fd50-4b60-80a5-5e90a9f093c5"
+                            "uuid": "f937274d-da03-4143-8c2f-df494aaf6a6c"
                         }
                     ],
                     "severity": "warning",
@@ -2154,7 +2154,7 @@
                                 "x": 1.3,
                                 "y": 3.158
                             },
-                            "uuid": "2dfe85a7-6034-4ef7-adae-769b3b69772b"
+                            "uuid": "5b4f0df1-4280-4795-82a8-ac9c9ea4e376"
                         }
                     ],
                     "severity": "warning",
@@ -2169,7 +2169,7 @@
                                 "x": 1.3,
                                 "y": 3.158
                             },
-                            "uuid": "30716041-f333-4256-af2c-99efe72d4036"
+                            "uuid": "af22081b-c92e-4dec-b422-7a047f0ac0dd"
                         }
                     ],
                     "severity": "warning",
@@ -2184,7 +2184,7 @@
                                 "x": 1.3,
                                 "y": 3.3104
                             },
-                            "uuid": "9446ad89-6486-416a-88f0-d02332b73bd1"
+                            "uuid": "0374e50c-36c4-4217-b61a-b25d11ee32ca"
                         }
                     ],
                     "severity": "warning",
@@ -2199,7 +2199,7 @@
                                 "x": 1.3,
                                 "y": 3.4523
                             },
-                            "uuid": "283d9e4a-4f91-4aad-869b-4ed9fced0851"
+                            "uuid": "cb9cc036-0cf8-4c65-b8d4-ca4951f10dee"
                         }
                     ],
                     "severity": "warning",
@@ -2214,7 +2214,7 @@
                                 "x": 1.3,
                                 "y": 3.4523
                             },
-                            "uuid": "312b8805-d1c9-46fa-8c32-f03442b5f9ce"
+                            "uuid": "f72d2fa2-796b-442e-8873-a4624bf3518c"
                         }
                     ],
                     "severity": "warning",
@@ -2229,22 +2229,7 @@
                                 "x": 1.3,
                                 "y": 3.5285
                             },
-                            "uuid": "b307d153-43e5-47d1-9048-80e8a2ee4bd3"
-                        }
-                    ],
-                    "severity": "warning",
-                    "type": "endpoint_off_grid"
-                },
-                {
-                    "description": "Symbol pin or wire end off connection grid",
-                    "items": [
-                        {
-                            "description": "Vertical Wire, length 0.0127 mm",
-                            "pos": {
-                                "x": 1.3,
-                                "y": 3.7466
-                            },
-                            "uuid": "6274f72d-f071-42de-af18-59478a79caea"
+                            "uuid": "ddc27d0e-a36d-4036-815b-f1ac7d727284"
                         }
                     ],
                     "severity": "warning",
@@ -2259,7 +2244,22 @@
                                 "x": 1.3,
                                 "y": 3.7466
                             },
-                            "uuid": "eca9da5a-cc71-49dc-9abc-8c544ae52869"
+                            "uuid": "16714284-92e0-4bf3-8760-9d15b9bd11ee"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "endpoint_off_grid"
+                },
+                {
+                    "description": "Symbol pin or wire end off connection grid",
+                    "items": [
+                        {
+                            "description": "Vertical Wire, length 0.0127 mm",
+                            "pos": {
+                                "x": 1.3,
+                                "y": 3.7466
+                            },
+                            "uuid": "37a59978-f9a5-4bfb-96c5-b6b338dd1878"
                         }
                     ],
                     "severity": "warning",
@@ -2274,7 +2274,22 @@
                                 "x": 1.3,
                                 "y": 3.899
                             },
-                            "uuid": "20d5d665-3422-4d03-aa54-88bd93f84de9"
+                            "uuid": "b9481706-6b40-43e2-84f9-074dc68250db"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "endpoint_off_grid"
+                },
+                {
+                    "description": "Symbol pin or wire end off connection grid",
+                    "items": [
+                        {
+                            "description": "Vertical Wire, length 0.0127 mm",
+                            "pos": {
+                                "x": 1.3,
+                                "y": 4.0409
+                            },
+                            "uuid": "21b8db21-e9f7-45f2-a7d1-07d2bbe70733"
                         }
                     ],
                     "severity": "warning",
@@ -2289,22 +2304,7 @@
                                 "x": 1.3,
                                 "y": 4.0409
                             },
-                            "uuid": "0c2bd34b-0afd-4d34-bb63-ab84838d3668"
-                        }
-                    ],
-                    "severity": "warning",
-                    "type": "endpoint_off_grid"
-                },
-                {
-                    "description": "Symbol pin or wire end off connection grid",
-                    "items": [
-                        {
-                            "description": "Vertical Wire, length 0.0127 mm",
-                            "pos": {
-                                "x": 1.3,
-                                "y": 4.0409
-                            },
-                            "uuid": "16fbd10c-4533-4923-943e-7ad9f8395217"
+                            "uuid": "cab57725-ce27-49f6-8f52-2f842caaff0a"
                         }
                     ],
                     "severity": "warning",
@@ -2319,7 +2319,7 @@
                                 "x": 1.3,
                                 "y": 4.1171
                             },
-                            "uuid": "d3f424ac-5b3d-4736-8bbc-12637713fc4f"
+                            "uuid": "b692b1cc-f0a6-4e3b-bb73-83fff9e858fd"
                         }
                     ],
                     "severity": "warning",
@@ -2334,7 +2334,7 @@
                                 "x": 1.3,
                                 "y": 4.3352
                             },
-                            "uuid": "12725f3a-0699-4352-a0ca-9c9ce17dd620"
+                            "uuid": "6ff58f70-7a2e-454e-a2a6-827061e29428"
                         }
                     ],
                     "severity": "warning",
@@ -2349,7 +2349,7 @@
                                 "x": 1.3,
                                 "y": 4.3352
                             },
-                            "uuid": "3567f71c-248f-4506-8f94-7eee1660e1ad"
+                            "uuid": "e1d06e03-20c0-435a-aedc-c8adaadc71c5"
                         }
                     ],
                     "severity": "warning",
@@ -2364,22 +2364,7 @@
                                 "x": 1.3,
                                 "y": 4.4876
                             },
-                            "uuid": "7762960e-65ca-4e03-aacb-1cc0583f1466"
-                        }
-                    ],
-                    "severity": "warning",
-                    "type": "endpoint_off_grid"
-                },
-                {
-                    "description": "Symbol pin or wire end off connection grid",
-                    "items": [
-                        {
-                            "description": "Vertical Wire, length 0.0127 mm",
-                            "pos": {
-                                "x": 1.3,
-                                "y": 4.6295
-                            },
-                            "uuid": "0f61a672-ab5b-4bbe-b2e0-16b70ce141ad"
+                            "uuid": "c84c75e4-b5a4-488f-8078-d6fb093d326e"
                         }
                     ],
                     "severity": "warning",
@@ -2394,7 +2379,22 @@
                                 "x": 1.3,
                                 "y": 4.6295
                             },
-                            "uuid": "5ae41a36-087d-4e34-970b-98c2055190c2"
+                            "uuid": "d336d9a2-d4c1-4aa3-9310-64039b69f805"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "endpoint_off_grid"
+                },
+                {
+                    "description": "Symbol pin or wire end off connection grid",
+                    "items": [
+                        {
+                            "description": "Vertical Wire, length 0.0127 mm",
+                            "pos": {
+                                "x": 1.3,
+                                "y": 4.6295
+                            },
+                            "uuid": "f9fa40cd-cbc6-4a17-9b1c-f2f27c9bedc8"
                         }
                     ],
                     "severity": "warning",
@@ -2409,7 +2409,7 @@
                                 "x": 1.3,
                                 "y": 4.7057
                             },
-                            "uuid": "d7bd80ce-e181-4d6b-9ebb-780ae23a2dfb"
+                            "uuid": "67b79755-68d1-47c0-9528-51f3ab411ef9"
                         }
                     ],
                     "severity": "warning",
@@ -2424,7 +2424,7 @@
                                 "x": 1.3,
                                 "y": 4.9238
                             },
-                            "uuid": "128fb6fd-7aa3-4a0e-8932-71fbd601af70"
+                            "uuid": "0bdececa-e366-4284-be70-147e70839b7f"
                         }
                     ],
                     "severity": "warning",
@@ -2439,7 +2439,7 @@
                                 "x": 1.3,
                                 "y": 4.9238
                             },
-                            "uuid": "30834576-a510-4ea8-8abe-ee457850d33e"
+                            "uuid": "1fe2b12e-6479-4210-8986-8e67675fb11c"
                         }
                     ],
                     "severity": "warning",
@@ -2454,7 +2454,7 @@
                                 "x": 1.3,
                                 "y": 5.0762
                             },
-                            "uuid": "b05ff39a-461d-4d62-985e-298b24db2df4"
+                            "uuid": "b3d9ce91-118c-4fe9-aff5-deaa6737976c"
                         }
                     ],
                     "severity": "warning",
@@ -2469,7 +2469,7 @@
                                 "x": 1.3762,
                                 "y": 2.057
                             },
-                            "uuid": "5de99177-0a8b-427f-bd11-f9315cdf422a"
+                            "uuid": "6e644884-1fee-4853-93ef-f30d04ad572a"
                         }
                     ],
                     "severity": "warning",
@@ -2484,7 +2484,7 @@
                                 "x": 1.3762,
                                 "y": 2.6456
                             },
-                            "uuid": "dbdf98dc-b1ad-4786-9e16-e887cd59498b"
+                            "uuid": "8ff10dd7-851e-42e2-8825-88aee2b07f4b"
                         }
                     ],
                     "severity": "warning",
@@ -2499,7 +2499,7 @@
                                 "x": 1.3762,
                                 "y": 3.2342
                             },
-                            "uuid": "1f0b46a0-0dd8-4bbe-b2c9-232ebc51f928"
+                            "uuid": "f56764a6-708c-40ca-b1eb-6281fc20f7d7"
                         }
                     ],
                     "severity": "warning",
@@ -2514,7 +2514,7 @@
                                 "x": 1.3762,
                                 "y": 3.8228
                             },
-                            "uuid": "6e4ca249-dffd-4d97-970f-ad9dea4d2775"
+                            "uuid": "cefd3bef-0a12-4531-87cc-4e699d97ff83"
                         }
                     ],
                     "severity": "warning",
@@ -2529,7 +2529,7 @@
                                 "x": 1.3762,
                                 "y": 4.4114
                             },
-                            "uuid": "3938272d-81a3-46e0-a295-46d7f99dbc20"
+                            "uuid": "5b5106ca-2296-48ba-9164-422d71472a6c"
                         }
                     ],
                     "severity": "warning",
@@ -2544,7 +2544,7 @@
                                 "x": 1.3762,
                                 "y": 5.0
                             },
-                            "uuid": "9e480680-f821-4a12-b979-0bc212c6add2"
+                            "uuid": "8bc12689-4107-44c8-a76c-744601872c3c"
                         }
                     ],
                     "severity": "warning",
@@ -2559,7 +2559,7 @@
                                 "x": 2.1238,
                                 "y": 3.9498
                             },
-                            "uuid": "7c8a683f-4fd1-41c2-a0bf-ef9b6fbcb57c"
+                            "uuid": "4d0fdcb2-b2a2-48ef-8ba1-a2ecfd1e6b6f"
                         }
                     ],
                     "severity": "warning",
@@ -2574,7 +2574,7 @@
                                 "x": 2.1238,
                                 "y": 3.9498
                             },
-                            "uuid": "f21553c6-67d6-4c41-913c-f909e563131f"
+                            "uuid": "92623bcf-a288-4633-868d-80b737893779"
                         }
                     ],
                     "severity": "warning",
@@ -2589,7 +2589,7 @@
                                 "x": 2.1238,
                                 "y": 3.9752
                             },
-                            "uuid": "6417551b-ab9b-4c19-995a-5acb5dc6d26c"
+                            "uuid": "f1d4f971-d9d8-4a3a-a927-c4d3e8cff55c"
                         }
                     ],
                     "severity": "warning",
@@ -2604,26 +2604,11 @@
                                 "x": 2.2,
                                 "y": 3.9752
                             },
-                            "uuid": "ff8cb3c0-bbdb-4653-b7be-8258d704d852"
+                            "uuid": "b25dbffc-313f-42a0-abf8-6217573296f7"
                         }
                     ],
                     "severity": "warning",
                     "type": "lib_symbol_issues"
-                },
-                {
-                    "description": "Symbol pin or wire end off connection grid",
-                    "items": [
-                        {
-                            "description": "Vertical Wire, length 0.0127 mm",
-                            "pos": {
-                                "x": 2.2,
-                                "y": 4.1933
-                            },
-                            "uuid": "741695d5-616d-45a4-a1da-c22a809a1d1b"
-                        }
-                    ],
-                    "severity": "warning",
-                    "type": "endpoint_off_grid"
                 },
                 {
                     "description": "Symbol pin or wire end off connection grid",
@@ -2634,7 +2619,22 @@
                                 "x": 2.2,
                                 "y": 4.1933
                             },
-                            "uuid": "ea131c66-3167-4d69-a046-3fd99ae77a38"
+                            "uuid": "4c2052a3-9252-470e-8aa0-f41ecbc31a31"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "endpoint_off_grid"
+                },
+                {
+                    "description": "Symbol pin or wire end off connection grid",
+                    "items": [
+                        {
+                            "description": "Vertical Wire, length 0.0127 mm",
+                            "pos": {
+                                "x": 2.2,
+                                "y": 4.1933
+                            },
+                            "uuid": "63f221f9-9c82-4863-90ea-d6851512cae7"
                         }
                     ],
                     "severity": "warning",
@@ -2649,7 +2649,7 @@
                                 "x": 2.2,
                                 "y": 4.2695
                             },
-                            "uuid": "1f8d9ebe-c64d-4f02-909d-eff0e7cfb27c"
+                            "uuid": "822cc604-fa40-4700-84cd-bcef1625f273"
                         }
                     ],
                     "severity": "warning",
@@ -2664,7 +2664,7 @@
                                 "x": 2.2,
                                 "y": 4.4495
                             },
-                            "uuid": "40243d2e-46a5-4bcb-b623-1c888e5eeb2a"
+                            "uuid": "0b9211f7-e12f-418c-8f05-e58fe7be3546"
                         }
                     ],
                     "severity": "warning",
@@ -2679,7 +2679,7 @@
                                 "x": 2.2,
                                 "y": 4.4495
                             },
-                            "uuid": "4c623323-0454-469e-a5b0-e97de05801c2"
+                            "uuid": "869ef22f-37b9-4abd-add8-cfb0902f2a64"
                         }
                     ],
                     "severity": "warning",
@@ -2694,7 +2694,22 @@
                                 "x": 2.2,
                                 "y": 4.5257
                             },
-                            "uuid": "7c119bb0-66d0-4139-8e3c-2940824fe1df"
+                            "uuid": "7bca94c4-8f09-42b5-be0d-c5741cf3a5ae"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "endpoint_off_grid"
+                },
+                {
+                    "description": "Symbol pin or wire end off connection grid",
+                    "items": [
+                        {
+                            "description": "Vertical Wire, length 0.0127 mm",
+                            "pos": {
+                                "x": 2.2,
+                                "y": 4.7057
+                            },
+                            "uuid": "518ca8e5-11cd-4909-b1f4-325888fb83f3"
                         }
                     ],
                     "severity": "warning",
@@ -2709,22 +2724,7 @@
                                 "x": 2.2,
                                 "y": 4.7057
                             },
-                            "uuid": "c34ea8ce-ded9-4146-b6e2-0b9d7ecb2962"
-                        }
-                    ],
-                    "severity": "warning",
-                    "type": "endpoint_off_grid"
-                },
-                {
-                    "description": "Symbol pin or wire end off connection grid",
-                    "items": [
-                        {
-                            "description": "Vertical Wire, length 0.0127 mm",
-                            "pos": {
-                                "x": 2.2,
-                                "y": 4.7057
-                            },
-                            "uuid": "f722c028-33b3-4737-a850-5f8ef550dee5"
+                            "uuid": "dcac3c9b-ef27-46bc-b103-d5f5eb05d4aa"
                         }
                     ],
                     "severity": "warning",
@@ -2739,22 +2739,7 @@
                                 "x": 2.2,
                                 "y": 4.7819
                             },
-                            "uuid": "453f8153-34c6-473b-afa2-58923d024bb0"
-                        }
-                    ],
-                    "severity": "warning",
-                    "type": "endpoint_off_grid"
-                },
-                {
-                    "description": "Symbol pin or wire end off connection grid",
-                    "items": [
-                        {
-                            "description": "Vertical Wire, length 0.0127 mm",
-                            "pos": {
-                                "x": 2.2,
-                                "y": 4.9619
-                            },
-                            "uuid": "b53438cc-5d53-4f47-9d99-082442daa7bc"
+                            "uuid": "a7950ee4-1745-4ccf-bab2-dba9e1af16b2"
                         }
                     ],
                     "severity": "warning",
@@ -2769,7 +2754,22 @@
                                 "x": 2.2,
                                 "y": 4.9619
                             },
-                            "uuid": "d4831730-a5c1-4ce6-ad07-2bcc1b2323dd"
+                            "uuid": "287d7146-ae1f-45f0-ad48-6ff93586b38a"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "endpoint_off_grid"
+                },
+                {
+                    "description": "Symbol pin or wire end off connection grid",
+                    "items": [
+                        {
+                            "description": "Vertical Wire, length 0.0127 mm",
+                            "pos": {
+                                "x": 2.2,
+                                "y": 4.9619
+                            },
+                            "uuid": "ed761b20-414e-4e79-b771-25f97f644347"
                         }
                     ],
                     "severity": "warning",
@@ -2784,7 +2784,7 @@
                                 "x": 2.2,
                                 "y": 5.0381
                             },
-                            "uuid": "74f2055c-827c-4eb3-8073-30ac4c391ff2"
+                            "uuid": "910ce0a4-0441-498d-8ee2-29c206b16551"
                         }
                     ],
                     "severity": "warning",
@@ -2799,7 +2799,7 @@
                                 "x": 2.2762,
                                 "y": 3.9498
                             },
-                            "uuid": "d4ea6409-30bd-4e3d-95ae-8f9428b8e3af"
+                            "uuid": "2e1c9151-5b8d-4aad-b536-d075d82ed8fa"
                         }
                     ],
                     "severity": "warning",
@@ -2814,7 +2814,7 @@
                                 "x": 2.2762,
                                 "y": 3.9752
                             },
-                            "uuid": "b8159f71-4df6-4b21-ba6a-76cf0d7d37d9"
+                            "uuid": "595f052d-bc90-46f3-be0f-d1fa3df56d6e"
                         }
                     ],
                     "severity": "warning",

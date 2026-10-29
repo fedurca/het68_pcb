@@ -4,6 +4,14 @@ Formát podle [Keep a Changelog](https://keepachangelog.com/cs/1.1.0/), verze po
 
 Tento soubor drží řadu **4.x**. Starší tagy `v1.1.1` … `v3.0.0` zůstávají v gitu.
 
+## [4.2.0] — 2026-10-29
+
+### Added
+
+- Core: jedna stavová SK6812 (GP37, `STATUS_DIN`) a tři mikrospínače PTS645 — RESET (`RUN`), BOOT (`QSPI_SS`) a USER (GP38, aktivní v nule).
+- Silová deska: držák **Keystone 1122** na článek 21700 (LiFePO4/LTO v tom rozměru). 18650 Keystone 1042 končí.
+- K zakázce: masky, schéma PDF a gerber zip v `kicad/jlc/` a `docs/img/`.
+
 ## [4.1.0] — 2026-10-29
 
 Produktový strom je jen Core 6L + satelit 6L + tři silové SKU. Z aktuální verze pryč HAT/Pico a historický 2L satelit/power v3.
@@ -44,5 +52,6 @@ Nativní RP2350B na 6L Faraday Core, MeshCore na Heltec V3 (`J_MESH`) se spánke
 - Compute už není Pico Plus 2 + HAT. GP0/GP1 jsou UART MeshCore.
 - T568B jednovodičové I²S na UTP končí; na kabelu je LVDS.
 
+[4.2.0]: https://github.com/fedurca/het68_pcb/releases/tag/v4.2.0
 [4.1.0]: https://github.com/fedurca/het68_pcb/releases/tag/v4.1.0
 [4.0.0]: https://github.com/fedurca/het68_pcb/releases/tag/v4.0.0

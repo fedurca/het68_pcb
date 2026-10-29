@@ -1,4 +1,6 @@
 het68 silova VN v4.1.0
-140 x 80 mm, 2 vrstvy, mer 70 um. JLC / standardni TPV.
+140 x 80 mm, 2 vrstvy, 1.6 mm, med 2 oz (70 um).
 Jen sekundar CT/Rogowski. NE 230 V / 22 kV / 110 kV na med.
-HASL nebo ENIG dle TPV. Stopa >= 0.25 mm, prokovy 0.8/0.5 mm.
+ENIG nebo HASL bezolovnaty. Stopa >= 0.20 mm (2 oz chce >= 0.16 mm).
+Prokov 1.00/0.50 mm (mezikruzi 0.25 mm). Tloustka 1.6 mm.
+POZOR: signalove spoje nejsou doroutovane. Neobjednavat jako funkcni desku.

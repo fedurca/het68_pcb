@@ -1,4 +1,4 @@
 het68 satelit v4.1.0 6L Faraday LVDS
-50 x 80 mm, 6 vrstev, ENIG. >= 0603. Ne BGA. JLC / standardni TPV.
-T5848 uprostred. 8x SK6812 kruh (D4=N, daisy CW). SN65LVDS1 = SD sat->Core.
-LVDS RX SCK/WS (SN65LVDS2 + 100R), CMC + TVS + PPTC 0.5 A + ferrite. RGB 3.3 V.
+50 x 80 x 1.6 mm, 6 vrstev, ENIG, vnejsi Cu 1 oz, vnitrni 0.5 oz. >= 0603.
+Prokov 0.60/0.20 mm. T5848 uprostred. 8x SK6812. SN65LVDS1 = SD sat->Core.
+POZOR: signalove spoje nejsou doroutovane. Neobjednavat jako funkcni desku.
