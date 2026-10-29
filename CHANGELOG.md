@@ -12,7 +12,7 @@ Nativní RP2350B na 6L Faraday Core, MeshCore na Heltec V3 (`J_MESH`) se spánke
 
 - **Core** `kicad/het68-core`: RP2350B, 16 MB flash, 8 MB PSRAM, USB-C, 6× RJ45 LVDS, ADXL355, DPS310+SHT40, DRV8837, `J_MESH` 1×8 na Heltec WiFi LoRa 32 V3 868 MHz, DNP stamp land na stejných sítích, interconnect 2×10. `WAKE_DSP` hradluje `+3V3_DIG` a `+1V8_AUDIO`. Stackup 6L, GND stitching, L4 split, L3 keepout nad mezerami.
 - **Silové SKU** `het68-pwr-nn` (multiplex CT), `het68-pwr-vn` (15KP / silnější GDT), `het68-pwr-vvn` (saturační harvest CT + Rogowski + integrátor). Společný sekundár: GDT, TVS, LC, burden THT, crowbar, CN3791, LiFePO4/LTO, boost 5 V, LDO `+3V3_RF`, INA3221, PT1000.
-- Satelit LVDS: CMC, TVS, PPTC, SN65LVDS2×2 + SN65LVDS1, TXS0104E, T5848 1,8 V, RGB 3,3 V.
+- Satelit LVDS 6L Faraday 50 × 80 mm: CMC, TVS, PPTC 0,5 A, SN65LVDS2×2 (RX SCK/WS) + **SN65LVDS1 (TX SD sat→Core)**, TXS0104E, T5848 1,8 V ve středu, **8× SK6812** v kruhu (daisy-chain, D4 = sever).
 - Dokumentace: zadání 4.0.0, [`docs/INTERCONNECT_v4.md`](docs/INTERCONNECT_v4.md), [`docs/PINOUT_SAT_v4.csv`](docs/PINOUT_SAT_v4.csv), [`docs/PINOUT.csv`](docs/PINOUT.csv) pro Core. HAT GPIO z v3 je v [`docs/PINOUT_HAT_v3.csv`](docs/PINOUT_HAT_v3.csv).
 - Generátor `kicad/tools/gen_v4.py`, 6L helper `kicad/tools/route6.py`.
 
@@ -21,11 +21,11 @@ Nativní RP2350B na 6L Faraday Core, MeshCore na Heltec V3 (`J_MESH`) se spánke
 - Compute už není Pico Plus 2 + HAT. GP0/GP1 jsou UART MeshCore (USB CDC místo debug UART).
 - T568B jednovodičové I²S na UTP končí; na kabelu je LVDS.
 - Článek LiFePO4/LTO místo 21700.
-- printed.cz PROTOTYP platí jen pro 2L satelit (a historický HAT/pwr v3). 6L Core a 70 µm silová deska jdou na JLC / standardní TPV.
+- printed.cz PROTOTYP platí jen pro historický HAT/pwr v3. 6L Core, 6L satelit a 70 µm silová deska jdou na JLC / standardní TPV.
 
 ### Notes
 
-- 6L DRC 0 Core (QFN-80 0,4 mm) je cíl v4.1.0; v4.0.0 uzavírá schéma Core, stackup, interconnect a NN silovou elektriku plus satelit 2L.
+- 6L DRC 0 Core (QFN-80) a doroutování satelitu (8× LED + Faraday) je cíl v4.1.0; v4.0.0 uzavírá schémata, stackup, interconnect, NN silovou elektriku, satelit 6L s LVDS TX SD a kruhem 8 LED.
 - Firmware MeshCore (repeater + WAKE GPIO7) žije v [fedurca/het68](https://github.com/fedurca/het68), ne v tomto repo.
 
 ## [3.0.0] — 2026-10-29

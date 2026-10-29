@@ -127,9 +127,11 @@ PT1000 na svorce vodiče u všech SKU (2vodič na interconnect). Článek mrazuv
 
 Pinout: [`docs/INTERCONNECT_v4.md`](INTERCONNECT_v4.md). `+3V3_RF` drží LDO na silové desce, i když je DSP pryč.
 
-### 1.5 Satelit — LVDS, T5848, RGB 3,3 V
+### 1.5 Satelit — 6L Faraday, LVDS, T5848, 8× RGB
 
-Evoluce `kicad/het68-sat`. T5848 1,8 V, RGB 3,3 V, LDO, **LVDS + CMC + TVS &lt; 1 pF + PPTC**. T568B jednovodičové I²S končí. Mapa: [`docs/PINOUT_SAT_v4.csv`](PINOUT_SAT_v4.csv).
+Evoluce `kicad/het68-sat`. Stejný Faraday stackup jako Core (L2/L3/L5 GND, L4 `+3V3` s ostrovem `+1V8` pod MEMS). T5848 1,8 V uprostřed, **8× SK6812** v kruhu (daisy-chain, pixel 0 = sever, poslední `DOUT` NC). LDO, **LVDS + CMC + TVS &lt; 1 pF + PPTC 0,5 A**. T568B jednovodičové I²S končí. Mapa: [`docs/PINOUT_SAT_v4.csv`](PINOUT_SAT_v4.csv).
+
+Data mikrofonu na Core jdou **diferenciálně**: T5848 SD 1,8 V → TXS0104E → **SN65LVDS1** (Y/Z = `SD_P`/`SD_N`) → CMC → RJ45 4/5. Na Core pár přijímá **SN65LVDS32**. SCK/WS opačně: Core SN65LVDS047 → satelit SN65LVDS2.
 
 110 kV satelity jako samostatné krabičky **nejsou**: MEMS uvnitř sféry, krátký vnitřní STP do stejných RJ45 na Core. Jacky zůstanou, kabely **neopustí** sféru.
 
@@ -161,7 +163,7 @@ Stopy na L3 **nekřižují** mezeru ostrovů na L4. Via stitching GND L1–L2–
 | F7 | Piezo PHY GP6/GP7, 4 elementy paralelně za H-můstkem | `buzzer.c` |
 | F8 | DSP neovládá SX1262 | MeshCore na Heltecu/stampu |
 | F9 | Na měď nejde síť | isolace, koróna, 16 kA je na primáru |
-| F10 | **6× RJ45**, 1 mikrofon + 1 RGB LED na kabel | prostor kostky + indikace směru |
+| F10 | **6× RJ45**, 1 mikrofon + 8× RGB v kruhu na satelitu | prostor kostky + indikace směru |
 | F11 | Compute = nativní RP2350B | tato revize |
 
 USB audio a I²S jen v `+3V3_DIG`. Po detekci RP2350 požádá o spánek; Heltec shodí EN.
@@ -222,12 +224,13 @@ Na desce musí být:
 
 | Položka | Návrh |
 |---|---|
-| MEMS | T5848 bottom port, VDD 1,8 V, 100 nF + 1 µF |
+| MEMS | T5848 bottom port, VDD 1,8 V, 100 nF + 1 µF, střed desky |
 | LR / SEL | GND |
-| SD | 100 kΩ pulldown |
-| LED | WS2812B / SK6812 @ 3,3 V, jeden pixel |
+| SD | 100 kΩ pulldown; **SN65LVDS1** = budič páru sat → Core |
+| LED | 8× WS2812B / SK6812 @ 3,3 V, kruh, daisy-chain z pinu 8; `DOUT` poslední NC |
+| PCB | 50 × 80 mm, **6L Faraday**, ENIG (ne printed.cz PROTOTYP) |
 | Kabel | STP, mapa [`PINOUT_SAT_v4.csv`](PINOUT_SAT_v4.csv) |
-| PHY | LVDS RX SCK/WS, LVDS TX SD, CMC, TVS, PPTC na 3V3 |
+| PHY | LVDS RX SCK/WS (SN65LVDS2), LVDS TX SD (SN65LVDS1), CMC, TVS, PPTC 0,5 A |
 | Úroveň | TXS 3,3 V LVDS-CMOS ↔ 1,8 V MEMS |
 
 Žádný rozbočovač 3+3. Žádný `DOUT` zpět na Core.
@@ -283,12 +286,12 @@ Stínění STP na GND **jen na Core**. Na satelitu `SH` NC.
 | Deska | Vrstvy | Povrch | Kam |
 |---|---|---|---|
 | Core | 6L ENIG (QFN-80, LGA) | ENIG | JLC / standardní TPV printed.cz, **ne** SKU PROTOTYP |
-| Satelit | 2L ENIG | ENIG | printed.cz PROTOTYP platí |
+| Satelit | 6L Faraday ENIG | ENIG | JLC / standardní TPV, **ne** SKU PROTOTYP |
 | Silová | 2L, 70 µm | HASL nebo ENIG dle TPV | ne PROTOTYP |
 
 Gerbery z `kicad-cli`, ne `WriteDRCReport` (segfault v KiCad 10). KiCad 10, ne downgrade na 8/9.
 
-v4.0.0 = Core schéma + stackup + interconnect pinout + NN silová elektricky uzavřená + satelit 2L DRC 0. 6L DRC 0 Core může být v4.1.0.
+v4.0.0 = Core schéma + stackup + interconnect pinout + NN silová elektricky uzavřená + satelit 6L (8× LED, LVDS TX SD). 6L DRC 0 Core může být v4.1.0.
 
 ---
 

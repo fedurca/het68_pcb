@@ -102,37 +102,42 @@ def add_keepout_rect(board, x0, y0, x1, y1, layer, tracks=True, vias=True):
     return z
 
 
-def split_power_l4(board, regions, gap=2.0):
+def split_power_l4(board, regions, gap=2.0, keepout_l3=True):
     """regions: list of (net, x0, x1) covering the board width with gaps.
 
     Also plants keepouts on L3 (In2.Cu) over each gap so stripline cannot
-    cross a split in the power plane below.
+    cross a split in the power plane below. Skip keepouts when L3 is GND.
     """
     m = 1.2
     for net, x0, x1 in regions:
         pts = ((max(m, x0), m), (min(board.w - m, x1), m),
                (min(board.w - m, x1), board.h - m), (max(m, x0), board.h - m))
         board.add_zone(net, pcbnew.In3_Cu, pts=pts, priority=1, clearance=0.25, islands="always")
-    # gap keepouts on L3
     gaps = []
     ordered = sorted(regions, key=lambda r: r[1])
     for a, b in zip(ordered, ordered[1:]):
         gx0, gx1 = a[2], b[1]
         if gx1 > gx0:
             gaps.append((gx0, gx1))
-            add_keepout_rect(board, gx0, m, gx1, board.h - m, pcbnew.In2_Cu)
+            if keepout_l3:
+                add_keepout_rect(board, gx0, m, gx1, board.h - m, pcbnew.In2_Cu)
     board.l4_gaps = gaps
     return gaps
 
 
-def faraday_planes(board, splits):
-    """Solid GND on L2 and L5, GND pours on L1/L6, split L4, L3 gap keepout."""
+def faraday_planes(board, splits, l3_gnd=False):
+    """Solid GND on L2 and L5, GND pours on L1/L6, split L4.
+
+    When l3_gnd is set, L3 is also a solid GND (outer-layer routing only).
+    """
     set_stackup(board)
     board.add_zone("GND", pcbnew.In1_Cu, islands="always")
     board.add_zone("GND", pcbnew.In4_Cu, islands="always")
+    if l3_gnd:
+        board.add_zone("GND", pcbnew.In2_Cu, islands="always")
     board.add_zone("GND", pcbnew.F_Cu, islands="area", clearance=0.2)
     board.add_zone("GND", pcbnew.B_Cu, islands="area", clearance=0.2)
-    split_power_l4(board, splits)
+    split_power_l4(board, splits, keepout_l3=not l3_gnd)
     stitch_gnd(board)
 
 
@@ -155,7 +160,8 @@ def route_stripline(board) -> list:
     nxt = 1
     skip_refs = set(getattr(board, "route_skip_refs", ()) or ())
     power = set(getattr(board, "plane_nets", {}) or {"GND"})
-    power |= {"GND", "+3V3_DIG", "+3V3_RF", "+5V_ALWAYS", "+1V8_AUDIO", "DVDD", "VBUS"}
+    power |= {"GND", "+3V3", "+3V3_DIG", "+3V3_RF", "+5V_ALWAYS",
+              "+1V8", "+1V8_AUDIO", "DVDD", "VBUS"}
 
     def nid(name: str) -> int:
         nonlocal nxt

@@ -1,3 +1,4 @@
-printed.cz PROTOTYP — het68 satelit v4.0.0 LVDS
-50 x 80 mm, 2 vrstvy, FR4 1.5 mm. ENIG. >= 0603. Ne BGA.
-T5848 LGA. LVDS + CMC + TVS + PPTC. RGB 3.3 V.
+het68 satelit v4.0.0 6L Faraday LVDS
+50 x 80 mm, 6 vrstev, ENIG. >= 0603. Ne BGA. NE printed.cz PROTOTYP.
+T5848 uprostred. 8x SK6812 kruh (D4=N, daisy CW). SN65LVDS1 = SD sat->Core.
+LVDS RX SCK/WS (SN65LVDS2), CMC + TVS + PPTC 0.5 A. RGB 3.3 V.

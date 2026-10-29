@@ -7,7 +7,7 @@ v4 kreslí **Core 6L**, tři silové SKU a satelit LVDS. HAT pod Pico Plus 2 z v
 | Projekt | Deska | Vrstvy | Obrys |
 |---|---|---|---|
 | [het68-core](het68-core/het68-core.kicad_pro) | RP2350B + J_MESH Heltec V3 + 6× RJ45 LVDS | 6 Faraday | 160 × 100 mm |
-| [het68-sat](het68-sat/het68-sat.kicad_pro) | satelit LVDS + T5848 + RGB 3,3 V | 2, ENIG | 50 × 80 mm |
+| [het68-sat](het68-sat/het68-sat.kicad_pro) | satelit 6L LVDS + T5848 + 8× SK6812 | 6 Faraday, ENIG | 50 × 80 mm |
 | [het68-pwr-nn](het68-pwr-nn/het68-pwr-nn.kicad_pro) | silová NN, multiplex CT | 2, 70 µm | 140 × 80 mm |
 | [het68-pwr-vn](het68-pwr-vn/het68-pwr-vn.kicad_pro) | silová VN, 15KP | 2, 70 µm | 140 × 80 mm |
 | [het68-pwr-vvn](het68-pwr-vvn/het68-pwr-vvn.kicad_pro) | silová VVN, Rogowski | 2, 70 µm | 140 × 80 mm |
@@ -32,10 +32,10 @@ Jen sekundár CT/Rogowski. GDT, TVS, LC, THT burden 100 Ω, crowbar ~25 V, USB-C
 
 ## Satelit
 
-LVDS RX SCK/WS, LVDS TX SD, CMC, TVS, PPTC, TXS0104E 3,3↔1,8 V, T5848, SK6812. printed.cz PROTOTYP (2L, ≥ 0603, ENIG).
+6L Faraday. LVDS RX SCK/WS (SN65LVDS2), LVDS TX SD (SN65LVDS1 → Core SN65LVDS32), CMC, TVS, PPTC 0,5 A, TXS0104E 3,3↔1,8 V, T5848 ve středu, 8× SK6812 v kruhu. ENIG, ≥ 0603; ne printed.cz PROTOTYP.
 
 ## Výroba
 
-Gerbery z `kicad-cli pcb export gerbers` (ne `WriteDRCReport`). Core 6L ENIG u JLC. Satelit 2L ENIG PROTOTYP. Silová 2L 70 µm, ne SKU PROTOTYP.
+Gerbery z `kicad-cli pcb export gerbers` (ne `WriteDRCReport`). Core a satelit 6L ENIG u JLC. Silová 2L 70 µm, ne SKU PROTOTYP.
 
 v4.0.0: schémata elektricky uzavřená. 6L DRC 0 Core je v4.1.0.

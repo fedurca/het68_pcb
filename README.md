@@ -14,7 +14,7 @@ v4 je sada **Core 6L + vyměnitelná silová deska + šest satelitů**. Na měď
 
 **Silová deska** má tři SKU se stejným interconnectem 2×10: NN (multiplex CT), VN (silnější GDT/TVS), VVN (harvest CT + Rogowski). Společný front-end je jen sekundár: GDT, TVS, LC, burden, crowbar, MPPT, LiFePO4/LTO, 5 V a vždyživý `+3V3_RF`.
 
-**Satelit** je šest destiček T5848 + RGB 3,3 V; na kabelu je LVDS (mapa [`docs/PINOUT_SAT_v4.csv`](docs/PINOUT_SAT_v4.csv)).
+**Satelit** je šest destiček 6L: T5848 uprostřed, **8× SK6812** v kruhu, na kabelu LVDS. SD z mikrofonu jede párem (`SN65LVDS1` na satelitu, `SN65LVDS32` na Core). Mapa [`docs/PINOUT_SAT_v4.csv`](docs/PINOUT_SAT_v4.csv).
 
 ![Core 6L](docs/img/core-pcb.svg)
 ![Satelit LVDS](docs/img/sat-lvds.svg)
@@ -51,7 +51,7 @@ Na měď nejde 230 V / 22 kV / 110 kV. Gerbery z `kicad-cli` v `kicad/*/fab/`.
 | Deska | Rozměr | ERC error | DRC error | Objednat? |
 |---|---|---|---|---|
 | Core | 160 × 100 mm, 6L Faraday, ENIG | 0 | layout v4.1.0 (QFN-80) | schéma + stackup ano; ne printed.cz PROTOTYP |
-| Satelit | 50 × 80 mm, 2L ENIG | 0 | 0 | ano, printed.cz PROTOTYP, 6× |
+| Satelit | 50 × 80 mm, 6L Faraday, ENIG | 0 | layout 6L | schéma ano; ne printed.cz PROTOTYP, 6× |
 | Silová NN/VN/VVN | 140 × 80 mm, 2L 70 µm | 0 | layout v4.1.0 | schéma ano; HASL/ENIG dle TPV, ne SKU PROTOTYP |
 
 ## Vyrobitelnost (v3.0.0 HAT, zmrazené)

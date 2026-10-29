@@ -32,7 +32,7 @@ def route_board(board) -> list:
     # CLEAR to foreign track halos (the halo only covers track centres).
     ring_r = max(2.2, (VIA_R - 0.2 + 0.1) / G)
     ring_span = int(math.ceil(ring_r))
-    four = getattr(board, "layers", 2) >= 4
+    four = getattr(board, "layers", 2) >= 4 and not getattr(board, "outer_route", False)
     hat = "hat" in board.name
     diag = four or hat
     nx = int(round(board.w / G)) + 3

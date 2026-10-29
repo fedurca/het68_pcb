@@ -6,6 +6,7 @@ HAT v3.0.0 is not regenerated here. Run with KiCad's Python.
 from __future__ import annotations
 
 import csv
+import math
 import os
 import re
 import subprocess
@@ -740,7 +741,7 @@ def build_sat(sch: Sch):
     tvs(sch, "D1", ("SCK_P", "SCK_N"))
     tvs(sch, "D2", ("WS_P", "WS_N"))
     tvs(sch, "D3", ("SD_P", "SD_N"))
-    sch.add("Device:Polyfuse", "F1", "0.25A", "Fuse:Fuse_0603_1608Metric",
+    sch.add("Device:Polyfuse", "F1", "0.5A", "Fuse:Fuse_0603_1608Metric",
             {"1": "3V3_F", "2": "+3V3"}, "PPTC 0603")
     sch.add("het68:SN65LVDS2", "U2", "SN65LVDS2", "Package_TO_SOT_SMD:SOT-23-5",
             {"1": "+3V3", "2": "SCK_P", "3": "SCK_N", "4": "GND", "5": "SCK_3V3"}, "SN65LVDS2DBVR")
@@ -759,9 +760,16 @@ def build_sat(sch: Sch):
     sch.add("het68:T5848", "MK1", "T5848", "het68:T5848",
             {"1": "WS", "2": "GND", "3": "GND", "4": None, "5": None,
              "6": "SCK", "7": "+1V8", "8": "SD"}, "MMICT5848-00-012")
-    sch.add("LED:WS2812B", "D4", "SK6812",
-            "LED_SMD:LED_WS2812B_PLCC4_5.0x5.0mm_P3.2mm",
-            {"1": "+3V3", "2": None, "3": "GND", "4": "LED"}, "SK6812 (5050, 3.3 V)")
+    # 8× SK6812 daisy-chain, pixel 0 = north. Last DOUT is NC (no return to Core).
+    led_in = "LED"
+    for i in range(8):
+        dout = f"LED{i + 2}" if i < 7 else None
+        sch.add("LED:WS2812B", f"D{4 + i}", "SK6812",
+                "LED_SMD:LED_WS2812B_PLCC4_5.0x5.0mm_P3.2mm",
+                {"1": "+3V3", "2": dout, "3": "GND", "4": led_in},
+                "SK6812 (5050, 3.3 V)")
+        C(sch, f"C_L{i + 1}", ("+3V3", "GND"), "100n")
+        led_in = dout
     C(sch, "C1", ("+3V3", "GND"), "1u", mpn="CL10A105KA8NNNC")
     C(sch, "C2", ("+1V8", "GND"), "1u", mpn="CL10A105KA8NNNC")
     C(sch, "C3", ("+1V8", "GND"), "100n")
@@ -990,30 +998,39 @@ def place_sat(board: Board, sch: Sch):
         board.place(by[ref], x, y, rot)
         placed.add(ref)
 
+    cx, cy, led_r = 25.0, 58.0, 12.0
     P("J1", 14, 16, 0)
-    P("F1", 32, 18, 90)
-    P("FL1", 8, 36, 0)
-    P("FL2", 18, 36, 0)
-    P("FL3", 28, 36, 0)
-    P("D1", 8, 42, 0)
-    P("D2", 18, 42, 0)
-    P("D3", 28, 42, 0)
-    P("U2", 8, 50, 0)
-    P("U3", 18, 50, 0)
-    P("U4", 28, 50, 0)
-    P("C5", 38, 50, 90)
-    P("U5", 20, 60, 0)
-    P("U1", 34, 58, 0)
-    P("C1", 40, 58, 90)
-    P("C4", 28, 58, 90)
-    P("MK1", 16, 70, 0)
-    P("C2", 10, 70, 0)
-    P("C3", 22, 70, 0)
-    P("R1", 28, 70, 90)
-    P("D4", 36, 70, 0)
-    place_remaining(board, sch, placed, 42, 36, 4, 5)
-    board.text("het68 SAT v4 LVDS", 25, 4, size=0.8)
-    board.text("1/2 SCK  3/6 WS  4/5 SD", 25, 8, size=0.5)
+    P("F1", 34, 18, 90)
+    P("FL1", 8, 27, 0)
+    P("FL2", 18, 27, 0)
+    P("FL3", 28, 27, 0)
+    P("D1", 8, 32, 0)
+    P("D2", 18, 32, 0)
+    P("D3", 28, 32, 0)
+    P("U2", 8, 38, 0)
+    P("U3", 18, 38, 0)
+    P("U4", 8, 44, 0)
+    P("U5", 36, 30, 0)
+    P("U1", 40, 40, 0)
+    P("C5", 44, 30, 90)
+    P("C1", 44, 36, 90)
+    P("C4", 44, 42, 90)
+    P("MK1", cx, cy, 0)
+    P("C2", 23.4, 61.4, 0)
+    P("C3", 26.6, 61.4, 0)
+    P("R1", 29.6, 61.4, 90)
+    for i in range(8):
+        phi = math.radians(i * 45.0)
+        x = cx + led_r * math.sin(phi)
+        y = cy - led_r * math.cos(phi)
+        P(f"D{4 + i}", x, y, i * 45)
+        cap_r = led_r + 5.2
+        P(f"C_L{i + 1}", cx + cap_r * math.sin(phi), cy - cap_r * math.cos(phi), i * 45)
+    holes(board, ((4, 4), (46, 4), (4, 76), (46, 76)))
+    place_remaining(board, sch, placed, 8, 22, 4, 5)
+    board.text("het68 SAT v4 6L LVDS", 25, 4, size=0.8)
+    board.text("1/2 SCK  3/6 WS  4/5 SD  8x SK6812", 25, 8, size=0.45)
+    board.text("D4=N  daisy CW  DOUT NC", 25, 78, size=0.45)
 
 
 def sat_prewire(api):
@@ -1024,12 +1041,14 @@ def sat_prewire(api):
     +1V8 stubs north then west to C2 so WS can still reach U5 on F.Cu.
     """
     draw, set_tip = api["draw_poly"], api["set_tip"]
-    pads = list(api["by_net"].get("WS_PJ", []))
-    if len(pads) >= 2:
+    for net in ("WS_PJ", "SD_PJ", "SD_NJ", "SCK_PJ", "SCK_NJ"):
+        pads = list(api["by_net"].get(net, []))
+        if len(pads) < 2:
+            continue
         jack = min(pads, key=lambda p: p["y"])
         fl = max(pads, key=lambda p: p["y"])
         x = jack["x"]
-        draw([(jack["x"], jack["y"]), (x, fl["y"]), (fl["x"], fl["y"])], 0, "WS_PJ")
+        draw([(jack["x"], jack["y"]), (x, fl["y"]), (fl["x"], fl["y"])], 0, net)
         set_tip(jack, x, fl["y"])
         set_tip(fl, fl["x"], fl["y"])
 
@@ -1042,24 +1061,25 @@ def sat_prewire(api):
 
     mk_sd = pad_of("MK1", "8")
     mk_vdd = pad_of("MK1", "7")
-    u5_sd = pad_of("U5", "4")
     c_vdd = pad_of("C2", "1")
-    if mk_sd and u5_sd:
-        dest = u5_sd.get("tip_mm") or (u5_sd["x"], u5_sd["y"])
-        # Stay west of U5's 2.175 mm pin stubs (GND pin 7 sits at dest.y+3.81).
-        x_west = min(mk_sd["x"], dest[0]) - 1.2
-        y_south = dest[1] + 5.5
-        draw(
-            [
-                (mk_sd["x"], mk_sd["y"]),
-                (mk_sd["x"], y_south),
-                (x_west, y_south),
-                (x_west, dest[1]),
-                dest,
-            ],
-            0, "SD", width=0.25,
-        )
-        set_tip(mk_sd, dest[0], dest[1])
+    mk_ws = pad_of("MK1", "1")
+    if mk_sd:
+        x_esc, y_esc = mk_sd["x"] + 1.6, mk_sd["y"] - 1.8
+        draw([(mk_sd["x"], mk_sd["y"]), (x_esc, mk_sd["y"]), (x_esc, y_esc)], 0, "SD", width=0.25)
+        set_tip(mk_sd, x_esc, y_esc)
+    if mk_ws:
+        x_esc, y_esc = mk_ws["x"] + 0.2, mk_ws["y"] - 1.8
+        draw([(mk_ws["x"], mk_ws["y"]), (x_esc, y_esc)], 0, "WS", width=0.25)
+        set_tip(mk_ws, x_esc, y_esc)
+    for i in range(7):
+        a = pad_of(f"D{4 + i}", "2")
+        b = pad_of(f"D{5 + i}", "4")
+        if not (a and b):
+            continue
+        net = f"LED{i + 2}"
+        draw([(a["x"], a["y"]), (b["x"], b["y"])], 0, net, width=0.25)
+        set_tip(a, b["x"], b["y"])
+        set_tip(b, b["x"], b["y"])
     if mk_vdd and c_vdd:
         y_bus = mk_vdd["y"] - 1.15
         draw(
@@ -1142,16 +1162,26 @@ def finish_v4(board: Board, sch: Sch, out: Path, power_nets, six=False, skip_rou
             ("+5V_ALWAYS", 64, 110),
             ("+1V8_AUDIO", 112, 158.8),
         ])
-        faraday_planes(board, splits)
+        faraday_planes(board, splits, l3_gnd=getattr(board, "l3_gnd", False))
+        island = getattr(board, "l4_island", None)
+        if island:
+            net, x0, y0, x1, y1 = island
+            board.add_zone(
+                net, pcbnew.In3_Cu,
+                pts=((x0, y0), (x1, y0), (x1, y1), (x0, y1)),
+                priority=2, clearance=0.3, islands="always",
+            )
     else:
         design_rules(board)
         board.add_zone("GND", pcbnew.B_Cu, islands="area")
     missing = []
     if not skip_route:
-        if six:
+        if six and not getattr(board, "outer_route", False):
             board.plane_nets = {n: None for n in power_nets or []}
             missing = route_stripline(board)
         else:
+            if six:
+                board.plane_nets = {n: None for n in power_nets or []}
             missing = route_board(board)
     board.fill()
     try:
@@ -1249,16 +1279,20 @@ def main():
     )
     print("CORE unrouted", len(cmiss), cmiss[:20], flush=True)
 
-    sat = SchV4("het68-sat", "het68 satelit LVDS + T5848 + RGB 3.3V", ["GND", "+3V3", "+1V8"])
+    sat = SchV4("het68-sat", "het68 satelit 6L LVDS + T5848 + 8x SK6812", ["GND", "+3V3", "+1V8"])
     v4_libs(sat, ["GND", "+3V3", "+1V8"])
     build_sat(sat)
     _drop_self_shorts(sat)
-    sb = Board("het68-sat", 50, 80, 2)
-    sb.via_d, sb.via_drill = 0.8, 0.5
+    sb = Board("het68-sat", 50, 80, 6)
+    sb.via_d, sb.via_drill = 0.45, 0.2
+    sb.outer_route = True
+    sb.l3_gnd = True
+    sb.l4_splits = [("+3V3", 1.2, 48.8)]
+    sb.l4_island = ("+1V8", 22.2, 55.0, 27.8, 63.6)
     sb.prewire = sat_prewire
     place_sat(sb, sat)
     sout = ROOT / "het68-sat"
-    smiss = finish_v4(sb, sat, sout, {"GND", "+3V3", "+1V8"})
+    smiss = finish_v4(sb, sat, sout, {"GND", "+3V3", "+1V8"}, six=True, skip_route=True)
     print("SAT unrouted", len(smiss), smiss, flush=True)
 
     sheets = [("core", core, 1), ("sat", sat, 6)]
@@ -1307,7 +1341,7 @@ def main():
         (ROOT / "het68-core" / "het68-core.kicad_sch", ROOT / "het68-core" / "het68-core.kicad_pcb",
          ["F.Cu", "In1.Cu", "In2.Cu", "In3.Cu", "In4.Cu", "B.Cu", "F.SilkS", "B.SilkS", "F.Mask", "B.Mask", "F.Paste", "B.Paste", "Edge.Cuts"]),
         (ROOT / "het68-sat" / "het68-sat.kicad_sch", ROOT / "het68-sat" / "het68-sat.kicad_pcb",
-         ["F.Cu", "B.Cu", "F.SilkS", "B.SilkS", "F.Mask", "B.Mask", "F.Paste", "B.Paste", "Edge.Cuts"]),
+         ["F.Cu", "In1.Cu", "In2.Cu", "In3.Cu", "In4.Cu", "B.Cu", "F.SilkS", "B.SilkS", "F.Mask", "B.Mask", "F.Paste", "B.Paste", "Edge.Cuts"]),
         (ROOT / "het68-pwr-nn" / "het68-pwr-nn.kicad_sch", ROOT / "het68-pwr-nn" / "het68-pwr-nn.kicad_pcb",
          ["F.Cu", "B.Cu", "F.SilkS", "B.SilkS", "F.Mask", "B.Mask", "F.Paste", "B.Paste", "Edge.Cuts"]),
         (ROOT / "het68-pwr-vn" / "het68-pwr-vn.kicad_sch", ROOT / "het68-pwr-vn" / "het68-pwr-vn.kicad_pcb",
@@ -1327,9 +1361,10 @@ def main():
                  "NE printed.cz PROTOTYP. JLC / standardni TPV.\n"
                  "J_MESH 1x8 Heltec V3 868. Stamp DNP. USB Heltec odpojit po flash.\n")
     write_vyroba(ROOT / "het68-sat" / "fab" / "VYROBA.txt",
-                 "printed.cz PROTOTYP — het68 satelit v4.0.0 LVDS\n"
-                 "50 x 80 mm, 2 vrstvy, FR4 1.5 mm. ENIG. >= 0603. Ne BGA.\n"
-                 "T5848 LGA. LVDS + CMC + TVS + PPTC. RGB 3.3 V.\n")
+                 "het68 satelit v4.0.0 6L Faraday LVDS\n"
+                 "50 x 80 mm, 6 vrstev, ENIG. >= 0603. Ne BGA. NE printed.cz PROTOTYP.\n"
+                 "T5848 uprostred. 8x SK6812 kruh (D4=N, daisy CW). SN65LVDS1 = SD sat->Core.\n"
+                 "LVDS RX SCK/WS (SN65LVDS2), CMC + TVS + PPTC 0.5 A. RGB 3.3 V.\n")
     print("done")
 
 

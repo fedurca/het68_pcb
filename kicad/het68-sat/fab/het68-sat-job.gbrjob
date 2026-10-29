@@ -5,7 +5,7 @@
       "Application": "Pcbnew",
       "Version": "10.0.6"
     },
-    "CreationDate": "2026-10-29T10:13:32+01:00"
+    "CreationDate": "2026-10-29T10:58:52+01:00"
   },
   "GeneralSpecs": {
     "ProjectId": {
@@ -17,8 +17,8 @@
       "X": 50.1,
       "Y": 80.1
     },
-    "LayerNumber": 2,
-    "BoardThickness": 1.5,
+    "LayerNumber": 6,
+    "BoardThickness": 1.6,
     "Finish": "None"
   },
   "DesignRules": [
@@ -27,7 +27,14 @@
       "PadToPad": 0.2,
       "PadToTrack": 0.2,
       "TrackToTrack": 0.2,
-      "MinLineWidth": 0.25,
+      "TrackToRegion": 0.2,
+      "RegionToRegion": 0.2
+    },
+    {
+      "Layers": "Inner",
+      "PadToPad": 0.2,
+      "PadToTrack": 0.2,
+      "TrackToTrack": 0.2,
       "TrackToRegion": 0.2,
       "RegionToRegion": 0.2
     }
@@ -39,8 +46,28 @@
       "FilePolarity": "Positive"
     },
     {
+      "Path": "het68-sat-GND_L2.g1",
+      "FileFunction": "Copper,L2,Inr",
+      "FilePolarity": "Positive"
+    },
+    {
+      "Path": "het68-sat-SIG_L3.g2",
+      "FileFunction": "Copper,L3,Inr",
+      "FilePolarity": "Positive"
+    },
+    {
+      "Path": "het68-sat-PWR_L4.g3",
+      "FileFunction": "Copper,L4,Inr",
+      "FilePolarity": "Positive"
+    },
+    {
+      "Path": "het68-sat-GND_L5.g4",
+      "FileFunction": "Copper,L5,Inr",
+      "FilePolarity": "Positive"
+    },
+    {
       "Path": "het68-sat-B_Cu.gbl",
-      "FileFunction": "Copper,L2,Bot",
+      "FileFunction": "Copper,L6,Bot",
       "FilePolarity": "Positive"
     },
     {
@@ -100,10 +127,58 @@
     },
     {
       "Type": "Dielectric",
-      "Thickness": 1.41,
+      "Thickness": 0.274,
       "Material": "FR4",
-      "Name": "F.Cu/B.Cu",
-      "Notes": "Type: dielectric layer 1 (from F.Cu to B.Cu)"
+      "Name": "F.Cu/GND_L2",
+      "Notes": "Type: dielectric layer 1 (from F.Cu to GND_L2)"
+    },
+    {
+      "Type": "Copper",
+      "Thickness": 0.035,
+      "Name": "GND_L2"
+    },
+    {
+      "Type": "Dielectric",
+      "Thickness": 0.274,
+      "Material": "FR4",
+      "Name": "GND_L2/SIG_L3",
+      "Notes": "Type: dielectric layer 2 (from GND_L2 to SIG_L3)"
+    },
+    {
+      "Type": "Copper",
+      "Thickness": 0.035,
+      "Name": "SIG_L3"
+    },
+    {
+      "Type": "Dielectric",
+      "Thickness": 0.274,
+      "Material": "FR4",
+      "Name": "SIG_L3/PWR_L4",
+      "Notes": "Type: dielectric layer 3 (from SIG_L3 to PWR_L4)"
+    },
+    {
+      "Type": "Copper",
+      "Thickness": 0.035,
+      "Name": "PWR_L4"
+    },
+    {
+      "Type": "Dielectric",
+      "Thickness": 0.274,
+      "Material": "FR4",
+      "Name": "PWR_L4/GND_L5",
+      "Notes": "Type: dielectric layer 4 (from PWR_L4 to GND_L5)"
+    },
+    {
+      "Type": "Copper",
+      "Thickness": 0.035,
+      "Name": "GND_L5"
+    },
+    {
+      "Type": "Dielectric",
+      "Thickness": 0.274,
+      "Material": "FR4",
+      "Name": "GND_L5/B.Cu",
+      "Notes": "Type: dielectric layer 5 (from GND_L5 to B.Cu)"
     },
     {
       "Type": "Copper",

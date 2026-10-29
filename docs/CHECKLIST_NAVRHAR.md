@@ -40,8 +40,9 @@
 - [x] LVDS RX SCK/WS, LVDS TX SD
 - [x] CMC + TVS + PPTC
 - [x] TXS 3,3 V ↔ 1,8 V k T5848
-- [x] SK6812/WS2812B @ 3,3 V; `DOUT` NC
-- [x] 2L DRC 0, printed.cz PROTOTYP (ENIG, ≥ 0603, ne BGA)
+- [x] 8× SK6812/WS2812B @ 3,3 V v kruhu (D4 = sever, daisy CW); poslední `DOUT` NC
+- [x] LVDS TX SD: SN65LVDS1 na satelitu, SN65LVDS32 na Core
+- [x] 6L Faraday, ENIG, ≥ 0603, ne BGA (ne printed.cz PROTOTYP)
 
 ## Dokumentace / fab
 
