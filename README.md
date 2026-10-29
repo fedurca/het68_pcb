@@ -2,7 +2,7 @@
 
 Zadání a KiCad návrh PCB pro **het68** (akustická detekce dronů).
 
-Aktuální verze: **[v4.6.0](https://github.com/fedurca/het68_pcb/releases/tag/v4.6.0)** — viz [CHANGELOG.md](CHANGELOG.md). Kusovník sady: [kicad/BOM_KIT.csv](kicad/BOM_KIT.csv). Po deskách: [kicad/BOM_v4.csv](kicad/BOM_v4.csv).
+Aktuální verze: **[v4.7.0](https://github.com/fedurca/het68_pcb/releases/tag/v4.7.0)** — viz [CHANGELOG.md](CHANGELOG.md). Kusovník sady: [kicad/BOM_KIT.csv](kicad/BOM_KIT.csv). Po deskách: [kicad/BOM_v4.csv](kicad/BOM_v4.csv).
 
 Firmware a geometrie pole: [fedurca/het68](https://github.com/fedurca/het68). Zadání: [docs/ZADANI_PCB.md](docs/ZADANI_PCB.md). Projekty v KiCadu: [kicad/README.md](kicad/README.md).
 
@@ -16,11 +16,11 @@ v4 je sada **Core 6L + vyměnitelná silová deska + šest satelitů**. Na měď
 
 **Satelit** je šest destiček 6L. Ven z desky kouká jen akustický otvor T5848 a kruh **8× SK6812**. Tělo mikrofonu, RJ45 a ostatní elektronika jsou na druhé straně. SD z mikrofonu jede párem (`SN65LVDS1` na satelitu, `SN65LVDS32` na Core, 100 Ω u přijímače). Mapa [`docs/PINOUT_SAT_v4.csv`](docs/PINOUT_SAT_v4.csv).
 
-## Prototyp (v4.6.0)
+## Prototyp (v4.7.0)
 
-Náhledy níže jsou z desek v tomto commitu. Starší soubory v `docs/img/` GitHub dál kešuje, proto jsou aktuální obrázky v `docs/img/v460/`.
+Náhledy satelitu a silové desky jsou z v4.6.0, ty desky se v 4.7.0 neměnily. Core je nový render v `docs/img/v470/`.
 
-![Core 6L](docs/img/v460/core-3d.png)
+![Core 6L](docs/img/v470/core-3d.png)
 
 ![Satelit, venkovní strana: jen 8× SK6812 a otvor mikrofonu](docs/img/v460/sat-front-3d.png)
 
@@ -28,7 +28,7 @@ Náhledy níže jsou z desek v tomto commitu. Starší soubory v `docs/img/` Git
 
 ![Silová NN](docs/img/v460/pwr-nn-3d.png)
 
-Měď: [Core](docs/img/v460/core-top.svg) · [satelit ven](docs/img/v460/sat-front.svg) · [satelit zadek](docs/img/v460/sat-back.svg) · [silová](docs/img/v460/pwr-nn-top.svg). Maska venkovní strany satelitu: [SVG](docs/img/v460/sat-front-mask.svg). Schémata: [Core](docs/img/v460/core-sch.pdf) · [satelit](docs/img/v460/sat-sch.pdf) · [silová](docs/img/v460/pwr-nn-sch.pdf). Gerbery a nastavení formuláře: [`kicad/jlc/`](kicad/jlc/) · [NASTAVENI.md](kicad/jlc/NASTAVENI.md).
+Měď: [Core](docs/img/v470/core-top.svg) · [satelit ven](docs/img/v460/sat-front.svg) · [satelit zadek](docs/img/v460/sat-back.svg) · [silová](docs/img/v460/pwr-nn-top.svg). Maska venkovní strany satelitu: [SVG](docs/img/v460/sat-front-mask.svg). Schémata: [Core](docs/img/v460/core-sch.pdf) · [satelit](docs/img/v460/sat-sch.pdf) · [silová](docs/img/v460/pwr-nn-sch.pdf). Gerbery a nastavení formuláře: [`kicad/jlc/`](kicad/jlc/) · [NASTAVENI.md](kicad/jlc/NASTAVENI.md).
 
 ![Sestava v4.6.0](docs/img/v460/sestava.svg)
 
@@ -38,15 +38,15 @@ Na měď nejde 230 V / 22 kV / 110 kV. Gerbery z `kicad-cli` v `kicad/*/fab/`. T
 
 | Deska | Rozměr | ERC error | DRC | Objednat? |
 |---|---|---|---|---|
-| Core | 160 × 100 mm, 6L Faraday, ENIG | 0 | 0 zkratů, 42 otevřených párů | ne |
+| Core | 160 × 100 mm, 6L Faraday, ENIG | 0 | 0 zkratů, 0 mezer, 17 otevřených párů | ne |
 | Satelit | 50 × 80 mm, 6L, ven jen LED a port | 0 | 0 zkratů, signály spojené | ne, dokud není LCSC |
 | Silová NN/VN/VVN | 140 × 80 mm, 2L 70 µm | 0 | 0 zkratů, otevřené páry 30 / 36 / 26 | ne jako hotový zdroj |
 
-Schémata jsou elektricky uzavřená (ERC 0 chyb). QFN-80 má únik 0,15 mm po ose pinu. Krystal je odsunutý od severní hrany, aby ta řada měla koridor. Prokov 0,60 mm se do rozteče 0,40 mm nevejde, proto část pinů uprostřed řady na Core zůstává otevřená. Satelit má signály dotažené; DRC u něj zbývá jeden záznam dvou zemních zón na stejném rohu, prokovy ty plochy spojují.
+Schémata jsou elektricky uzavřená (ERC 0 chyb). Core vrtá prokov 0,30/0,15 mm, což se do rozteče QFN 0,40 mm vejde, a L4 pod procesorem je plocha `+3V3_DIG`. DRC Core nemá zkrat ani mezeru. Otevřených zůstává 17 párů: jejich prokov je v prstenci, kudy stopa 0,15 mm už neprojde. Satelit má signály dotažené; DRC u něj zbývá jeden záznam dvou zemních zón na stejném rohu, prokovy ty plochy spojují.
 
 ## VF / EMC (silné rušení)
 
-- 6L Faraday: L2/L5 souvislá GND, L4 split napájení, stitch 1,5 mm po obvodu.
+- 6L Faraday: L2/L5 souvislá GND. Na Core je L4 jedna plocha `+3V3_DIG`. Silové desky mají L4 rozdělené. Stitch po obvodu.
 - I²S na kabelu je LVDS (T568B páry), ne jednovodič. Stínění STP na GND jen na Core.
 - CMC na SCK, WS i SD na obou koncích; nízko-kapacitní TVS napříč párem; 100 Ω u přijímače (SN65LVDS2 / SN65LVDS32 nemají vnitřní zakončení).
 - Ferit 600 Ω na 3V3 každého jacku a na satelitu za PPTC.

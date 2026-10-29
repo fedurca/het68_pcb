@@ -1065,9 +1065,15 @@ def place_core(board: Board, sch: Sch):
     P("C_X2", 84, 40, 0)
     # North of the QFN the 0.40 mm row needs a clear channel. The crystal
     # stays on the north side; XIN/XOUT are on the south edge of the QFN.
+    # DVDD cannot use the 3.3 V plane, so the inductor and its capacitor
+    # sit just north-east of VREG_LX instead of on the leftover column.
     P("R_I2S_SCK", 71, 48, 0)
     P("R_I2S_WS", 71, 66, 0)
-    P("L_VREG", 93, 44, 0)
+    P("L_VREG", 89, 48, 0)
+    P("C_DVDD", 96, 48, 0)
+    P("C18A", 63.5, 74, 0)
+    P("C18B", 68, 74, 0)
+    P("C_ADX", 86.5, 74.5, 0)
     P("U4", 50, 70, 0)
     P("U5", 58, 70, 0)
     P("J_USB", 16, 70, 0)
@@ -1303,14 +1309,21 @@ def finish_v4(board: Board, sch: Sch, out: Path, power_nets, six=False, skip_rou
     board.outline()
     board.assign_nets()
     if six:
-        # JLCPCB 6L, 1 oz: annular ring ≥ 0.15 mm (0.20 recommended).
-        # 0.60 / 0.20 → 0.20 mm ring, no small-via surcharge.
-        board.via_d, board.via_drill = 0.60, 0.20
+        # JLCPCB multilayer drills 0.15 mm. A 0.30 mm pad is 0.15 mm larger
+        # than the hole, their preferred annular ring (0.075 mm a side).
+        # Core sets small_via so the 0.40 mm QFN can escape.
+        # Satellite keeps 0.60/0.20 unless it opts in the same way.
+        if getattr(board, "small_via", False):
+            board.via_d, board.via_drill = 0.30, 0.15
+            via_min = 0.30
+        else:
+            board.via_d, board.via_drill = 0.60, 0.20
+            via_min = 0.50
         ds = board.b.GetDesignSettings()
         ds.m_MinClearance = pcbnew.FromMM(0.1)
         ds.m_TrackMinWidth = pcbnew.FromMM(0.1)
-        ds.m_ViasMinSize = pcbnew.FromMM(0.50)
-        ds.m_ViasMinDrill = pcbnew.FromMM(0.20)
+        ds.m_ViasMinSize = pcbnew.FromMM(via_min)
+        ds.m_ViasMinDrill = pcbnew.FromMM(board.via_drill)
         ds.m_CopperEdgeClearance = pcbnew.FromMM(0.3)
         if hasattr(ds, "m_BoardThickness"):
             ds.m_BoardThickness = pcbnew.FromMM(1.6)
@@ -1318,8 +1331,8 @@ def finish_v4(board: Board, sch: Sch, out: Path, power_nets, six=False, skip_rou
             nc = ds.m_NetSettings.m_DefaultNetClass
             nc.SetClearance(pcbnew.FromMM(0.1))
             nc.SetTrackWidth(pcbnew.FromMM(0.15))
-            nc.SetViaDiameter(pcbnew.FromMM(0.60))
-            nc.SetViaDrill(pcbnew.FromMM(0.20))
+            nc.SetViaDiameter(pcbnew.FromMM(board.via_d))
+            nc.SetViaDrill(pcbnew.FromMM(board.via_drill))
         except Exception:
             pass
         set_stackup(board)
@@ -1478,7 +1491,13 @@ def main():
     build_core(core)
     _drop_self_shorts(core)
     cb = Board("het68-core", 160, 100, 6)
-    cb.via_d, cb.via_drill = 0.60, 0.20
+    # 0.30/0.15 fits the 0.40 mm QFN escape. JLCPCB 6L drills 0.15 mm;
+    # the 0.15 mm hole is a paid option (any pad size).
+    cb.small_via = True
+    cb.via_d, cb.via_drill = 0.30, 0.15
+    # One 3.3 V plane under the MCU. 5 V and 1.8 V are tracks: a through
+    # via in a 5 V island would miss the digital plane.
+    cb.l4_splits = [("+3V3_DIG", 1.2, 158.8)]
     cb.route_skip_refs = {"U1", "U9", "U7", "U8", "U6"}
     cb.outer_route = True
     place_core(cb, core)

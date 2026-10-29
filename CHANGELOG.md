@@ -4,6 +4,16 @@ Formát podle [Keep a Changelog](https://keepachangelog.com/cs/1.1.0/), verze po
 
 Tento soubor drží řadu **4.x**. Starší tagy `v1.1.1` … `v3.0.0` zůstávají v gitu.
 
+## [4.7.0] — 2026-10-29
+
+### Changed
+
+- Core používá prokov 0,30/0,15 mm. JLCPCB na 6 vrstvách vrtá od 0,15 mm; ploška je o 0,15 mm větší než díra (doporučené mezikruží). Vrtání 0,15 mm je v kalkulaci příplatek.
+- L4 na Core je jedna plocha `+3V3_DIG`. Dřív ležel RP2350 na ostrůvku `+5V_ALWAYS`, takže prokov 3,3 V plochu minul. `+5V_ALWAYS` a `+1V8_AUDIO` jsou stopy.
+- Únik QFN-80 je schod po ose pinu a prokov až tam, kde má L3 volný krok ven. Tlumivka měniče a kondenzátor `DVDD` jsou u pinu VREG, kondenzátory 1,8 V u LDO a ADXL355.
+- DRC Core: 0 zkratů a 0 mezer. Otevřených párů je 17 (bylo 42). Pořád otevřené jsou `LED1/2/5/6_DIN`, `SCK3`/`WS3`, `I2C0_SCL`, `PIEZO_IN1/2`, `ADC_I`, `ADC_ROGO`, `ADC_HARVEST`, `BURDEN_EN`, `PG_5V`, `STATUS_DIN`. Jejich prokovy leží v prstenci, kudy stopa 0,15 mm už neprojde.
+- Via Covering u Core je Epoxy Filled & Capped, protože tepelné prokovy jsou v ploše QFN a díra 0,15 mm se zalije.
+
 ## [4.6.0] — 2026-10-29
 
 ### Changed

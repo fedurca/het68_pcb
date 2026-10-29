@@ -1,6 +1,7 @@
-het68 Core v4.6.0
+het68 Core v4.7.0
 160 x 100 x 1.6 mm, 6 vrstev, ENIG, vnejsi Cu 1 oz, vnitrni 0.5 oz.
-Prokov 0.60/0.20 mm. QFN thermal via 0.50/0.20 mm.
-H1 je na (5, 71), mimo RJ45.
-0 zkratu, 0 mezer. Otevrenych medenych paru: 42.
+Prokov 0.30/0.15 mm (JLCPCB 6L, vrtani 0.15 mm je priplatek).
+Tepelne prokovy jsou v plose QFN: Via Covering Epoxy Filled & Capped.
+L4 je souvisla +3V3_DIG. 5 V a 1.8 V jsou stopy.
+0 zkratu, 0 mezer. Otevrenych medenych paru: 17.
 Osazeni zatim ne. LCSC je prazdne.

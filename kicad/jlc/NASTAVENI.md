@@ -1,8 +1,8 @@
-# JLCPCB — nastavení formuláře (v4.6.0)
+# JLCPCB — nastavení formuláře (v4.7.0)
 
 Každá deska je samostatná zakázka. Jeden gerber zip = jedno Different Design. Rozměr ber z obrysu, ne ze společné kalkulace 100 × 100 mm.
 
-Osazení nech vypnuté. V `*-bom.csv` je sloupec LCSC prázdný a bez něj JLC osazení nepřijme. RP2350B, ADXL355, T5848 a LVDS budou extended nebo consignment. Satelit má signály spojené, Core má 42 otevřených párů a silové desky 30 / 36 / 26, takže osazená sada by se nezapnula. Satelit je oboustranný, takže pozdější osazení musí být Both sides.
+Osazení nech vypnuté. V `*-bom.csv` je sloupec LCSC prázdný a bez něj JLC osazení nepřijme. RP2350B, ADXL355, T5848 a LVDS budou extended nebo consignment. Satelit má signály spojené. Core má 17 otevřených párů (zkrat ani mezera ne) a silové desky 30 / 36 / 26, takže osazená sada by se nezapnula. Satelit je oboustranný, takže pozdější osazení musí být Both sides.
 
 Šablona (stencil) zůstane vypnutá, dokud se nepájí ručně.
 
@@ -30,8 +30,8 @@ Na měď nepatří 230 V, 22 kV ani 110 kV.
 | Outer Copper Weight | 1 oz |
 | Inner Copper Weight | 0.5 oz |
 | Specify Stackup | No |
-| Via Covering | Tented |
-| Min via hole size/diameter | 0.2 mm / (0.3/0.35 mm) |
+| Via Covering | Epoxy Filled & Capped |
+| Min via hole size/diameter | 0.15 mm / 0.30 mm |
 | Board Outline Tolerance | ±0.2 mm (Regular) |
 | Confirm Production file | Yes |
 | Mark on PCB | Remove Mark |
@@ -41,9 +41,9 @@ Na měď nepatří 230 V, 22 kV ani 110 kV.
 | PCB Assembly | Off |
 | Stencil | Off |
 
-Via Covering není Epoxy Filled & Capped. Nápověda JLC říká, že prokov nad 0,5 mm se nezalije. V gerberu jsou prokovy 0,60/0,20 mm. Tepelné prokovy pod QFN jsou 0,50/0,20 mm. Deska se zalévanými prokovy nepočítá. Tented je maska přes prokov.
+Prokov je 0,30/0,15 mm. Průměr plošky je o 0,15 mm větší než vrtání, což je doporučené mezikruží JLC (0,075 mm na stranu). Vrtání 0,15 mm je na vícevrstvé desce vyrobitelné a v kalkulaci je to příplatek (platí pro jakoukoli velikost plošky). Tepelné prokovy sedí v ploše QFN, proto Via Covering = Epoxy Filled & Capped. Díra 0,15 mm se zalít dá; dřívější 0,60 mm ne.
 
-Min. vrtání není 0,3 mm. Návrh vrtá 0,20 mm. Číslo v závorce je nejmenší ploška k tomu vrtu, ne horní mez. Plošky 0,60 mm jsou větší než 0,35 mm.
+L4 je jedna plocha `+3V3_DIG` pod procesorem. `+5V_ALWAYS` a `+1V8_AUDIO` jsou stopy, ne ostrůvky, do kterých by prokov 3,3 V netrefil.
 
 6 vrstev u JLC nemá HASL, proto ENIG. Impedance se neobjednává, Specify Stackup zůstává No. Kelvinův test měří miliohmy a tady není potřeba. Flying probe stačí.
 

@@ -22,7 +22,7 @@ Generátor: `kicad/tools/gen_v4.py` (Python z KiCadu). 6L stackup: `kicad/tools/
 - Šest RJ45 LVDS, mapa [`docs/PINOUT_SAT_v4.csv`](../docs/PINOUT_SAT_v4.csv). CMC na SCK/WS/SD, 100 Ω u RX SD, ferit na 3V3.
 - GPIO: [`docs/PINOUT.csv`](../docs/PINOUT.csv).
 - Interconnect: [`docs/INTERCONNECT_v4.md`](../docs/INTERCONNECT_v4.md).
-- L1 SMT+GND, L2 GND, L3 stripline, L4 split DIG / RF / 1V8, L5 GND, L6 pomalé+GND. Stitch 1,5 mm.
+- L1 SMT+GND, L2 GND, L3 stripline, L4 souvislá `+3V3_DIG`, L5 GND, L6 pomalé+GND. Prokov 0,30/0,15 mm. Stitch po obvodu.
 
 ## Silová deska
 
