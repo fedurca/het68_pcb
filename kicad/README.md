@@ -1,54 +1,41 @@
-# het68 — KiCad (v3.0.0)
+# het68 — KiCad (v4.0.0)
 
-Náhledy návrhu i osazených desek jsou v [README](../README.md) repozitáře.
+Náhledy a kontext: [README](../README.md) repozitáře.
 
-Tři desky podle zadání (Pimoroni Pico Plus 2 + HAT, 6× RJ45, 4× piezo, I²C). Všechny splňují printed.cz PROTOTYP.
+v4 kreslí **Core 6L**, tři silové SKU a satelit LVDS. HAT pod Pico Plus 2 z v3.0.0 zůstává v `het68-hat` (negenerovat znovu úzký WIP).
 
 | Projekt | Deska | Vrstvy | Obrys |
 |---|---|---|---|
-| [het68-hat](het68-hat/het68-hat.kicad_pro) | HAT pod Pico Plus 2 / Plus 2 W, rev F | 2 (F.Cu signál, B.Cu GND) | 140 × 140 mm |
-| [het68-sat](het68-sat/het68-sat.kicad_pro) | satelit, 6× stejný | 2, ENIG | 28 × 52 mm |
-| [het68-pwr](het68-pwr/het68-pwr.kicad_pro) | napájení ze sekundáru CT (burden, LC, crowbar) | 2 | 100 × 58 mm |
+| [het68-core](het68-core/het68-core.kicad_pro) | RP2350B + J_MESH Heltec V3 + 6× RJ45 LVDS | 6 Faraday | 160 × 100 mm |
+| [het68-sat](het68-sat/het68-sat.kicad_pro) | satelit LVDS + T5848 + RGB 3,3 V | 2, ENIG | 50 × 80 mm |
+| [het68-pwr-nn](het68-pwr-nn/het68-pwr-nn.kicad_pro) | silová NN, multiplex CT | 2, 70 µm | 140 × 80 mm |
+| [het68-pwr-vn](het68-pwr-vn/het68-pwr-vn.kicad_pro) | silová VN, 15KP | 2, 70 µm | 140 × 80 mm |
+| [het68-pwr-vvn](het68-pwr-vvn/het68-pwr-vvn.kicad_pro) | silová VVN, Rogowski | 2, 70 µm | 140 × 80 mm |
+| [het68-hat](het68-hat/het68-hat.kicad_pro) | HAT Pico Plus 2, **v3.0.0 zmrazené** | 2 | 140 × 140 mm |
+| [het68-pwr](het68-pwr/het68-pwr.kicad_pro) | harvest front-end v3 | 2 | 100 × 58 mm |
 
-Schémata prošla ERC bez chyb (KiCad 10). Otevři `*.kicad_pro` v KiCadu.
+Generátor v4: `kicad/tools/gen_v4.py` (Python z KiCadu). 6L stackup: `kicad/tools/route6.py`. HAT v3: `kicad/tools/gen_boards.py`.
 
-Generátor (umístění i routování): `kicad/tools/gen_boards.py` (Python z KiCadu), router `kicad/tools/route2.py`.
+## Zapojení Core
 
-## Zapojení
+- RP2350B QFN-80, W25Q128 SOIC-8, APS6404L SOIC-8, USB-C.
+- `+3V3_DIG` a `+1V8_AUDIO` hradluje `WAKE_DSP` (Heltec GPIO7). `+5V_ALWAYS` / `+3V3_RF` vždyživé.
+- `J_MESH` 1×8: GND, 5V, UART TX/RX (22 Ω + ESD), WAKE_DSP, DSP_AWAKE, RST NC, rezerva. Stamp DNP paralelně na pinech 1–6.
+- Šest RJ45 LVDS, mapa [`docs/PINOUT_SAT_v4.csv`](../docs/PINOUT_SAT_v4.csv).
+- GPIO: [`docs/PINOUT.csv`](../docs/PINOUT.csv). I²S/LED/piezo jako HAT rev E.
+- Interconnect: [`docs/INTERCONNECT_v4.md`](../docs/INTERCONNECT_v4.md).
+- L1 SMT+GND, L2 GND, L3 stripline, L4 split DIG / RF / 1V8, L5 GND, L6 pomalé+GND. L3 nekřižuje mezery L4. Stitch 2 mm.
 
-**HAT (rev F)**
+## Silová deska
 
-- Pico Plus 2 leží naplocho na dvou zásuvkových lištách 1×20 (8,5 mm), USB-C na západní hraně. Footprint `RaspberryPi_Pico_Common_THT` včetně zakázané zóny pod anténou verze W.
-- GPIO stejné jako v2.0.0: WS GP8, SCK GP9. SD MIC1–MIC6 = GP18, GP17, GP16, GP13, GP14, GP15. LED_DIN MIC1–MIC6 = GP21, GP20, GP19, GP10, GP11, GP12. Piezo GP6/GP7, I²C1 GP2/GP3, I²C0 GP4/GP5, UART GP0/GP1. Volné GP22 a GP26–GP28. Celá mapa: [`docs/PINOUT.csv`](../docs/PINOUT.csv).
-- Šest RJ45 **bez magnetik** (Amphenol RJHSE-5380) ve dvou řadách, otvorem ven: MIC1–MIC3 na severní hraně, MIC4–MIC6 na jižní. T568B: pin 1 SCK, 2 GND, 3 WS, 4 SD, 5 GND, 6 GND, 7 3V3, 8 LED. Stínění na GND jen na HAT.
-- Za každým jackem: ESD (PESD5V0S1BA) na SCK, WS, SD a LED, 33 Ω v sérii se SCK a WS, 100 Ω v sérii s LED a 100 kΩ pull-down na SD.
-- Tři `SN74LVC8T245`. U2 budí SCK/WS pro MIC1–MIC3, U3 pro MIC4–MIC6 (3,3 V → 1,8 V). U4 převádí šest SD z 1,8 V na 3,3 V. 1,8 V jen pro budiče, LDO `AP2112K-1.8`.
-- `DRV8837` na VSYS, vstupy GP6/GP7. Čtyři PS1240 paralelně na `J11`–`J14` (10 Ω v sérii).
-- I²C1: DPS310 (0x77) + SHT40 (0x44). I²C0: INA3221 (0x40), bočníky 0,1 Ω na VSYS (R47) a na 3V3 k mikrofonům (R48).
-- `J10` = VSYS ze power desky. `J17` = UART.
-- Vrstvy: F.Cu signál, B.Cu GND výplň. `+3V3` a `+3V3_MIC` po B.Cu sběrnicích a prokovech (mezi patkami Pica B.Cu nesmí, SD2 jde po F.Cu).
-- Pasiva od 0603 výš. Díry M3: [4; 4], [4; 136], [132; 50], [132; 90] mm.
+Jen sekundár CT/Rogowski. GDT, TVS, LC, THT burden 100 Ω, crowbar ~25 V, USB-C lab, CN3791, LiFePO4, boost 5 V, LDO 3V3_RF, INA3221, PT1000. NN má MOSFET multiplex burdenu. VN 15KP. VVN Rogowski + MCP6001.
 
-**Satelit**
+## Satelit
 
-- Stejná mapa RJ45. `AP2112K-1.8` krmí T5848. LR na GND. 100 kΩ na SD, 33 Ω v sérii se SD. WS2812/SK6812 5050 na 3,3 V, `DOUT` nezapojený. Díra 0,8 mm pod akustickým portem.
-
-**Power**
-
-- Kleště / CT (**YHDC SCT-013-000** nebo VN ekvivalent) na izolovaný vodič. Na desku jen sekundár — ne 230 V ani 22 kV.
-- Na desce: THT **burden 100 Ω** trvale na J1, **LC** (470 µH + 1 µF) před můstkem, **crowbar ~25 V** (X0202MN + BZX84-C24), USB-C laboratoř.
-- Ještě dokreslit: panel (MPPT **CN3791**), **21700**, výstup 5 V (**BQ25895**), **PAC1934** / NTC. Kusovník: [het68-pwr/BOM_ZDROJE.csv](het68-pwr/BOM_ZDROJE.csv).
+LVDS RX SCK/WS, LVDS TX SD, CMC, TVS, PPTC, TXS0104E 3,3↔1,8 V, T5848, SK6812. printed.cz PROTOTYP (2L, ≥ 0603, ENIG).
 
 ## Výroba
 
-V `*/fab/` jsou Gerbery RS-274X (jen F.Cu a B.Cu), Excellon (PTH a NPTH zvlášť), mapy děr a CSV pozic. U HAT navíc IPC-D-356 a STEP osazené desky se zasunutým Pico. Poznámky k objednávce u printed.cz PROTOTYP jsou v `*/fab/VYROBA.txt`. Souhrnný kusovník je [`BOM.csv`](BOM.csv).
+Gerbery z `kicad-cli pcb export gerbers` (ne `WriteDRCReport`). Core 6L ENIG u JLC. Satelit 2L ENIG PROTOTYP. Silová 2L 70 µm, ne SKU PROTOTYP.
 
-| Deska | Stav | Vrtání |
-|---|---|---|
-| HAT | DRC 0, parita 0; 2× zone-to-self na vrcholu GND výplně | 0,5 mm |
-| Satelit | DRC 0, nepřipojené 0 — ENIG, 6× | 0,5 mm |
-| Power | DRC 0, nepřipojené 0 pro harvest front-end | 0,5 mm |
-
-Před panelem zkontroluj v 3D náhledu footprint T5848 (DS-000479, obr. 3 a 33) a DPS310. DPS310 sedí na pouzdru LGA-8 2,0 × 2,5 mm se stejným číslováním pinů jako BMP280.
-
-V DRC HAT je vypnutá jen kontrola `lib_footprint_mismatch`: generátor záměrně skrývá reference malých pasiv na potisku (zůstávají na F.Fab), takže se footprinty liší od knihovny.
+v4.0.0: schémata elektricky uzavřená. 6L DRC 0 Core je v4.1.0.

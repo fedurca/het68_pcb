@@ -1,0 +1,4 @@
+het68 Core v4.0.0
+160 x 100 mm, 6 vrstev Faraday, ENIG (QFN-80 + LGA).
+NE printed.cz PROTOTYP. JLC / standardni TPV.
+J_MESH 1x8 Heltec V3 868. Stamp DNP. USB Heltec odpojit po flash.

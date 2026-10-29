@@ -1,33 +1,41 @@
 function,gpio,dir,net,notes
-debug_uart_tx,GP0,out,UART0_TX,115200 baud; firmware; HAT J17 pin 1
-debug_uart_rx,GP1,in,UART0_RX,firmware; HAT J17 pin 2
-env_sda,GP2,i2c,I2C1_SDA,firmware DPS310 0x77; SHT40 0x44 on the same bus
+mesh_uart_tx,GP0,out,UART_TX,J_MESH pin 3; Heltec GPIO5 RX; 22 ohm; MeshCore companion 115200
+mesh_uart_rx,GP1,in,UART_RX,J_MESH pin 4; Heltec GPIO6 TX; 22 ohm
+env_sda,GP2,i2c,I2C1_SDA,DPS310 0x77; SHT40 0x44
 env_scl,GP3,i2c,I2C1_SCL,pressure + temperature + humidity
-pm_sda,GP4,i2c,I2C0_SDA,INA3221 0x40; Plus 2 Qw/ST
+pm_sda,GP4,i2c,I2C0_SDA,via J_PWR to power board INA/PAC
 pm_scl,GP5,i2c,I2C0_SCL,
-piezo_a,GP6,out,PIEZO_IN1,firmware H-bridge; DRV8837 IN1; 4x PS1240 parallel
-piezo_b,GP7,out,PIEZO_IN2,firmware PWM inverted; DRV8837 IN2
-i2s_ws,GP8,out,I2S_WS,firmware shared; HAT U2/U3 A2 A4 A6
-i2s_sck,GP9,out,I2S_SCK,firmware 3.072 MHz; HAT U2/U3 A1 A3 A5
-led4_din,GP10,out,LED4_DIN,rev E; RJ45 MIC4 (J4) pin 8; not yet in firmware
-led5_din,GP11,out,LED5_DIN,rev E; RJ45 MIC5 (J5) pin 8
-led6_din,GP12,out,LED6_DIN,rev E; RJ45 MIC6 (J6) pin 8
-mic4_sd,GP13,in,I2S_SD4,rev E; MIC4 (J4) BC 180 -35; firmware PIN_I2S_SD[3]
-mic5_sd,GP14,in,I2S_SD5,rev E; MIC5 (J5) RLC 300 -35; firmware PIN_I2S_SD[4]
-mic6_sd,GP15,in,I2S_SD6,rev E; MIC6 (J6) RRC 60 -35; firmware PIN_I2S_SD[5]
-mic3_sd,GP16,in,I2S_SD3,rev E; MIC3 (J3) TSL 240 +35; firmware PIN_I2S_SD[2]
-mic2_sd,GP17,in,I2S_SD2,rev E; MIC2 (J2) TRR 120 +35; firmware PIN_I2S_SD[1]
-mic1_sd,GP18,in,I2S_SD1,rev E; MIC1 (J1) TFC north +35 USB ch1; firmware PIN_I2S_SD[0]
-led3_din,GP19,out,LED3_DIN,rev E; RJ45 MIC3 (J3) pin 8
-led2_din,GP20,out,LED2_DIN,rev E; RJ45 MIC2 (J2) pin 8
-led1_din,GP21,out,LED1_DIN,rev E; RJ45 MIC1 (J1) pin 8
-spare_gp22,GP22,,SPARE,not connected on HAT rev E
-wifi_wl_on,GP23,reserved,WL_ON,Plus 2 W CYW43/RM2 do not use
-wifi_data,GP24,reserved,WL_D,do not use
-wifi_cs,GP25,reserved,WL_CS,do not use
-spare_gp26,GP26,,SPARE,ADC0; not connected on HAT rev E
-spare_gp27,GP27,,SPARE,ADC1; not connected on HAT rev E
-spare_gp28,GP28,,SPARE,ADC2; not connected on HAT rev E
-wifi_clk,GP29,reserved,WL_CLK,do not use
-boot_plus2w,GP45,in,BOOT,Pimoroni Plus 2 W; not on HAT
-psram_cs,GP47,out,PSRAM_CS,on Plus 2 module; not on HAT
+piezo_a,GP6,out,PIEZO_IN1,DRV8837 IN1; 4x PS1240 parallel
+piezo_b,GP7,out,PIEZO_IN2,DRV8837 IN2
+i2s_ws,GP8,out,I2S_WS,shared; LVDS drivers to six RJ45
+i2s_sck,GP9,out,I2S_SCK,3.072 MHz; LVDS
+led4_din,GP10,out,LED4_DIN,RJ45 MIC4 pin 8
+led5_din,GP11,out,LED5_DIN,RJ45 MIC5 pin 8
+led6_din,GP12,out,LED6_DIN,RJ45 MIC6 pin 8
+mic4_sd,GP13,in,I2S_SD4,LVDS RX; firmware PIN_I2S_SD[3]
+mic5_sd,GP14,in,I2S_SD5,firmware PIN_I2S_SD[4]
+mic6_sd,GP15,in,I2S_SD6,firmware PIN_I2S_SD[5]
+mic3_sd,GP16,in,I2S_SD3,firmware PIN_I2S_SD[2]
+mic2_sd,GP17,in,I2S_SD2,firmware PIN_I2S_SD[1]
+mic1_sd,GP18,in,I2S_SD1,firmware PIN_I2S_SD[0]
+led3_din,GP19,out,LED3_DIN,RJ45 MIC3 pin 8
+led2_din,GP20,out,LED2_DIN,RJ45 MIC2 pin 8
+led1_din,GP21,out,LED1_DIN,RJ45 MIC1 pin 8
+dsp_awake,GP22,out,DSP_AWAKE,J_MESH pin 6; Heltec GPIO4
+adxl_sck,GP23,out,SPI0_SCK,ADXL355 1.8 V
+adxl_mosi,GP24,out,SPI0_MOSI,ADXL355
+adxl_miso,GP25,in,SPI0_MISO,ADXL355
+adc_i,GP26,analog,ADC_I,J_PWR pin 9; CT burden
+adc_rogo,GP27,analog,ADC_ROGO,J_PWR pin 10; VVN integrator; NC on NN/VN
+adc_pt1000,GP28,analog,ADC_PT1000,J_PWR pin 12
+adc_harvest,GP29,analog,ADC_HARVEST,J_PWR pin 11
+adxl_cs,GP30,out,SPI0_CS,ADXL355
+burden_en,GP31,out,BURDEN_EN,J_PWR pin 13; NN/VN multiplex; NC on VVN
+psram_ce,GP32,out,PSRAM_CE,APS6404L
+psram_so,GP33,in,PSRAM_SO,APS6404L
+psram_si,GP34,out,PSRAM_SI,APS6404L
+psram_sclk,GP35,out,PSRAM_SCLK,APS6404L
+pg_5v,GP36,in,PG_5V,J_PWR pin 14
+wake_dsp,,in,WAKE_DSP,not an MCU GPIO; Heltec GPIO7 -> EN of +3V3_DIG and +1V8_AUDIO LDOs
+qspi_flash,,bus,QSPI,dedicated RP2350B QSPI pins to W25Q128
+usb_cdc,,,USB,console; replaces v3 debug UART on GP0/GP1

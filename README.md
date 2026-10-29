@@ -2,23 +2,39 @@
 
 Zadání a KiCad návrh PCB pro **het68** (akustická detekce dronů).
 
-Aktuální verze: **[v3.0.0](https://github.com/fedurca/het68_pcb/releases/tag/v3.0.0)** — viz [CHANGELOG.md](CHANGELOG.md). Kusovník: [kicad/BOM.csv](kicad/BOM.csv).
+Aktuální verze: **[v4.0.0](https://github.com/fedurca/het68_pcb/releases/tag/v4.0.0)** — viz [CHANGELOG.md](CHANGELOG.md). Kusovník v4: [kicad/BOM_v4.csv](kicad/BOM_v4.csv). Poslední Pico-revize: [v3.0.0](https://github.com/fedurca/het68_pcb/releases/tag/v3.0.0).
 
-Firmware a geometrie pole: [fedurca/het68](https://github.com/fedurca/het68). Zadání pro návrháře: [docs/ZADANI_PCB.md](docs/ZADANI_PCB.md). Projekty v KiCadu: [kicad/README.md](kicad/README.md).
+Firmware a geometrie pole: [fedurca/het68](https://github.com/fedurca/het68). Zadání: [docs/ZADANI_PCB.md](docs/ZADANI_PCB.md). Projekty v KiCadu: [kicad/README.md](kicad/README.md).
 
 ## Co to je
 
-Tři desky.
+v4 je sada **Core 6L + vyměnitelná silová deska + šest satelitů**. Na měď nepřijde 230 V, 22 kV ani 110 kV.
 
-**Power deska** (100 × 58 mm) bere sekundár CT / kleští (ne 230 V ani 22 kV na desku), USB-C jako laboratorní vstup, a později panel + 21700. Na nakreslené desce je teď: THT burden 100 Ω trvale na J1, LC filtr před usměrňovačem, můstek, crowbar ~25 V (SCR X0202MN + Zener BZX84-C24) a výstup přes ferit. MPPT, nabíječka a PAC1934 jsou v kusovníku, ve schématu ještě ne.
+**Core** (`kicad/het68-core`) nese nativní RP2350B, flash, PSRAM, šest RJ45 s LVDS, piezo, env senzor, ADXL355 a `J_MESH` na Heltec WiFi LoRa 32 V3 (868 MHz). MeshCore běží na Heltecu, takže uzel v síti žije, i když DSP spí. `WAKE_DSP` zapíná `+3V3_DIG`. Později stejné sítě osazené pájeným stampem (DNP land).
 
-**Akustická deska** je HAT pod Pimoroni Pico Plus 2 (140 × 140 mm, 2 vrstvy). Nese šest RJ45 ve dvou řadách, převodníky I²S, budič čtyř piezoměničů, DPS310, SHT40 a INA3221. Piezoměniče jsou signalizace na téhle desce, ne v satelitech.
+**Silová deska** má tři SKU se stejným interconnectem 2×10: NN (multiplex CT), VN (silnější GDT/TVS), VVN (harvest CT + Rogowski). Společný front-end je jen sekundár: GDT, TVS, LC, burden, crowbar, MPPT, LiFePO4/LTO, 5 V a vždyživý `+3V3_RF`.
 
-**Satelit** je šest stejných destiček, každá na vlastním kabelu. Na každé je mikrofon T5848, LDO 1,8 V a jedna adresovatelná RGB dioda.
+**Satelit** je šest destiček T5848 + RGB 3,3 V; na kabelu je LVDS (mapa [`docs/PINOUT_SAT_v4.csv`](docs/PINOUT_SAT_v4.csv)).
 
-## Co je ještě potřeba vyřešit
+![Core 6L](docs/img/core-pcb.svg)
+![Satelit LVDS](docs/img/sat-lvds.svg)
+![Silová NN](docs/img/pwr-nn.svg)
 
-Schémata mají ERC 0 chyb. Všechny tři desky jsou dvouvrstvé, FR4 1,5 mm, a vejdou se do printed.cz PROTOTYP (max. 200 × 250 mm).
+HAT pod Pico Plus 2 z v3.0.0 (140 × 140 mm, 2L) zůstává v `kicad/het68-hat` jako poslední vyrobitelná Pico-revize.
+
+## Co je ještě potřeba vyřešit (v4)
+
+1. **Firmware.** `PICO_BOARD` končí. DSP = RP2350B (stejná I²S/LED/piezo GPIO jako HAT rev E). MeshCore na Heltecu: `Heltec_lora32_v3`, UART GPIO5/6, WAKE GPIO7. DSP neovládá SX1262.
+2. **6L DRC 0 Core.** QFN-80 0,4 mm chce užší pravidla než 0,25 mm router. v4.0.0 uzavírá schéma a stackup; doroutování je v4.1.0.
+3. **Heltec je lab.** ~40–80 mA, ne harvest repeater. Stamp nRF52 později. SCT-013 při 10 A repeater neuživí — LTO povinná, minimální SOC repeateru 30 %.
+4. **110 kV.** Žádný externí kabel ze sféry. Anténa U.FL do slotu/pucku u stampu; teď IPEX na Heltecu.
+5. **RGB na 3,3 V.** Firmware svítí nejvýš dvěma pixely naráz.
+
+Historický seznam z v3 (HAT / Pico) platí jen pro tag v3.0.0.
+
+## Co je ještě potřeba vyřešit (v3.0.0 HAT, zmrazené)
+
+Schémata v3 mají ERC 0. HAT, satelit v3 a power v3 jsou dvouvrstvé a vejdou se do printed.cz PROTOTYP (max. 200 × 250 mm).
 
 1. **Firmware na pinout rev E.** HAT přesunul SD a LED: `PIN_I2S_SD[6] = { 18, 17, 16, 13, 14, 15 }` pro MIC1–MIC6 a LED_DIN MIC1–MIC6 na GP21, GP20, GP19, GP10, GP11, GP12. Každý SD má vlastní PIO SM, jiná změna ve firmware není potřeba. Bez úpravy firmware čte staré piny a mikrofony mlčí. Proti v2.0.0 se GPIO nemění.
 2. **Pouzdro.** HAT je 140 × 140 mm (ve v2.0.0 byl 100 × 100 mm). Jacky jsou ve dvou řadách: MIC1–MIC3 na severní hraně, MIC4–MIC6 na jižní, otvorem ven. USB-C Pica je na západní hraně. Díry M3 jsou na [4; 4], [4; 136], [132; 50] a [132; 90] mm od levého horního rohu. Nosný prstenec se upraví podle STEP v `kicad/het68-hat/fab/`.
@@ -28,15 +44,25 @@ Schémata mají ERC 0 chyb. Všechny tři desky jsou dvouvrstvé, FR4 1,5 mm, a 
 6. **RGB na 3,3 V.** Šest bílých diod se nevejde do 3,3 V z Pica. Firmware má svítit nejvýš dvěma pixely naráz a na zlomek jasu (cíl pod 150 mA na `+3V3_MIC`; INA3221 kanál 2 to měří).
 7. **DPS310.** Land pattern je z BMP280 — před výrobou HAT srovnat s C130156. T5848 chce ENIG. SS34 je SMC.
 
-## Vyrobitelnost
+## Vyrobitelnost (v4.0.0)
 
-Všechny tři desky splňují **printed.cz PROTOTYP**: jedna osazená deska, max. 200 × 250 mm, 1 nebo 2 vrstvy, bez SMD 0402 a menších, bez BGA, ENIG (ne HAL), zelená lesklá maska, bílý potisk, obrys frézováním. Cena kategorie je 5 000 Kč za osazenou desku do týdne; součástky dodá zákazník do dvou dnů. LGA/QFN/DFN/WSON (DPS310, SHT40, T5848, INA3221, DRV8837) nejsou BGA. SMT jen nahoře. FR4 1,5 mm, stopa ≥ 0,25 mm, mezera ≥ 0,2 mm, prokovy 0,8 / 0,5 mm.
+Na měď nejde 230 V / 22 kV / 110 kV. Gerbery z `kicad-cli` v `kicad/*/fab/`.
+
+| Deska | Rozměr | ERC error | DRC error | Objednat? |
+|---|---|---|---|---|
+| Core | 160 × 100 mm, 6L Faraday, ENIG | 0 | layout v4.1.0 (QFN-80) | schéma + stackup ano; ne printed.cz PROTOTYP |
+| Satelit | 50 × 80 mm, 2L ENIG | 0 | 0 | ano, printed.cz PROTOTYP, 6× |
+| Silová NN/VN/VVN | 140 × 80 mm, 2L 70 µm | 0 | layout v4.1.0 | schéma ano; HASL/ENIG dle TPV, ne SKU PROTOTYP |
+
+## Vyrobitelnost (v3.0.0 HAT, zmrazené)
+
+HAT, satelit v3 a power v3 splňují **printed.cz PROTOTYP**: jedna osazená deska, max. 200 × 250 mm, 1 nebo 2 vrstvy, bez SMD 0402 a menších, bez BGA, ENIG (ne HAL), zelená lesklá maska, bílý potisk, obrys frézováním. Cena kategorie je 5 000 Kč za osazenou desku do týdne; součástky dodá zákazník do dvou dnů. LGA/QFN/DFN/WSON (DPS310, SHT40, T5848, INA3221, DRV8837) nejsou BGA. SMT jen nahoře. FR4 1,5 mm, stopa ≥ 0,25 mm, mezera ≥ 0,2 mm, prokovy 0,8 / 0,5 mm.
 
 | Deska | Rozměr | DRC error | Unconnected | Objednat? |
 |---|---|---|---|---|
 | HAT | 140 × 140 mm, 2L | 0 | 2× zone-to-self na vrcholu GND výplně (není pad) | ano, ENIG, printed.cz PROTOTYP |
-| Satelit | 28 × 52 mm, 2L | 0 | 0 | ano, ENIG, 6× |
-| Power | 100 × 58 mm, 2L | 0 | 0 | ano jen pro harvest front-end; bez MPPT/BQ |
+| Satelit v3 | 28 × 52 mm, 2L | 0 | 0 | historický tag v3.0.0 |
+| Power v3 | 100 × 58 mm, 2L | 0 | 0 | historický harvest front-end |
 
 ## Odhad výrobní ceny
 

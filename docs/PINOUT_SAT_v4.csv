@@ -1,0 +1,9 @@
+pair,t568b,rj45_pins,net_p,net_n,level,notes
+2,orange,"1,2",SCK_P,SCK_N,LVDS,clock from Core; CMC + TVS <1pF on both ends
+3,green,"3,6",WS_P,WS_N,LVDS,word select; same CMC/TVS treatment
+1,blue,"4,5",SD_P,SD_N,LVDS,mic data sat -> Core; 100k pulldown on 1.8V CMOS after TXS
+4,brown,"7,8",+3V3,LED_DIN,single-ended,3.3V power + SK6812/WS2812B DIN; PPTC on +3V3 at sat
+shield,drain,SH,NC,,no connect on sat; shield bonded to GND only on Core
+extra,,,,,T5848 VDD is 1.8V from AP2112K-1.8 on sat; never feed 3.3V to MEMS
+extra,,,,,LR/SEL = GND; WAKE and THSEL = NC
+extra,,,,,T568B single-ended I2S map from v3 is retired
