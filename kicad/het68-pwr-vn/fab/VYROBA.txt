@@ -1,4 +1,4 @@
-het68 silova VN v4.0.0
-140 x 80 mm, 2 vrstvy, mer 70 um. NE printed.cz PROTOTYP.
+het68 silova VN v4.1.0
+140 x 80 mm, 2 vrstvy, mer 70 um. JLC / standardni TPV.
 Jen sekundar CT/Rogowski. NE 230 V / 22 kV / 110 kV na med.
 HASL nebo ENIG dle TPV. Stopa >= 0.25 mm, prokovy 0.8/0.5 mm.

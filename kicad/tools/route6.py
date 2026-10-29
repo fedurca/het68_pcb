@@ -66,8 +66,8 @@ def add_via(board, x, y, netname, diameter=0.45, drill=0.2):
     return v
 
 
-def stitch_gnd(board, pitch=2.0, margin=1.6, diameter=0.45, drill=0.2):
-    """Through-via fence L1–L6 on GND, 1.5–2 mm pitch along the outline."""
+def stitch_gnd(board, pitch=1.5, margin=1.6, diameter=0.45, drill=0.2):
+    """Through-via fence L1–L6 on GND, 1.5 mm pitch along the outline."""
     xs, xe = margin, board.w - margin
     ys, ye = margin, board.h - margin
     n = 0
@@ -139,6 +139,40 @@ def faraday_planes(board, splits, l3_gnd=False):
     board.add_zone("GND", pcbnew.B_Cu, islands="area", clearance=0.2)
     split_power_l4(board, splits, keepout_l3=not l3_gnd)
     stitch_gnd(board)
+
+
+def fanout_power_vias(board, nets, offset=0.95):
+    """Via next to each SMT pad on a plane net so L4 (or B.Cu on 2L) actually feeds the part."""
+    diameter = getattr(board, "via_d", 0.45)
+    drill = getattr(board, "via_drill", 0.2)
+    margin = 1.2
+    wanted = {n for n in nets if n and n in board.nets}
+    n = 0
+    for fp in board.b.GetFootprints():
+        pos = fp.GetPosition()
+        cx, cy = pcbnew.ToMM(pos.x), pcbnew.ToMM(pos.y)
+        for pad in fp.Pads():
+            net = pad.GetNetname()
+            if net not in wanted:
+                continue
+            try:
+                if pad.GetAttribute() in (pcbnew.PAD_ATTRIB_PTH, pcbnew.PAD_ATTRIB_NPTH):
+                    continue
+            except Exception:
+                pass
+            p = pad.GetPosition()
+            x, y = pcbnew.ToMM(p.x), pcbnew.ToMM(p.y)
+            dx, dy = x - cx, y - cy
+            norm = math.hypot(dx, dy) or 1.0
+            vx = x + offset * dx / norm
+            vy = y + offset * dy / norm
+            if not (margin < vx < board.w - margin and margin < vy < board.h - margin):
+                vx, vy = x, min(board.h - margin, y + offset)
+            if not (margin < vx < board.w - margin and margin < vy < board.h - margin):
+                continue
+            if add_via(board, vx, vy, net, diameter, drill):
+                n += 1
+    return n
 
 
 # ---------------------------------------------------------------------------

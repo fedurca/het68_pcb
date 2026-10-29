@@ -3,8 +3,8 @@
 **Projekt:** akustická detekce dronů (het68)
 **Firmware:** [github.com/fedurca/het68](https://github.com/fedurca/het68)
 **Tento dokument:** [github.com/fedurca/het68_pcb](https://github.com/fedurca/het68_pcb)
-**Verze zadání:** 4.0.0 · 29. 10. 2026 (Europe/Prague)
-**Git tag:** `v4.0.0`
+**Verze zadání:** 4.1.0 · 29. 10. 2026 (Europe/Prague)
+**Git tag:** `v4.1.0`
 **Jazyk:** čeština
 
 Dokument vychází z provozu prototypu, z firmware v `fedurca/het68` a z elektrického zmrazení v §1. Osoby, kontakty a termíny protistrany v něm **nejsou**.
@@ -16,8 +16,6 @@ Dokument vychází z provozu prototypu, z firmware v `fedurca/het68` a z elektri
 | §1 | **zmrazené** — nativní RP2350B, 6L Faraday Core, `J_MESH` na Heltec V3 (teď) / stamp (později), tři silové SKU, zákaz sítě na měď, LVDS k satelitům |
 | §2 | omezení z firmware / fyziky — měnit jen s vědomím, že padne PIO, USB audio, DOA nebo piezo PHY |
 | §3+ | technický podklad; výběr konkrétního MPN (LVDS, GDT, MPPT) je na kusovníku, ne na vymýšlení LCSC kódů |
-
-v3.0.0 (Pico HAT 140 × 140 mm, 2L, printed.cz PROTOTYP) zůstává poslední vyrobitelnou Pico-revizí. HAT v `kicad/het68-hat` se v4 **nepřekresluje**.
 
 ---
 
@@ -43,11 +41,11 @@ Poloměr pole (střed → mikrofon) = `hrana / 2`. Firmware default hrana **128 
 
 ---
 
-## 1. Zmrazené zadání (v4.0.0)
+## 1. Zmrazené zadání (v4.1.0)
 
 ### 1.1 Compute — nativní RP2350B na Core 6L
 
-Ne Pico Plus 2, ne HAT. SoM je součást `kicad/het68-core`:
+SoM je součást `kicad/het68-core`:
 
 - RP2350B (QFN-80), 16 MB flash (WSON/SOIC, ne BGA), 8 MB PSRAM (USON/SOIC, ne BGA), USB-C.
 - Doména `+3V3_DIG` / PSRAM / audio / LVDS se při spánku **vypíná** (EN LDO z `WAKE_DSP`).
@@ -56,9 +54,9 @@ Ne Pico Plus 2, ne HAT. SoM je součást `kicad/het68-core`:
 - Piezo chirp (`DRV8837`, 4× PS1240) a env senzor (DPS310 + SHT40) zůstávají na Core.
 - ADXL355 na SPI, 1,8 V, u středu / upevnění (eolické kmitání 10–100 Hz → ANC).
 
-GPIO I²S / LED / piezo / I²C1 drží mapu z HAT rev E, aby PIO a `PIN_I2S_SD` v `fedurca/het68` padly na stejná čísla. Debug UART z GP0/GP1 jde pryč — na těch pinech je UART MeshCore. Konzole je USB CDC.
+GPIO I²S / LED / piezo / I²C1 drží čísla z firmware (`PIN_I2S_SD` v `fedurca/het68`). Debug UART z GP0/GP1 jde pryč — na těch pinech je UART MeshCore. Konzole je USB CDC.
 
-Mapa: [`docs/PINOUT.csv`](PINOUT.csv). HAT v3: [`docs/PINOUT_HAT_v3.csv`](PINOUT_HAT_v3.csv).
+Mapa: [`docs/PINOUT.csv`](PINOUT.csv).
 
 ### 1.2 MeshCore — teď Heltec V3, později stamp
 
@@ -123,7 +121,7 @@ Zkrat 16 kA / 40 kA je na **primáru**. Na desku jde odražený sekundár (`I_pr
 | VN | `kicad/het68-pwr-vn` | stejné multiplex CT, silnější GDT/TVS a crowbar | Al obal R ≥ 10 mm, ekvipotenciál fáze, Mu-metal přepážka 50 Hz |
 | VVN | `kicad/het68-pwr-vvn` | saturační CT jen harvest + Rogowski + analogový integrátor na ADC Core | sféra R ≥ 50 mm, korónové prstence; žádný externí kabel |
 
-PT1000 na svorce vodiče u všech SKU (2vodič na interconnect). Článek mrazuvzdorný **LiFePO4 / LTO** (21700 Li-ion z v3 končí).
+PT1000 na svorce vodiče u všech SKU (2vodič na interconnect). Článek mrazuvzdorný **LiFePO4 / LTO**.
 
 Pinout: [`docs/INTERCONNECT_v4.md`](INTERCONNECT_v4.md). `+3V3_RF` drží LDO na silové desce, i když je DSP pryč.
 
@@ -146,7 +144,11 @@ Data mikrofonu na Core jdou **diferenciálně**: T5848 SD 1,8 V → TXS0104E →
 | L5 In4.Cu | souvislá GND |
 | L6 B.Cu | pomalé GPIO, GND výplň |
 
-Stopy na L3 **nekřižují** mezeru ostrovů na L4. Via stitching GND L1–L2–L5–L6 po obvodu, rozteč 1,5–2 mm. Ostrov `+3V3_RF` **není** hradlovaný.
+Stopy na L3 **nekřižují** mezeru ostrovů na L4. Via stitching GND L1–L2–L5–L6 po obvodu, rozteč **1,5 mm**. Ostrov `+3V3_RF` **není** hradlovaný.
+
+### 1.7 LVDS / EMC v silném rušení
+
+Na přijímači **100 Ω** (SN65LVDS32 a SN65LVDS2 nemají vnitřní zakončení). CMC na SCK, WS i SD **na obou koncích**. TVS &lt; 1 pF napříč párem. Ferit 600 Ω na 3V3 za PPTC. Krystal C0G 15 pF. Sériové 33 Ω na I²S u MCU, 22 Ω + ESD na UART. Stínění STP na GND jen na Core.
 
 ---
 
@@ -157,7 +159,7 @@ Stopy na L3 **nekřižují** mezeru ostrovů na L4. Via stitching GND L1–L2–
 | F1 | 6× digitální MEMS **I²S**, ne PDM | firmware PIO |
 | F2 | Jeden společný `SCK` + `WS` z MCU, každý mikrofon vlastní `SD` | 100% sync |
 | F3 | 48 kHz, I²S 24 bit, 64 SCK/frame → **SCK = 3,072 MHz**; rezerva 192 kHz | USB UAC2 + T5848 HQ 2,0–3,7 MHz |
-| F4 | GPIO SD/LED/piezo/I²C1 jako HAT rev E (`PIN_I2S_SD`, `buzzer.c`) | firmware v `fedurca/het68` |
+| F4 | GPIO SD/LED/piezo/I²C1 podle `PIN_I2S_SD` / `buzzer.c` | firmware v `fedurca/het68` |
 | F5 | GP0/GP1 = UART MeshCore, ne debug | companion 115200 |
 | F6 | Environment na I²C1 GP2/GP3; DPS310 0x77 | `c(T,p,RH)` pro TDOA |
 | F7 | Piezo PHY GP6/GP7, 4 elementy paralelně za H-můstkem | `buzzer.c` |
@@ -228,9 +230,9 @@ Na desce musí být:
 | LR / SEL | GND |
 | SD | 100 kΩ pulldown; **SN65LVDS1** = budič páru sat → Core |
 | LED | 8× WS2812B / SK6812 @ 3,3 V, kruh, daisy-chain z pinu 8; `DOUT` poslední NC |
-| PCB | 50 × 80 mm, **6L Faraday**, ENIG (ne printed.cz PROTOTYP) |
+| PCB | 50 × 80 mm, **6L Faraday**, ENIG |
 | Kabel | STP, mapa [`PINOUT_SAT_v4.csv`](PINOUT_SAT_v4.csv) |
-| PHY | LVDS RX SCK/WS (SN65LVDS2), LVDS TX SD (SN65LVDS1), CMC, TVS, PPTC 0,5 A |
+| PHY | LVDS RX SCK/WS (SN65LVDS2 + 100 Ω), LVDS TX SD (SN65LVDS1), CMC oba konce, TVS, PPTC 0,5 A, ferit 3V3 |
 | Úroveň | TXS 3,3 V LVDS-CMOS ↔ 1,8 V MEMS |
 
 Žádný rozbočovač 3+3. Žádný `DOUT` zpět na Core.
@@ -285,13 +287,13 @@ Stínění STP na GND **jen na Core**. Na satelitu `SH` NC.
 
 | Deska | Vrstvy | Povrch | Kam |
 |---|---|---|---|
-| Core | 6L ENIG (QFN-80, LGA) | ENIG | JLC / standardní TPV printed.cz, **ne** SKU PROTOTYP |
-| Satelit | 6L Faraday ENIG | ENIG | JLC / standardní TPV, **ne** SKU PROTOTYP |
-| Silová | 2L, 70 µm | HASL nebo ENIG dle TPV | ne PROTOTYP |
+| Core | 6L ENIG (QFN-80, LGA) | ENIG | JLC / standardní TPV |
+| Satelit | 6L Faraday ENIG | ENIG | JLC / standardní TPV |
+| Silová | 2L, 70 µm | HASL nebo ENIG dle TPV | JLC / standardní TPV |
 
 Gerbery z `kicad-cli`, ne `WriteDRCReport` (segfault v KiCad 10). KiCad 10, ne downgrade na 8/9.
 
-v4.0.0 = Core schéma + stackup + interconnect pinout + NN silová elektricky uzavřená + satelit 6L (8× LED, LVDS TX SD). 6L DRC 0 Core může být v4.1.0.
+v4.1.0 = produkt jen 4.x, BoM sady, 3D náhledy, LVDS 100 Ω + CMC SD + ferit. Doroutování stop je v4.2.0.
 
 ---
 
@@ -310,4 +312,4 @@ v4.0.0 = Core schéma + stackup + interconnect pinout + NN silová elektricky uz
 
 Technický obsah pochází z provozu prototypu, z firmware het68 a z v4 architektury Core + silová deska. Osoby, kontakty, nabídky a pracnosti v tomto dokumentu **nejsou**.
 
-Konec zadání v4.0.0.
+Konec zadání v4.1.0.

@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Generate het68 v4: 6L Core (RP2350B + J_MESH), LVDS satellite, three power SKUs.
 
-HAT v3.0.0 is not regenerated here. Run with KiCad's Python.
+Run with KiCad's Python. The v3 HAT generator in gen_boards.py is not part of
+the current product tree.
 """
 from __future__ import annotations
 
@@ -52,7 +53,7 @@ DVDD_PADS = ("10", "32", "51")
 
 
 class SchV4(Sch):
-    def __init__(self, name, title, rails, rev="A"):
+    def __init__(self, name, title, rails, rev="4.1.0"):
         super().__init__(name, title)
         self.rails = rails
         self.rev = rev
@@ -82,7 +83,7 @@ class SchV4(Sch):
     (title "{self.title}")
     (date "2026-10-29")
     (rev "{self.rev}")
-    (comment 1 "het68 v4 — Core 6L + silova deska, KiCad 10")
+    (comment 1 "het68 v4.1.0 — Core 6L Faraday + silova deska, KiCad 10")
   )
   (lib_symbols
 {libs}
@@ -158,6 +159,10 @@ def v4_libs(sch: Sch, extra_rails):
         pass
     try:
         load_std(sch, "Device.kicad_sym", "Crystal", "Device")
+    except SystemExit:
+        pass
+    try:
+        load_std(sch, "Device.kicad_sym", "FerriteBead", "Device")
     except SystemExit:
         pass
     try:
@@ -490,6 +495,12 @@ def tvs(sch, ref, nets, value="PESD5V0X1BT"):
     sch.add(lib, ref, value, "Diode_SMD:D_SOD-323", {"1": nets[0], "2": nets[1]}, value)
 
 
+def FB(sch, ref, nets, value="600R", mpn="BLM18PG601SN1D"):
+    lib = "Device:FerriteBead" if "Device:FerriteBead" in sch.symbols else "Device:L"
+    sch.add(lib, ref, value, "Inductor_SMD:L_0603_1608Metric",
+            {"1": nets[0], "2": nets[1]}, mpn)
+
+
 def usb_c(sch, ref, vbus, gnd="GND"):
     usb = {p: None for p in [
         "A1", "A4", "A5", "A6", "A7", "A8", "A9", "A12",
@@ -539,7 +550,7 @@ def rp_nets():
         GPIO_PAD[2]: "I2C1_SDA", GPIO_PAD[3]: "I2C1_SCL",
         GPIO_PAD[4]: "I2C0_SDA", GPIO_PAD[5]: "I2C0_SCL",
         GPIO_PAD[6]: "PIEZO_IN1", GPIO_PAD[7]: "PIEZO_IN2",
-        GPIO_PAD[8]: "I2S_WS", GPIO_PAD[9]: "I2S_SCK",
+        GPIO_PAD[8]: "I2S_WS_MCU", GPIO_PAD[9]: "I2S_SCK_MCU",
         GPIO_PAD[10]: "LED4_DIN", GPIO_PAD[11]: "LED5_DIN", GPIO_PAD[12]: "LED6_DIN",
         GPIO_PAD[13]: "I2S_SD4", GPIO_PAD[14]: "I2S_SD5", GPIO_PAD[15]: "I2S_SD6",
         GPIO_PAD[16]: "I2S_SD3", GPIO_PAD[17]: "I2S_SD2", GPIO_PAD[18]: "I2S_SD1",
@@ -572,8 +583,8 @@ def build_core(sch: Sch):
             "APS6404L-3SQR-SN")
     sch.add("het68:XTAL_3225", "Y1", "12MHz", "Crystal:Crystal_SMD_3225-4Pin_3.2x2.5mm",
             {"1": "XIN", "2": "GND", "3": "XOUT", "4": "GND"}, "12MHz 3225")
-    C(sch, "C_X1", ("XIN", "GND"), "15p")
-    C(sch, "C_X2", ("XOUT", "GND"), "15p")
+    C(sch, "C_X1", ("XIN", "GND"), "15p", mpn="CL10C150JB8NNNC")
+    C(sch, "C_X2", ("XOUT", "GND"), "15p", mpn="CL10C150JB8NNNC")
     sch.add("Device:L", "L_VREG", "2.2uH", "Inductor_SMD:L_0805_2012Metric",
             {"1": "VREG_LX", "2": "DVDD"}, "2.2uH VREG")
     C(sch, "C_DVDD", ("DVDD", "GND"), "2.2u", "Capacitor_SMD:C_0805_2012Metric", "CL21A225KOQNNNE")
@@ -607,8 +618,10 @@ def build_core(sch: Sch):
     sch.add("het68:Conn_1x08", "J_STAMP", "J_STAMP_DNP",
             "Connector_PinHeader_2.54mm:PinHeader_1x08_P2.54mm_Vertical",
             {**mesh, "2": "+3V3_RF"}, "DNP stamp RAK class")
-    R(sch, "R_TX", ("UART_TX_MCU", "UART_TX"), "22")
-    R(sch, "R_RX", ("UART_RX", "UART_RX_MCU"), "22")
+    R(sch, "R_TX", ("UART_TX_MCU", "UART_TX"), "22", mpn="RC0603FR-0722RL")
+    R(sch, "R_RX", ("UART_RX", "UART_RX_MCU"), "22", mpn="RC0603FR-0722RL")
+    R(sch, "R_I2S_SCK", ("I2S_SCK_MCU", "I2S_SCK"), "33", mpn="RC0603FR-0733RL")
+    R(sch, "R_I2S_WS", ("I2S_WS_MCU", "I2S_WS"), "33", mpn="RC0603FR-0733RL")
     tvs(sch, "D_TX", ("UART_TX", "GND"))
     tvs(sch, "D_RX", ("UART_RX", "GND"))
     sch.add("het68:Conn_1x03", "J_SWD", "SWD",
@@ -708,11 +721,16 @@ def build_core(sch: Sch):
         sch.add("het68:CMC", f"FL{i}B", "CMC",
                 "Inductor_SMD:L_CommonModeChoke_Coilank_ACM2012",
                 {"1": f"WS{i}_P", "4": f"WS{i}_PJ", "2": f"WS{i}_N", "3": f"WS{i}_NJ"}, "ACM2012")
+        sch.add("het68:CMC", f"FL{i}C", "CMC",
+                "Inductor_SMD:L_CommonModeChoke_Coilank_ACM2012",
+                {"1": f"SD{i}_P", "4": f"SD{i}_PJ", "2": f"SD{i}_N", "3": f"SD{i}_NJ"}, "ACM2012")
         tvs(sch, f"DT{i}A", (f"SCK{i}_PJ", f"SCK{i}_NJ"))
         tvs(sch, f"DT{i}B", (f"WS{i}_PJ", f"WS{i}_NJ"))
         tvs(sch, f"DT{i}C", (f"SD{i}_PJ", f"SD{i}_NJ"))
+        R(sch, f"R_SD{i}", (f"SD{i}_P", f"SD{i}_N"), "100", mpn="RC0603FR-07100RL")
         sch.add("Device:Polyfuse", f"F{i}", "0.25A", "Fuse:Fuse_0603_1608Metric",
-                {"1": "+3V3_DIG", "2": f"MIC{i}_3V3"}, "PPTC 0603")
+                {"1": "+3V3_DIG", "2": f"MIC{i}_FB"}, "PPTC 0603")
+        FB(sch, f"FB{i}", (f"MIC{i}_FB", f"MIC{i}_3V3"))
 
     C(sch, "C_IO1", ("+3V3_DIG", "GND"), "100n")
     C(sch, "C_IO2", ("+3V3_DIG", "GND"), "100n")
@@ -742,7 +760,10 @@ def build_sat(sch: Sch):
     tvs(sch, "D2", ("WS_P", "WS_N"))
     tvs(sch, "D3", ("SD_P", "SD_N"))
     sch.add("Device:Polyfuse", "F1", "0.5A", "Fuse:Fuse_0603_1608Metric",
-            {"1": "3V3_F", "2": "+3V3"}, "PPTC 0603")
+            {"1": "3V3_F", "2": "+3V3_FB"}, "PPTC 0603")
+    FB(sch, "FB1", ("+3V3_FB", "+3V3"))
+    R(sch, "R_SCK", ("SCK_P", "SCK_N"), "100", mpn="RC0603FR-07100RL")
+    R(sch, "R_WS", ("WS_P", "WS_N"), "100", mpn="RC0603FR-07100RL")
     sch.add("het68:SN65LVDS2", "U2", "SN65LVDS2", "Package_TO_SOT_SMD:SOT-23-5",
             {"1": "+3V3", "2": "SCK_P", "3": "SCK_N", "4": "GND", "5": "SCK_3V3"}, "SN65LVDS2DBVR")
     sch.add("het68:SN65LVDS2", "U3", "SN65LVDS2", "Package_TO_SOT_SMD:SOT-23-5",
@@ -950,7 +971,7 @@ def place_core(board: Board, sch: Sch):
         board.place(by[ref], x, y, rot)
         placed.add(ref)
 
-    xs = (14, 40, 66, 92, 118, 144)
+    xs = (14, 38, 62, 86, 110, 134)
     for i, x in enumerate(xs, start=1):
         P(f"J{i}", x, 10, 0)
         P(f"FL{i}A", x - 4, 24, 0)
@@ -958,15 +979,31 @@ def place_core(board: Board, sch: Sch):
         P(f"DT{i}A", x - 4, 30, 0)
         P(f"DT{i}B", x, 30, 0)
         P(f"DT{i}C", x + 4, 30, 0)
-        P(f"F{i}", x, 36, 0)
+        P(f"FL{i}C", x, 36, 0)
+        P(f"F{i}", x - 4, 36, 90)
+        P(f"FB{i}", x + 4, 36, 90)
+    P("R_SD1", 28, 80, 0)
+    P("R_SD2", 28, 86, 0)
+    P("R_SD3", 32, 86, 0)
+    P("R_SD4", 48, 86, 0)
+    P("R_SD5", 70, 80, 0)
+    P("R_SD6", 70, 86, 0)
     P("U1", 80, 58, 0)
     P("U2", 96, 58, 0)
     P("U3", 64, 58, 0)
     P("Y1", 80, 48, 0)
+    P("C_X1", 76, 44, 0)
+    P("C_X2", 84, 44, 0)
+    P("R_I2S_SCK", 70, 52, 0)
+    P("R_I2S_WS", 74, 52, 0)
     P("L_VREG", 88, 48, 0)
     P("U4", 50, 70, 0)
     P("U5", 58, 70, 0)
     P("J_USB", 16, 70, 0)
+    P("D_USB", 32, 68, 0)
+    P("C_VBUS", 32, 78, 0)
+    P("R_CC1", 22, 62, 90)
+    P("R_CC2", 26, 62, 90)
     P("J_MESH", 80, 92, 0)
     P("J_STAMP", 102, 92, 0)
     P("J_PWR", 16, 92, 0)
@@ -974,8 +1011,31 @@ def place_core(board: Board, sch: Sch):
     P("U10", 40, 48, 0)
     P("U11", 120, 48, 0)
     P("U12", 140, 48, 0)
+    P("C_LV1", 32, 48, 0)
+    P("C_LV2", 112, 48, 0)
+    P("C_LV3", 140, 42, 0)
     P("U13", 40, 80, 0)
     P("U14", 58, 80, 0)
+    P("C_RX1", 46, 74, 0)
+    P("C_RX2", 52, 74, 0)
+    P("C_IO1", 88, 64, 0)
+    P("C_IO2", 92, 64, 0)
+    P("C_IO3", 88, 52, 0)
+    P("R_TX", 88, 88, 0)
+    P("R_RX", 92, 88, 0)
+    P("R_WK", 74, 88, 0)
+    P("D_TX", 70, 84, 0)
+    P("D_RX", 66, 84, 0)
+    P("R_SDA0", 8, 86, 0)
+    P("R_SCL0", 12, 86, 0)
+    P("R_SDA1", 122, 64, 0)
+    P("R_SCL1", 126, 64, 0)
+    P("R_PT", 20, 80, 90)
+    P("R_PT2", 96, 70, 0)
+    P("R_RUN", 72, 64, 0)
+    P("R_ENRF", 108, 88, 0)
+    P("R_ALRT", 112, 88, 0)
+    P("R_SH", 24, 88, 0)
     P("U6", 120, 80, 0)
     P("U7", 130, 70, 0)
     P("U8", 138, 70, 0)
@@ -983,7 +1043,7 @@ def place_core(board: Board, sch: Sch):
     for ref, x in (("J11", 118), ("J12", 126), ("J13", 134), ("J14", 142)):
         P(ref, x, 92, 0)
     holes(board, ((4, 4), (4, 96), (156, 4), (156, 96)))
-    place_remaining(board, sch, placed, 8, 40, 4.5, 5)
+    place_remaining(board, sch, placed, 148, 55, 3.5, 5)
     board.text("het68 CORE rev A  6L Faraday", 80, 98, size=1.0)
     board.text("J_MESH Heltec V3 868  pin1 GND", 80, 2, size=0.7)
     board.text("USB Heltec odpojit po flash", 50, 98, size=0.6)
@@ -1001,6 +1061,9 @@ def place_sat(board: Board, sch: Sch):
     cx, cy, led_r = 25.0, 58.0, 12.0
     P("J1", 14, 16, 0)
     P("F1", 34, 18, 90)
+    P("FB1", 40, 18, 90)
+    P("R_SCK", 13, 38, 90)
+    P("R_WS", 23, 38, 90)
     P("FL1", 8, 27, 0)
     P("FL2", 18, 27, 0)
     P("FL3", 28, 27, 0)
@@ -1320,7 +1383,7 @@ def main():
         (pout / "fab").mkdir(exist_ok=True)
         write_vyroba(
             pout / "fab" / "VYROBA.txt",
-            f"het68 silova {sku} v4.0.0\n140 x 80 mm, 2 vrstvy, mer 70 um. NE printed.cz PROTOTYP.\n"
+            f"het68 silova {sku} v4.1.0\n140 x 80 mm, 2 vrstvy, mer 70 um. JLC / standardni TPV.\n"
             "Jen sekundar CT/Rogowski. NE 230 V / 22 kV / 110 kV na med.\n"
             "HASL nebo ENIG dle TPV. Stopa >= 0.25 mm, prokovy 0.8/0.5 mm.\n",
         )
@@ -1335,6 +1398,23 @@ def main():
                 groups.setdefault(key, []).append(p["ref"])
             for (value, mpn), refs in groups.items():
                 w.writerow([board_name, len(refs) * mult, value, mpn, " ".join(refs)])
+
+    with (ROOT / "BOM_KIT.csv").open("w", newline="") as f:
+        w = csv.writer(f)
+        w.writerow(["Qty", "Value", "MPN", "On"])
+        kit = {}
+        for board_name, sch, mult in sheets:
+            if board_name in ("het68-pwr-vn", "het68-pwr-vvn"):
+                continue
+            label = {"core": "core", "sat": "sat x6", "het68-pwr-nn": "pwr-nn"}.get(
+                board_name, board_name)
+            for p in sch.parts:
+                key = (p["value"], p["mpn"])
+                rec = kit.setdefault(key, [0, set()])
+                rec[0] += mult
+                rec[1].add(label)
+        for (value, mpn), (qty, on) in sorted(kit.items(), key=lambda kv: kv[0][0]):
+            w.writerow([qty, value, mpn, "+".join(sorted(on))])
 
     # ERC / DRC / gerbers
     projects = [
@@ -1357,14 +1437,39 @@ def main():
         export_fab(pcbp, pcbp.parent / "fab", layers)
 
     write_vyroba(ROOT / "het68-core" / "fab" / "VYROBA.txt",
-                 "het68 Core v4.0.0\n160 x 100 mm, 6 vrstev Faraday, ENIG (QFN-80 + LGA).\n"
-                 "NE printed.cz PROTOTYP. JLC / standardni TPV.\n"
+                 "het68 Core v4.1.0\n160 x 100 mm, 6 vrstev Faraday, ENIG (QFN-80 + LGA).\n"
+                 "JLC / standardni TPV. Via fence 1.5 mm. LVDS 100R u RX, CMC na SCK/WS/SD.\n"
                  "J_MESH 1x8 Heltec V3 868. Stamp DNP. USB Heltec odpojit po flash.\n")
     write_vyroba(ROOT / "het68-sat" / "fab" / "VYROBA.txt",
-                 "het68 satelit v4.0.0 6L Faraday LVDS\n"
-                 "50 x 80 mm, 6 vrstev, ENIG. >= 0603. Ne BGA. NE printed.cz PROTOTYP.\n"
+                 "het68 satelit v4.1.0 6L Faraday LVDS\n"
+                 "50 x 80 mm, 6 vrstev, ENIG. >= 0603. Ne BGA. JLC / standardni TPV.\n"
                  "T5848 uprostred. 8x SK6812 kruh (D4=N, daisy CW). SN65LVDS1 = SD sat->Core.\n"
-                 "LVDS RX SCK/WS (SN65LVDS2), CMC + TVS + PPTC 0.5 A. RGB 3.3 V.\n")
+                 "LVDS RX SCK/WS (SN65LVDS2 + 100R), CMC + TVS + PPTC 0.5 A + ferrite. RGB 3.3 V.\n")
+
+    img = ROOT.parent / "docs" / "img"
+    img.mkdir(parents=True, exist_ok=True)
+    previews = [
+        (ROOT / "het68-core" / "het68-core.kicad_pcb", img / "core-3d.png",
+         ROOT / "het68-core" / "fab" / "het68-core-F.svg", img / "core-pcb.svg"),
+        (ROOT / "het68-sat" / "het68-sat.kicad_pcb", img / "sat-3d.png",
+         ROOT / "het68-sat" / "fab" / "het68-sat-F.svg", img / "sat-lvds.svg"),
+        (ROOT / "het68-pwr-nn" / "het68-pwr-nn.kicad_pcb", img / "pwr-nn-3d.png",
+         ROOT / "het68-pwr-nn" / "fab" / "het68-pwr-nn-F.svg", img / "pwr-nn.svg"),
+    ]
+    for pcb, png, svg_src, svg_dst in previews:
+        if svg_src.exists():
+            svg_dst.write_bytes(svg_src.read_bytes())
+        print("render", pcb.name, flush=True)
+        r = kicad_cli(
+            "pcb", "render", "--output", str(png),
+            "--width", "1600", "--height", "900", "--quality", "high",
+            "--perspective", "--rotate", "-45,0,30", "--floor",
+            "--background", "opaque", str(pcb),
+        )
+        if r.returncode:
+            print("render fail", pcb.name, (r.stderr or r.stdout)[-800:], flush=True)
+        kicad_cli("pcb", "export", "step", "--output", str(pcb.parent / "fab" / (pcb.stem + ".step")),
+                  str(pcb))
     print("done")
 
 

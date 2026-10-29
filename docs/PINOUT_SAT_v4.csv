@@ -6,7 +6,7 @@ pair,t568b,rj45_pins,net_p,net_n,level,notes
 shield,drain,SH,NC,,no connect on sat; shield bonded to GND only on Core
 extra,,,,,T5848 VDD is 1.8V from AP2112K-1.8 on sat; never feed 3.3V to MEMS
 extra,,,,,LR/SEL = GND; WAKE and THSEL = NC
-extra,,,,,SD sat->Core is LVDS: SN65LVDS1 on sat (DIN=SD_3V3 after TXS, Y/Z=SD_P/SD_N); SN65LVDS32 on Core
-extra,,,,,SCK/WS Core->sat is LVDS: SN65LVDS047 on Core; SN65LVDS2 on sat
+extra,,,,,SD sat->Core is LVDS: SN65LVDS1 on sat (DIN=SD_3V3 after TXS, Y/Z=SD_P/SD_N); SN65LVDS32 on Core; 100R at Core RX; CMC both ends
+extra,,,,,SCK/WS Core->sat is LVDS: SN65LVDS047 on Core; SN65LVDS2 on sat; 100R at sat RX; CMC both ends
 extra,,,,,T568B single-ended I2S map from v3 is retired
 extra,,,,,Satellite PCB is 6-layer Faraday 50x80 mm; MEMS at centre of 8-LED ring

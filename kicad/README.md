@@ -1,8 +1,8 @@
-# het68 — KiCad (v4.0.0)
+# het68 — KiCad (v4.1.0)
 
 Náhledy a kontext: [README](../README.md) repozitáře.
 
-v4 kreslí **Core 6L**, tři silové SKU a satelit LVDS. HAT pod Pico Plus 2 z v3.0.0 zůstává v `het68-hat` (negenerovat znovu úzký WIP).
+v4 kreslí **Core 6L**, tři silové SKU a satelit LVDS.
 
 | Projekt | Deska | Vrstvy | Obrys |
 |---|---|---|---|
@@ -11,20 +11,18 @@ v4 kreslí **Core 6L**, tři silové SKU a satelit LVDS. HAT pod Pico Plus 2 z v
 | [het68-pwr-nn](het68-pwr-nn/het68-pwr-nn.kicad_pro) | silová NN, multiplex CT | 2, 70 µm | 140 × 80 mm |
 | [het68-pwr-vn](het68-pwr-vn/het68-pwr-vn.kicad_pro) | silová VN, 15KP | 2, 70 µm | 140 × 80 mm |
 | [het68-pwr-vvn](het68-pwr-vvn/het68-pwr-vvn.kicad_pro) | silová VVN, Rogowski | 2, 70 µm | 140 × 80 mm |
-| [het68-hat](het68-hat/het68-hat.kicad_pro) | HAT Pico Plus 2, **v3.0.0 zmrazené** | 2 | 140 × 140 mm |
-| [het68-pwr](het68-pwr/het68-pwr.kicad_pro) | harvest front-end v3 | 2 | 100 × 58 mm |
 
-Generátor v4: `kicad/tools/gen_v4.py` (Python z KiCadu). 6L stackup: `kicad/tools/route6.py`. HAT v3: `kicad/tools/gen_boards.py`.
+Generátor: `kicad/tools/gen_v4.py` (Python z KiCadu). 6L stackup: `kicad/tools/route6.py`. Kusovník sady: [`BOM_KIT.csv`](BOM_KIT.csv).
 
 ## Zapojení Core
 
-- RP2350B QFN-80, W25Q128 SOIC-8, APS6404L SOIC-8, USB-C.
+- RP2350B QFN-80, W25Q128 SOIC-8, APS6404L SOIC-8, USB-C, krystal 12 MHz + C0G 15 pF.
 - `+3V3_DIG` a `+1V8_AUDIO` hradluje `WAKE_DSP` (Heltec GPIO7). `+5V_ALWAYS` / `+3V3_RF` vždyživé.
 - `J_MESH` 1×8: GND, 5V, UART TX/RX (22 Ω + ESD), WAKE_DSP, DSP_AWAKE, RST NC, rezerva. Stamp DNP paralelně na pinech 1–6.
-- Šest RJ45 LVDS, mapa [`docs/PINOUT_SAT_v4.csv`](../docs/PINOUT_SAT_v4.csv).
-- GPIO: [`docs/PINOUT.csv`](../docs/PINOUT.csv). I²S/LED/piezo jako HAT rev E.
+- Šest RJ45 LVDS, mapa [`docs/PINOUT_SAT_v4.csv`](../docs/PINOUT_SAT_v4.csv). CMC na SCK/WS/SD, 100 Ω u RX SD, ferit na 3V3.
+- GPIO: [`docs/PINOUT.csv`](../docs/PINOUT.csv).
 - Interconnect: [`docs/INTERCONNECT_v4.md`](../docs/INTERCONNECT_v4.md).
-- L1 SMT+GND, L2 GND, L3 stripline, L4 split DIG / RF / 1V8, L5 GND, L6 pomalé+GND. L3 nekřižuje mezery L4. Stitch 2 mm.
+- L1 SMT+GND, L2 GND, L3 stripline, L4 split DIG / RF / 1V8, L5 GND, L6 pomalé+GND. Stitch 1,5 mm.
 
 ## Silová deska
 
@@ -32,10 +30,10 @@ Jen sekundár CT/Rogowski. GDT, TVS, LC, THT burden 100 Ω, crowbar ~25 V, USB-C
 
 ## Satelit
 
-6L Faraday. LVDS RX SCK/WS (SN65LVDS2), LVDS TX SD (SN65LVDS1 → Core SN65LVDS32), CMC, TVS, PPTC 0,5 A, TXS0104E 3,3↔1,8 V, T5848 ve středu, 8× SK6812 v kruhu. ENIG, ≥ 0603; ne printed.cz PROTOTYP.
+6L Faraday. LVDS RX SCK/WS (SN65LVDS2 + 100 Ω), LVDS TX SD (SN65LVDS1 → Core SN65LVDS32), CMC, TVS, PPTC 0,5 A, ferit 600 Ω, TXS0104E 3,3↔1,8 V, T5848 ve středu, 8× SK6812 v kruhu. ENIG, ≥ 0603.
 
 ## Výroba
 
-Gerbery z `kicad-cli pcb export gerbers` (ne `WriteDRCReport`). Core a satelit 6L ENIG u JLC. Silová 2L 70 µm, ne SKU PROTOTYP.
+Gerbery z `kicad-cli pcb export gerbers` (ne `WriteDRCReport`). Core a satelit 6L ENIG u JLC. Silová 2L 70 µm.
 
-v4.0.0: schémata elektricky uzavřená. 6L DRC 0 Core je v4.1.0.
+v4.1.0: schémata elektricky uzavřená, BoM sady, 3D náhledy. Spoje 6L jsou v4.2.0.

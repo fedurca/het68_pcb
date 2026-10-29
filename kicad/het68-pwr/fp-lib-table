@@ -1,4 +1,0 @@
-(fp_lib_table
-  (version 7)
-  (lib (name "het68")(type "KiCad")(uri "${KIPRJMOD}/../lib/het68.pretty")(options "")(descr "het68"))
-)

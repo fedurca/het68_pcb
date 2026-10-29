@@ -7,8 +7,8 @@ pm_sda,GP4,i2c,I2C0_SDA,via J_PWR to power board INA/PAC
 pm_scl,GP5,i2c,I2C0_SCL,
 piezo_a,GP6,out,PIEZO_IN1,DRV8837 IN1; 4x PS1240 parallel
 piezo_b,GP7,out,PIEZO_IN2,DRV8837 IN2
-i2s_ws,GP8,out,I2S_WS,shared; LVDS drivers to six RJ45
-i2s_sck,GP9,out,I2S_SCK,3.072 MHz; LVDS
+i2s_ws,GP8,out,I2S_WS,shared; 33 ohm then LVDS047 to six RJ45
+i2s_sck,GP9,out,I2S_SCK,3.072 MHz; 33 ohm then LVDS047
 led4_din,GP10,out,LED4_DIN,RJ45 MIC4 pin 8
 led5_din,GP11,out,LED5_DIN,RJ45 MIC5 pin 8
 led6_din,GP12,out,LED6_DIN,RJ45 MIC6 pin 8
