@@ -26,13 +26,15 @@ EDGE = 255
 
 
 def route_board(board) -> list:
-    VIA_R = getattr(board, "via_d", 0.6) / 2
-    VIA_DRILL = getattr(board, "via_drill", 0.3)
+    VIA_R = getattr(board, "via_d", 0.9) / 2
+    VIA_DRILL = getattr(board, "via_drill", 0.5)
     # Cells around a new via centre that must be free, so the via disc keeps
     # CLEAR to foreign track halos (the halo only covers track centres).
     ring_r = max(2.2, (VIA_R - 0.2 + 0.1) / G)
     ring_span = int(math.ceil(ring_r))
     four = getattr(board, "layers", 2) >= 4
+    hat = "hat" in board.name
+    diag = four or hat
     nx = int(round(board.w / G)) + 3
     ny = int(round(board.h / G)) + 3
     copper = [bytearray(nx * ny) for _ in range(2)]
@@ -647,7 +649,7 @@ def route_board(board) -> list:
         if len(group) < 2:
             return False
         myid = group[0]["id"]
-        bus_y = 21.4
+        bus_y = 20.8
         xs = sorted({round(p["x"], 2) for p in group})
         for x in xs:
             src = next(p for p in group if abs(p["x"] - x) < 0.05)
@@ -687,10 +689,10 @@ def route_board(board) -> list:
             cells.append((*cell(x1 + (x2 - x1) * t, y1 + (y2 - y1) * t), layer))
         paint_path_cells(cells, myid)
 
-    def draw_poly(pts, layer, netname):
+    def draw_poly(pts, layer, netname, width=None):
         myid = ids[netname]
         for (x1, y1), (x2, y2) in zip(pts, pts[1:]):
-            add_track(x1, y1, x2, y2, layer, netname)
+            add_track(x1, y1, x2, y2, layer, netname, width=width)
             paint_segment(x1, y1, x2, y2, layer, myid)
 
     def place_via(x, y, netname):
@@ -805,9 +807,9 @@ def route_board(board) -> list:
         fanout(vip_only=True)
     fanout(vip_only=False)
 
-    # Four layers: 8-connected search so fine-pitch bundles fan out at 45 deg.
+    # 8-connected search so fine-pitch bundles fan out at 45 deg.
     # Costs are in tenths of a cell; a diagonal step costs 14.
-    if four:
+    if diag:
         moves = ((1, 0, 10), (-1, 0, 10), (0, 1, 10), (0, -1, 10),
                  (1, 1, 14), (1, -1, 14), (-1, 1, 14), (-1, -1, 14))
         unit = 10
@@ -817,7 +819,7 @@ def route_board(board) -> list:
 
     def heur(ix, iy, tx, ty):
         ax, ay = abs(ix - tx), abs(iy - ty)
-        if four:
+        if diag:
             return 10 * max(ax, ay) + 4 * min(ax, ay)
         return ax + ay
 
@@ -945,7 +947,7 @@ def route_board(board) -> list:
                 targets.extend(copper_cells(p))
             for p in fails:
                 starts = copper_cells(p)
-                path = bfs(starts, targets, myid, 12 if four else 20, 300000, 1 if four else 3) if targets else None
+                path = bfs(starts, targets, myid, 12 if diag else 20, 300000, 1 if diag else 3) if targets else None
                 if not path:
                     unrouted.append(pnet)
                     continue
@@ -975,7 +977,7 @@ def route_board(board) -> list:
     # Multi-pad nets that stopped half way keep their tree; a later pass only
     # connects the pads that are still missing.
     resume = {}
-    keep_partial = four
+    keep_partial = diag
 
     def route_nets(names, via_cost, limit, back_cost):
         failed = []
@@ -1071,18 +1073,16 @@ def route_board(board) -> list:
         flush=True,
     )
     if "hat" in board.name:
-        sig_lim, sig_retry, pwr_lim, pwr_retry = 220000, 550000, 280000, 650000
+        sig_lim, sig_retry, pwr_lim, pwr_retry = 400000, 900000, 350000, 800000
     else:
         sig_lim, sig_retry, pwr_lim, pwr_retry = 100000, 220000, 150000, 300000
 
-    if four:
-        # Planes carry GND and the 3V3 rails. B.Cu is a full signal layer, so
-        # both outer layers cost the same and a via is just a short detour.
+    if diag:
+        # B.Cu is a full signal layer; a via is a short detour. Signals first
+        # so supply stubs next to fine-pitch outputs do not wall them in.
         first = [n for n in getattr(board, "route_first", []) if n in by_net and n in nets]
         power = [n for n in power if n not in first]
         signal = [n for n in signal if n not in first]
-        # Signals first: supply stubs next to fine-pitch outputs (VCCB beside B1)
-        # would otherwise wall the first output in. Supplies have room later.
         order = first + signal + power
         missed = route_nets(order, 14, sig_lim, 1)
         for attempt, (vc, lim) in enumerate(((8, sig_retry), (5, sig_retry * 2)), start=1):
@@ -1091,15 +1091,6 @@ def route_board(board) -> list:
             print(f"  {board.name} retry {attempt} {missed}", flush=True)
             missed = route_nets(missed, vc, lim, 1)
         sig_miss = []
-    elif "hat" in board.name:
-        missed = route_nets(power, 4, pwr_lim, 1)
-        if missed:
-            print(f"  {board.name} power retry {missed}", flush=True)
-            missed = route_nets(missed, 2, pwr_retry, 1)
-        sig_miss = route_nets(signal, 6, sig_lim, 1)
-        if sig_miss:
-            print(f"  {board.name} signal retry {sig_miss}", flush=True)
-            sig_miss = route_nets(sig_miss, 4, sig_retry, 1)
     else:
         # Local nets first, while the top is still open. Power then uses the back.
         sig_miss = route_nets(signal, 22, sig_lim, 6)
@@ -1118,7 +1109,7 @@ def route_board(board) -> list:
         group = [p for p in by_net["VBUS"] if p["y"] < 26]
         if len(group) >= 2:
             myid = group[0]["id"]
-            bus_y = 21.4
+            bus_y = 20.8
             xs = sorted({round(p["x"], 2) for p in group})
             ok = True
             for x in xs:

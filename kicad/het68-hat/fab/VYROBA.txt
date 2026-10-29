@@ -1,12 +1,24 @@
-Gerbery HAT v2.0.0 (rev E): 100 × 100 mm, 4 vrstvy, 1,6 mm.
-DRC 0, nepřipojené 0, parita schéma ↔ deska 0, ERC 0 chyb.
+printed.cz PROTOTYP — het68 HAT v3.0.0 (rev F)
+140 × 140 mm, 2 vrstvy, FR4 1,5 mm. Obrys frézováním (ne drážkování).
+DRC 0 chyb, parita schéma ↔ deska 0, ERC 0. Všechny pády sítí jsou spojené.
+KiCad u GND výplně hlásí 2× zone-to-self na stejném vrcholu obrysu (1,2; 1,2) mm — není to nepřipojený pad.
 
-Vrstvy: F.Cu signál (gtl), In1.Cu GND (g1), In2.Cu 3V3 + ostrov +3V3_MIC (g2), B.Cu signál (gbl).
-Stopa ≥ 0,25 mm, mezera ≥ 0,2 mm. Nejmenší vrták 0,5 mm (prokovy 0,9/0,5 mm). Povrch HASL nebo ENIG.
-SMT jen nahoře (79 součástek), THT: 6× RJ45, 2× zásuvková lišta 1×20 8,5 mm pro Pico, J10, J11–J14, J17.
+Vrstvy: F.Cu signál (gtl), B.Cu GND výplň + spoje (gbl). Bez vnitřních vrstev.
+Stopa ≥ 0,25 mm, mezera ≥ 0,2 mm. Prokovy 0,8 / 0,5 mm (nejmenší vrták 0,5 mm).
+Povrch: celoplošné galvanické zlacení (ENIG). Ne HAL.
+Maska: zelená lesklá. Potisk: bílý. SMT jen nahoře.
 
-Soubory: Gerbery RS-274X, Excellon PTH a NPTH zvlášť s mapami, het68-hat-pos.csv (CPL),
-het68-hat.d356 (IPC-D-356, elektrický test), het68-hat.step (osazená deska se zasunutým Pico Plus 2).
+Nejmenší SMD je 0603. Není 0402 ani menší, není BGA.
+LGA/QFN/DFN/WSON na desce (DPS310, SHT40, INA3221, DRV8837) nejsou BGA.
+THT: 6× RJ45, 2× zásuvková lišta 1×20 8,5 mm pro Pico, J10, J11–J14, J17, 4× M3.
 
-Před objednávkou: srovnat land pattern DPS310 (U7) s C130156. Firmware přepnout na pinout rev E (docs/PINOUT.csv).
+Součástky k osazení dodá zákazník do dvou dnů (podmínka PROTOTYP).
 Pimoroni Pico Plus 2 se kupuje zvlášť, se samčími lištami 1×20.
+
+Soubory: Gerbery RS-274X (2 vrstvy), Excellon PTH a NPTH, mapy, het68-hat-pos.csv,
+het68-hat.d356, het68-hat.step (osazená deska se zasunutým Pico Plus 2).
+
+Před objednávkou: srovnat land pattern DPS310 (U7) s C130156. Firmware pinout rev E
+(docs/PINOUT.csv) — stejný jako v2.0.0, SD a LED se proti v2.0.0 nemění.
+Pouzdro: deska je 140 × 140 mm (proti 100 × 100 mm ve v2.0.0). Díry M3 na
+[4; 4], [4; 136], [132; 50], [132; 90] mm.

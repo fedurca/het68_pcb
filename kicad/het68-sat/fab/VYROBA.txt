@@ -1,5 +1,11 @@
-Gerbery satelitu v1.10.0 (ve v2.0.0 beze změny): 28 × 52 mm, 2 vrstvy.
-DRC error 0, nepřipojené 0, ERC 0.
-Objednej ENIG kvůli T5848. Šest kusů na jedno zařízení.
-Stínění RJ45 na satelitu není na GND.
-Prokovy mají vrták 0,3 mm: u výrobce s nejlevnější třídou „vrtání > 0,5 mm“ objednat třídu 0,3 mm.
+printed.cz PROTOTYP — het68 satelit v3.0.0 (rev A)
+28 × 52 mm, 2 vrstvy, FR4 1,5 mm. Obrys frézováním.
+DRC 0, nepřipojené 0, parita schéma ↔ deska 0, ERC 0.
+
+Stopa ≥ 0,25 mm, mezera ≥ 0,2 mm. Prokovy 0,8 / 0,5 mm.
+Povrch: ENIG (T5848). Ne HAL. Maska zelená lesklá, potisk bílý.
+Nejmenší SMD je 0603. Není 0402, není BGA. T5848 je LGA, ne BGA.
+Šest kusů na jedno zařízení. Stínění RJ45 na satelitu není na GND.
+Akustický otvor MEMS je NPTH 0,8 mm.
+
+Součástky k osazení dodá zákazník do dvou dnů (podmínka PROTOTYP).

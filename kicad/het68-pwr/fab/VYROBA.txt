@@ -1,6 +1,13 @@
-Gerbery power desky v1.10.0 (ve v2.0.0 beze změny): 100 × 58 mm, 2 vrstvy, 1,6 mm.
-DRC error 0, nepřipojené 0, ERC 0.
+printed.cz PROTOTYP — het68 power v3.0.0 (rev B)
+100 × 58 mm, 2 vrstvy, FR4 1,5 mm. Obrys frézováním.
+DRC 0, nepřipojené 0, parita schéma ↔ deska 0, ERC 0.
+
+Stopa ≥ 0,25 mm, mezera ≥ 0,2 mm. Prokovy 0,8 / 0,5 mm.
+Povrch: ENIG. Ne HAL. Maska zelená lesklá, potisk bílý.
+Nejmenší SMD je 0603. Není 0402, není BGA.
+
 Na desce: sekundár CT → THT burden 100 Ω → LC → můstek → crowbar ~25 V a USB-C laboratoř.
 MPPT CN3791, BQ25895, držák 21700 a PAC1934 na této desce ještě nejsou.
 Na desku nepřiváděj 230 V ani 22 kV — jen sekundár CT.
-Prokovy mají vrták 0,3 mm: u výrobce s nejlevnější třídou „vrtání > 0,5 mm“ objednat třídu 0,3 mm.
+
+Součástky k osazení dodá zákazník do dvou dnů (podmínka PROTOTYP).

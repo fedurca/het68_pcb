@@ -1,18 +1,10 @@
 ** Drc report for het68-pwr.kicad_pcb **
-** Created on 2026-10-28T17:20:50 **
+** Created on 2026-10-29T07:54:30 **
 ** Report includes: Errors **
 
 ** Found 0 DRC violations **
 
-** Found 2 unconnected pads **
-[unconnected_items]: Missing connection between items
-    Local override; error
-    @(19.8000 mm, 19.7000 mm): Track [VBUS] on F.Cu, length 0.5000 mm
-    @(20.4500 mm, 23.9550 mm): Track [VBUS] on F.Cu, length 2.4250 mm
-[unconnected_items]: Missing connection between items
-    Local override; error
-    @(23.8000 mm, 19.2000 mm): Track [VBUS] on F.Cu, length 0.1000 mm
-    @(20.5000 mm, 19.2000 mm): Track [VBUS] on F.Cu, length 0.1000 mm
+** Found 0 unconnected pads **
 
 ** Found 0 Footprint errors **
 
@@ -22,5 +14,6 @@
     - Tuning profile track geometries
     - Footprint doesn't match symbol's footprint filters
     - Footprint component type doesn't match footprint pads
+    - Footprint doesn't match copy in library
 
 ** End of Report **

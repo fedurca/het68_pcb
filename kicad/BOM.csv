@@ -2,13 +2,13 @@ Board,Qty,Value,MPN,LCSC,Refs,Note
 hat,1,Pico_Plus_2,Pimoroni Pico Plus 2,,U1,"koupit u Pimoroni, neni na LCSC"
 hat,3,SN74LVC8T245,SN74LVC8T245PWR,C27643,U2 U3 U4,
 hat,1,AP2112K-1.8,AP2112K-1.8TRG1,C176944,U5,
-hat,3,1u,CL05A105KA5NQNC,,C1 C2 C13,LCSC kod pro toto presne MPN neni overeny
+hat,3,1u,CL10A105KA8NNNC,,C1 C2 C13,LCSC kod pro toto presne MPN neni overeny
 hat,2,10u,CL21A106KOQNNNE,,C3 C4,LCSC kod pro toto presne MPN neni overeny
-hat,9,100n,CL05B104KB5NNNC,,C5 C6 C7 C8 C9 C10 C11 C12 C14,LCSC kod pro toto presne MPN neni overeny
+hat,9,100n,CL10B104KB8NNNC,,C5 C6 C7 C8 C9 C10 C11 C12 C14,LCSC kod pro toto presne MPN neni overeny
 hat,1,MIC1,"RJHSE-5380 (8P8C, bez magnetik)",C464586,J1,
-hat,12,33,RC0402FR-0733RL,C138002,R10 R11 R13 R14 R16 R17 R19 R20 R22 R23 R25 R26,
-hat,6,100,RC0402FR-07100RL,C106232,R12 R15 R18 R21 R24 R27,
-hat,6,100k,RC0402FR-07100KL,,R50 R51 R52 R53 R54 R55,LCSC kod pro toto presne MPN neni overeny
+hat,12,33,RC0603FR-0733RL,,R10 R11 R13 R14 R16 R17 R19 R20 R22 R23 R25 R26,LCSC kod pro toto presne MPN neni overeny
+hat,6,100,RC0603FR-07100RL,,R12 R15 R18 R21 R24 R27,LCSC kod pro toto presne MPN neni overeny
+hat,6,100k,RC0603FR-07100KL,,R50 R51 R52 R53 R54 R55,LCSC kod pro toto presne MPN neni overeny
 hat,24,PESD5V0S1BA,"PESD5V0S1BA,115",,D1 D2 D3 D4 D5 D6 D7 D8 D9 D10 D11 D12 D13 D14 D15 D16 D17 D18 D19 D20 D21 D22 D23 D24,LCSC kod pro toto presne MPN neni overeny
 hat,1,MIC2,"RJHSE-5380 (8P8C, bez magnetik)",C464586,J2,
 hat,1,MIC3,"RJHSE-5380 (8P8C, bez magnetik)",C464586,J3,
@@ -24,7 +24,7 @@ hat,1,PZ4,PinHeader 1x2,,J14,LCSC kod pro toto presne MPN neni overeny
 hat,1,DPS310,DPS310,C130156,U7,
 hat,1,SHT40,SHT40-AD1B-R2,C2909890,U8,
 hat,1,600R,BLM18PG601SN1D,,FB1,LCSC kod pro toto presne MPN neni overeny
-hat,4,4.7k,RC0402FR-074K7L,,R42 R43 R44 R45,LCSC kod pro toto presne MPN neni overeny
+hat,4,4.7k,RC0603FR-074K7L,,R42 R43 R44 R45,LCSC kod pro toto presne MPN neni overeny
 hat,1,INA3221,INA3221AIRGVR,C181255,U9,
 hat,2,0.1,RC0805FR-070R1L,,R47 R48,LCSC kod pro toto presne MPN neni overeny
 hat,1,PWR,PinHeader 1x2,,J10,LCSC kod pro toto presne MPN neni overeny
@@ -33,10 +33,10 @@ sat,6,RJ45,RJHSE-5380,C464586,J1,
 sat,6,AP2112K-1.8,AP2112K-1.8TRG1,C176944,U1,
 sat,6,T5848,MMICT5848-00-012,C20344623,MK1,
 sat,6,SK6812,"SK6812 (5050, 3.3 V)",,D1,LCSC kod pro toto presne MPN neni overeny
-sat,12,1u,CL05A105KA5NQNC,,C1 C2,LCSC kod pro toto presne MPN neni overeny
-sat,12,100n,CL05B104KB5NNNC,,C3 C4,LCSC kod pro toto presne MPN neni overeny
-sat,6,33,RC0402FR-0733RL,C138002,R1,
-sat,6,100k,RC0402FR-07100KL,,R2,LCSC kod pro toto presne MPN neni overeny
+sat,12,1u,CL10A105KA8NNNC,,C1 C2,LCSC kod pro toto presne MPN neni overeny
+sat,12,100n,CL10B104KB8NNNC,,C3 C4,LCSC kod pro toto presne MPN neni overeny
+sat,6,33,RC0603FR-0733RL,,R1,LCSC kod pro toto presne MPN neni overeny
+sat,6,100k,RC0603FR-07100KL,,R2,LCSC kod pro toto presne MPN neni overeny
 pwr,1,AC_IN,"sekundar CT / split-core, NE sit 230 V ani 22 kV",,J1,LCSC kod pro toto presne MPN neni overeny
 pwr,1,100,100R THT burden,,R4,LCSC kod pro toto presne MPN neni overeny
 pwr,1,470uH,470uH radial,,L1,LCSC kod pro toto presne MPN neni overeny
@@ -49,11 +49,11 @@ pwr,1,BZX84-C24,BZX84-C24,,D5,LCSC kod pro toto presne MPN neni overeny
 pwr,1,1k,RC0805FR-071KL,,R5,LCSC kod pro toto presne MPN neni overeny
 pwr,2,SS34,SS34,,D6 D7,"pouzdro SMC, ne SMA"
 pwr,1,USB_C,TYPE-C-31-M-12,C165948,J2,
-pwr,2,5.1k,RC0402FR-075K1L,,R1 R2,LCSC kod pro toto presne MPN neni overeny
+pwr,2,5.1k,RC0603FR-075K1L,,R1 R2,LCSC kod pro toto presne MPN neni overeny
 pwr,1,600R,BLM21PG601SN1D,,FB1,LCSC kod pro toto presne MPN neni overeny
 pwr,1,100u/16V,electrolytic 100u 16V,,C2,LCSC kod pro toto presne MPN neni overeny
 pwr,1,10u,CL21A106KOQNNNE,,C3,LCSC kod pro toto presne MPN neni overeny
-pwr,1,2.2k,RC0402FR-072K2L,,R3,LCSC kod pro toto presne MPN neni overeny
+pwr,1,2.2k,RC0603FR-072K2L,,R3,LCSC kod pro toto presne MPN neni overeny
 pwr,1,LED,LED 0805,,D8,LCSC kod pro toto presne MPN neni overeny
 pwr,1,VSYS_OUT,PinHeader 1x2,,J3,LCSC kod pro toto presne MPN neni overeny
 hat,2,PinSocket 1x20,"zásuvková lišta 1×20, rozteč 2,54 mm, výška 8,5 mm",,U1,Pico Plus 2 se zasouvá shora; na modul samčí lišty 1×20

@@ -4,8 +4,8 @@
 **Firmware a mechanika:** [github.com/fedurca/het68](https://github.com/fedurca/het68)
 **Tento dokument:** [github.com/fedurca/het68_pcb](https://github.com/fedurca/het68_pcb)
 **Stav:** proof-of-concept běží; toto je zadání další hardwarové iterace
-**Verze zadání:** 2.0.0 · 28. 10. 2026 (Europe/Prague)
-**Git tag:** `v2.0.0`
+**Verze zadání:** 3.0.0 · 29. 10. 2026 (Europe/Prague)
+**Git tag:** `v3.0.0`
 **Jazyk:** čeština (k odeslání návrháři)
 
 Dokument vychází z provozu prototypu, z firmware v `fedurca/het68`, z vazby na pouzdro a z **zmrazeného compute + HAT v §1**.
@@ -347,8 +347,10 @@ MEMS ±1 mm (1 vzorek TDOA ≈ 7,15 mm).
 | CAD | KiCad 8+ (plugin jlcpcb-tools na BOM/CPL) |
 | Gerber | RS-274X + drill; stejný balík na JLCPCB i na tisk v EU (printed.cz) |
 | Výrobce | JLC SMT + LCSC (Basic přednostně před Extended); nebo EU tisk + osazení |
-| Vrstvy | HAT 4L; satelit 2L; power 2L |
-| Povrch | HASL; satelit ENIG kvůli MEMS |
+| Vrstvy | všechny 2L (printed.cz PROTOTYP nebere 4L) |
+| Povrch | ENIG (PROTOTYP nenabízí HAL); zelená lesklá maska, bílý potisk, obrys frézováním |
+| Pouzdra | ne 0402 a menší, ne BGA; 0603 je minimum. LGA/QFN/DFN/WSON nejsou BGA |
+| Rozměr | HAT 140 × 140 mm; satelit 28 × 52 mm; power 100 × 58 mm (max. PROTOTYP 200 × 250 mm) |
 | BOM | LCSC C-code, DNP, orientační cena @10 a @100 ks (bez ceny samotného Pico) |
 
 Počet RJ45 je daný (6). Volba jacku, shifteru, piezo budiče a env čipu je součást kusovníku. Kompletní výkresová dokumentace je podmínkou odevzdání.
@@ -396,4 +398,4 @@ Počet RJ45 je daný (6). Volba jacku, shifteru, piezo budiče a env čipu je so
 
 Technický obsah zadání pochází z provozu prototypu, z firmware het68 (`wiring_and_bom.md`, `buzzer.c`, `dps310.c`, pinout, 48 kHz/24 bit) a ze zmrazeného HAT v §1. Osoby, kontakty, nabídky a pracnosti v tomto dokumentu **nejsou**.
 
-Konec zadání v2.0.0.
+Konec zadání v3.0.0.

@@ -663,17 +663,23 @@ class Board:
         z.SetLayer(layer)
         z.SetNet(self.nets[netname])
         z.SetPadConnection(pcbnew.ZONE_CONNECTION_FULL)
-        z.SetMinThickness(pcbnew.FromMM(0.25))
+        # 0.1 mm still above printed.cz min copper; 0.25 mm ate the outline
+        # corners and KiCad reported the zone as unconnected to itself.
+        z.SetMinThickness(0)
         z.SetLocalClearance(pcbnew.FromMM(clearance))
         z.SetIsFilled(False)
-        z.SetIslandRemovalMode(
-            pcbnew.ISLAND_REMOVAL_MODE_ALWAYS if islands == "always" else pcbnew.ISLAND_REMOVAL_MODE_NEVER
-        )
+        if islands == "always":
+            z.SetIslandRemovalMode(pcbnew.ISLAND_REMOVAL_MODE_ALWAYS)
+        elif islands == "area":
+            z.SetIslandRemovalMode(pcbnew.ISLAND_REMOVAL_MODE_AREA)
+            z.SetMinIslandArea(int(pcbnew.FromMM(1) ** 2))
+        else:
+            z.SetIslandRemovalMode(pcbnew.ISLAND_REMOVAL_MODE_NEVER)
         if priority:
             z.SetAssignedPriority(priority)
         ol = z.Outline()
         ol.NewOutline()
-        m = 0.8
+        m = 1.2
         if pts is None:
             pts = ((m, m), (self.w - m, m), (self.w - m, self.h - m), (m, self.h - m))
         for x, y in pts:
@@ -1002,19 +1008,29 @@ def route(board: Board, power_nets, width=0.25):
 
 
 def design_rules(board: Board):
+    via_d = getattr(board, "via_d", 0.9)
+    via_drill = getattr(board, "via_drill", 0.5)
     ds = board.b.GetDesignSettings()
     ds.m_MinClearance = pcbnew.FromMM(0.2)
     ds.m_TrackMinWidth = pcbnew.FromMM(0.2)
-    ds.m_ViasMinSize = pcbnew.FromMM(0.55)
-    ds.m_ViasMinDrill = pcbnew.FromMM(0.3)
+    ds.m_ViasMinSize = pcbnew.FromMM(0.8)
+    ds.m_ViasMinDrill = pcbnew.FromMM(0.5)
     ds.m_CopperEdgeClearance = pcbnew.FromMM(0.3)
     ds.m_HoleClearance = pcbnew.FromMM(0.2)
+    for attr in ("SetBoardThickness",):
+        fn = getattr(ds, attr, None)
+        if callable(fn):
+            fn(pcbnew.FromMM(1.5))
+            break
+    else:
+        if hasattr(ds, "m_BoardThickness"):
+            ds.m_BoardThickness = pcbnew.FromMM(1.5)
     try:
         nc = ds.m_NetSettings.m_DefaultNetClass
         nc.SetClearance(pcbnew.FromMM(0.2))
         nc.SetTrackWidth(pcbnew.FromMM(0.25))
-        nc.SetViaDiameter(pcbnew.FromMM(0.6))
-        nc.SetViaDrill(pcbnew.FromMM(0.3))
+        nc.SetViaDiameter(pcbnew.FromMM(via_d))
+        nc.SetViaDrill(pcbnew.FromMM(via_drill))
     except Exception as e:
         print("netclass", e)
 
@@ -1070,11 +1086,11 @@ def base_libs(sch: Sch):
         sch.add_lib(lib_id, raw, pins)
 
 
-def R(sch, ref, nets, value="33", fp="Resistor_SMD:R_0402_1005Metric", mpn="RC0402FR-0733RL"):
+def R(sch, ref, nets, value="33", fp="Resistor_SMD:R_0603_1608Metric", mpn="RC0603FR-0733RL"):
     sch.add("Device:R", ref, value, fp, {"1": nets[0], "2": nets[1]}, mpn)
 
 
-def C(sch, ref, nets, value="100n", fp="Capacitor_SMD:C_0402_1005Metric", mpn="CL05B104KB5NNNC"):
+def C(sch, ref, nets, value="100n", fp="Capacitor_SMD:C_0603_1608Metric", mpn="CL10B104KB8NNNC"):
     sch.add("Device:C", ref, value, fp, {"1": nets[0], "2": nets[1]}, mpn)
 
 
@@ -1172,8 +1188,8 @@ def build_hat(sch: Sch):
         {"1": "+3V3", "2": "GND", "3": "+3V3", "4": None, "5": "+1V8"},
         "AP2112K-1.8TRG1",
     )
-    C(sch, "C1", ("+3V3", "GND"), "1u", mpn="CL05A105KA5NQNC")
-    C(sch, "C2", ("+1V8", "GND"), "1u", mpn="CL05A105KA5NQNC")
+    C(sch, "C1", ("+3V3", "GND"), "1u", mpn="CL10A105KA8NNNC")
+    C(sch, "C2", ("+1V8", "GND"), "1u", mpn="CL10A105KA8NNNC")
     C(sch, "C3", ("+3V3", "GND"), "10u", "Capacitor_SMD:C_0805_2012Metric", "CL21A106KOQNNNE")
     C(sch, "C4", ("VSYS", "GND"), "10u", "Capacitor_SMD:C_0805_2012Metric", "CL21A106KOQNNNE")
 
@@ -1210,10 +1226,10 @@ def build_hat(sch: Sch):
         rnum += 1
         R(sch, f"R{rnum}", (f"WS{i}_B", f"WS{i}"), "33")
         rnum += 1
-        R(sch, f"R{rnum}", (f"LED{i}_G", f"LED{i}"), "100", mpn="RC0402FR-07100RL")
+        R(sch, f"R{rnum}", (f"LED{i}_G", f"LED{i}"), "100", mpn="RC0603FR-07100RL")
         rnum += 1
         # Holds the translator input low while the jack is empty.
-        R(sch, f"R{49 + i}", (f"SD{i}_18", "GND"), "100k", mpn="RC0402FR-07100KL")
+        R(sch, f"R{49 + i}", (f"SD{i}_18", "GND"), "100k", mpn="RC0603FR-07100KL")
         for net in (f"SCK{i}", f"WS{i}", f"SD{i}_18", f"LED{i}"):
             # D pin 1 = K (cathode) on signal, pin 2 = A to GND
             sch.add(
@@ -1293,11 +1309,11 @@ def build_hat(sch: Sch):
         "BLM18PG601SN1D",
     )
     C(sch, "C12", ("+3V3A", "GND"), "100n")
-    C(sch, "C13", ("+3V3A", "GND"), "1u", mpn="CL05A105KA5NQNC")
-    R(sch, "R42", ("I2C1_SDA", "+3V3"), "4.7k", mpn="RC0402FR-074K7L")
-    R(sch, "R43", ("I2C1_SCL", "+3V3"), "4.7k", mpn="RC0402FR-074K7L")
-    R(sch, "R44", ("I2C0_SDA", "+3V3"), "4.7k", mpn="RC0402FR-074K7L")
-    R(sch, "R45", ("I2C0_SCL", "+3V3"), "4.7k", mpn="RC0402FR-074K7L")
+    C(sch, "C13", ("+3V3A", "GND"), "1u", mpn="CL10A105KA8NNNC")
+    R(sch, "R42", ("I2C1_SDA", "+3V3"), "4.7k", mpn="RC0603FR-074K7L")
+    R(sch, "R43", ("I2C1_SCL", "+3V3"), "4.7k", mpn="RC0603FR-074K7L")
+    R(sch, "R44", ("I2C0_SDA", "+3V3"), "4.7k", mpn="RC0603FR-074K7L")
+    R(sch, "R45", ("I2C0_SCL", "+3V3"), "4.7k", mpn="RC0603FR-074K7L")
 
     # power monitor
     sch.add(
@@ -1401,12 +1417,12 @@ def build_sat(sch: Sch):
         {"1": "+3V3", "2": None, "3": "GND", "4": "LED"},
         "SK6812 (5050, 3.3 V)",
     )
-    C(sch, "C1", ("+3V3", "GND"), "1u", mpn="CL05A105KA5NQNC")
-    C(sch, "C2", ("+1V8", "GND"), "1u", mpn="CL05A105KA5NQNC")
+    C(sch, "C1", ("+3V3", "GND"), "1u", mpn="CL10A105KA8NNNC")
+    C(sch, "C2", ("+1V8", "GND"), "1u", mpn="CL10A105KA8NNNC")
     C(sch, "C3", ("+1V8", "GND"), "100n")
     C(sch, "C4", ("+3V3", "GND"), "100n")
     R(sch, "R1", ("SD", "SD_J"), "33")
-    R(sch, "R2", ("SD", "GND"), "100k", mpn="RC0402FR-07100KL")
+    R(sch, "R2", ("SD", "GND"), "100k", mpn="RC0603FR-07100KL")
 
 
 def build_pwr(sch: Sch):
@@ -1508,8 +1524,8 @@ def build_pwr(sch: Sch):
         usb,
         "TYPE-C-31-M-12",
     )
-    R(sch, "R1", ("CC1", "GND"), "5.1k", mpn="RC0402FR-075K1L")
-    R(sch, "R2", ("CC2", "GND"), "5.1k", mpn="RC0402FR-075K1L")
+    R(sch, "R1", ("CC1", "GND"), "5.1k", mpn="RC0603FR-075K1L")
+    R(sch, "R2", ("CC2", "GND"), "5.1k", mpn="RC0603FR-075K1L")
     sch.add("Device:D", "D7", "SS34", "Diode_SMD:D_SMC", {"1": "VSYS_RAW", "2": "VBUS"}, "SS34")
     sch.add(
         "Device:FerriteBead",
@@ -1528,7 +1544,7 @@ def build_pwr(sch: Sch):
         "electrolytic 100u 16V",
     )
     C(sch, "C3", ("VBUS", "GND"), "10u", "Capacitor_SMD:C_0805_2012Metric", "CL21A106KOQNNNE")
-    R(sch, "R3", ("VSYS", "LED"), "2.2k", mpn="RC0402FR-072K2L")
+    R(sch, "R3", ("VSYS", "LED"), "2.2k", mpn="RC0603FR-072K2L")
     # LED pin 1 = K, pin 2 = A
     sch.add(
         "Device:LED",
@@ -1549,31 +1565,30 @@ def build_pwr(sch: Sch):
 
 
 # ---------------------------------------------------------------------------
-# HAT rev E geometry (4 layers, 100 x 100 mm)
+# HAT rev F geometry (2 layers, 140 x 140 mm) — printed.cz prototyp
 # ---------------------------------------------------------------------------
 
-HAT_W = HAT_H = 100.0
+HAT_W = HAT_H = 140.0
 # Pico footprint origin is pin 1. Rotated 90 deg: USB-C end on the west edge,
 # pins 1-20 along y = PICO_Y0, pins 40..21 along y = PICO_Y0 - 17.78.
-PICO_X0, PICO_Y0 = 3.6, 59.0
+PICO_X0, PICO_Y0 = 3.6, 79.0
 # RJHSE-5380 opens towards footprint -Y. North row rot 0, south row rot 180,
 # front face (local y = -8) on the board edge.
 JACK_FRONT = 8.0
-JACKS_N = (("J1", 42.0), ("J2", 63.0), ("J3", 84.0))
-JACKS_S = (("J4", 49.12), ("J5", 70.12), ("J6", 91.12))
+JACKS_N = (("J1", 58.0), ("J2", 88.0), ("J3", 118.0))
+JACKS_S = (("J4", 65.0), ("J5", 95.0), ("J6", 125.0))
 # In-line ESD + series R behind each jack, jack-local coordinates (+y inward).
 MOD_X = {"SCK": -2.0, "WS": 1.5, "SD": 5.0, "LED": 8.5}
 MOD_D_Y, MOD_R_Y, MOD_VIA_Y, MOD_TIP_Y = 9.6, 12.5, 10.8, 14.4
-# In2: 3V3 plane, with a C-shaped +3V3_MIC island under both jack rows that
-# picks up contact 7 of every jack directly.
-CZONE = (
-    (22.0, 0.8), (99.2, 0.8), (99.2, 99.2), (33.0, 99.2), (33.0, 83.7),
-    (96.4, 83.7), (96.4, 16.3), (22.0, 16.3),
-)
-CZONE_RECTS = ((22.0, 0.8, 99.2, 16.3), (96.4, 0.8, 99.2, 99.2), (33.0, 83.7, 99.2, 99.2))
-# SCK/WS drivers, B row towards their jacks. ~8 mm to the module tips.
-CLOCK_DRIVERS = {"U2": (63.0, 34.0, 90), "U3": (63.0, 66.0, 270)}
-PIEZO_DRV = (24.0, 70.0, 90)  # DRV8837 WSON-8, 0.5 mm pitch
+R_PAD = 0.825  # R_0603 pad centre
+C_PAD = 0.775  # C_0603 pad centre
+# SCK/WS drivers, B row towards their jacks.
+CLOCK_DRIVERS = {"U2": (88.0, 46.0, 90), "U3": (88.0, 94.0, 270)}
+U4_POS = (85.0, 70.0, 0)
+PIEZO_DRV = (24.0, 100.0, 90)  # DRV8837 WSON-8, 0.5 mm pitch
+R40_POS = (PIEZO_DRV[0] - 2.0, PIEZO_DRV[1] + 5.5)
+R41_POS = (PIEZO_DRV[0] + 1.8, PIEZO_DRV[1] + 5.5)
+C11_POS = (18.0, 101.0)
 
 
 def wson8_pad(n):
@@ -1601,14 +1616,6 @@ def rot_at(ux, uy, rot, x, y):
     return ux - y, uy + x
 
 
-def in_czone(x, y, m=1.0):
-    return any(x0 + m <= x <= x1 - m and y0 + m <= y <= y1 - m for x0, y0, x1, y1 in CZONE_RECTS)
-
-
-def out_czone(x, y, m=1.0):
-    return not any(x0 - m <= x <= x1 + m and y0 - m <= y <= y1 + m for x0, y0, x1, y1 in CZONE_RECTS)
-
-
 def hat_jacks():
     """(mic index, ref, origin x, origin y, sign) — sign -1 means rotated 180 deg."""
     for i, (ref, jx) in enumerate(JACKS_N, start=1):
@@ -1628,7 +1635,7 @@ def jack_parts(i):
 
 
 def place_hat(board: Board, sch: Sch):
-    """100 x 100 mm, 4 layers. Two rows of three RJ45, Pico horizontal in the west."""
+    """140 x 140 mm, 2 layers. Two rows of three RJ45, Pico horizontal in the west."""
     by = {p["ref"]: p for p in sch.parts}
     W, H = board.w, board.h
 
@@ -1642,29 +1649,30 @@ def place_hat(board: Board, sch: Sch):
         def at(x, y):
             return jx + s * x, jy + s * y
 
+        pd_via = None
         for line in ("SCK", "WS", "SD", "LED"):
             # Cathode (pad 1) sits on the signal line, anode 2.1 mm further +x.
             board.place(by[parts[f"D_{line}"]], *at(MOD_X[line] + 1.05, MOD_D_Y), rot)
         for line in ("SCK", "WS", "LED"):
             board.place(by[parts[f"R_{line}"]], *at(MOD_X[line], MOD_R_Y), rot + 90)
         # SD pull-down: pad 1 on the SD line, pad 2 to a GND via.
-        board.place(by[parts["R_PD"]], *at(MOD_X["SD"] + 0.51, MOD_R_Y), rot)
+        board.place(by[parts["R_PD"]], *at(MOD_X["SD"] + R_PAD, MOD_R_Y), rot)
 
     # Clock drivers face their jack row; SD receiver east of the Pico.
     for ref, (ux, uy, rot) in CLOCK_DRIVERS.items():
         board.place(by[ref], ux, uy, rot)
-    board.place(by["U4"], 61.5, 50.0, 0)
-    board.place(by["C5"], 60.6, 40.4, 0)
-    board.place(by["C8"], 58.0, 27.6, 0)
-    board.place(by["C6"], 65.4, 59.6, 0)
-    board.place(by["C9"], 69.6, 68.6, 90)
-    board.place(by["C7"], 58.6, 44.3, 0)
-    board.place(by["C10"], 64.4, 44.3, 0)
-    board.place(by["U5"], 72.0, 50.0, 0)
-    board.place(by["C1"], 69.6, 47.0, 0)
-    board.place(by["C2"], 74.4, 47.0, 0)
-    board.place(by["C3"], 16.0, 35.5, 0)
-    board.place(by["C4"], 7.0, 35.5, 0)
+    board.place(by["U4"], *U4_POS)
+    board.place(by["C5"], 85.0, 52.0, 0)
+    board.place(by["C8"], 80.0, 38.0, 0)
+    board.place(by["C6"], 90.0, 86.0, 0)
+    board.place(by["C9"], 94.0, 102.0, 90)
+    board.place(by["C7"], 74.0, 62.0, 0)
+    board.place(by["C10"], 96.0, 62.0, 0)
+    board.place(by["U5"], 98.0, 70.0, 0)
+    board.place(by["C1"], 95.0, 67.0, 0)
+    board.place(by["C2"], 101.0, 67.0, 0)
+    board.place(by["C3"], 16.0, 52.0, 0)
+    board.place(by["C4"], 7.0, 52.0, 0)
 
     # North-west: supply input, power monitor, mic-rail shunt.
     board.place(by["J10"], 2.6, 14.0, 0)
@@ -1676,24 +1684,24 @@ def place_hat(board: Board, sch: Sch):
     board.place(by["R48"], 22.0, 14.0, 0)
 
     # South-west: UART, environment, piezo driver and four piezo headers.
-    board.place(by["J17"], 2.6, 66.0, 0)
-    board.place(by["U7"], 10.0, 68.0, 0)
-    board.place(by["U8"], 10.0, 73.0, 0)
-    board.place(by["FB1"], 16.0, 66.0, 0)
-    board.place(by["C12"], 13.5, 68.0, 90)
-    board.place(by["C13"], 13.5, 73.0, 90)
-    board.place(by["R42"], 6.5, 70.0, 90)
-    board.place(by["R43"], 6.5, 73.0, 90)
+    board.place(by["J17"], 2.6, 86.0, 0)
+    board.place(by["U7"], 10.0, 88.0, 0)
+    board.place(by["U8"], 10.0, 93.0, 0)
+    board.place(by["FB1"], 16.0, 86.0, 0)
+    board.place(by["C12"], 13.5, 88.0, 90)
+    board.place(by["C13"], 13.5, 93.0, 90)
+    board.place(by["R42"], 6.5, 90.0, 90)
+    board.place(by["R43"], 6.5, 93.0, 90)
     # rot 90: IN1/IN2 and the 3V3 pins face the Pico, OUT1/OUT2 face the headers.
     board.place(by["U6"], *PIEZO_DRV)
-    board.place(by["C11"], 21.6, 68.6, 0)
-    board.place(by["R40"], 22.0, 75.5, 270)
-    board.place(by["R41"], 25.8, 75.5, 270)
-    for ref, x, y in (("J11", 7.5, 81.0), ("J12", 7.5, 88.0), ("J13", 13.5, 81.0), ("J14", 13.5, 88.0)):
+    board.place(by["C11"], *C11_POS)
+    board.place(by["R40"], *R40_POS, 270)
+    board.place(by["R41"], *R41_POS, 270)
+    for ref, x, y in (("J11", 7.5, 115.0), ("J12", 7.5, 122.0), ("J13", 13.5, 115.0), ("J14", 13.5, 122.0)):
         board.place(by[ref], x, y, 0)
 
     hole_fp = "MountingHole:MountingHole_3.2mm_M3"
-    for i, (x, y) in enumerate(((4, 4), (4, H - 4), (W - 6, 34), (W - 6, 66)), start=1):
+    for i, (x, y) in enumerate(((4, 4), (4, H - 4), (W - 8, 50), (W - 8, 90)), start=1):
         dummy = {
             "ref": f"H{i}",
             "value": "M3",
@@ -1746,29 +1754,31 @@ def hat_prewire(api):
             "SD": (f"SD{i}_18", [(3.048, 1.78), (3.048, 3.0), (5.0, 4.952)]),
             "LED": (f"LED{i}", [(7.112, 1.78), (7.112, 3.0), (8.5, 4.388)]),
         }
+        diode_gnd = []
         for line, (net, pts) in lines.items():
             x = MOD_X[line]
             if line == "SD":
                 pts = pts + [(x, MOD_D_Y), (x, MOD_TIP_Y)]
                 tip = (x, MOD_TIP_Y)
             else:
-                pts = pts + [(x, MOD_D_Y), (x, MOD_R_Y - 0.51)]
+                pts = pts + [(x, MOD_D_Y), (x, MOD_R_Y - R_PAD)]
                 tip = (x, MOD_D_Y + 1.2)
             draw([at(*p) for p in pts], 0, net)
             group = [pad_near(net, *at(*pts[0])), pad_near(net, *at(x, MOD_D_Y))]
             if line == "SD":
                 group.append(pad_near(net, *at(x, MOD_R_Y)))
-                gx = x + 1.02
+                gx = x + 2 * R_PAD
                 gp = pad_near("GND", *at(gx, MOD_R_Y))
-                draw([at(gx, MOD_R_Y), at(gx, MOD_R_Y + 1.25)], 0, "GND")
-                via(*at(gx, MOD_R_Y + 1.25), "GND")
+                draw([at(gx, MOD_R_Y), at(gx, MOD_R_Y + 1.8)], 0, "GND")
+                via(*at(gx, MOD_R_Y + 1.8), "GND")
                 gp["plane_done"] = True
+                pd_via = at(gx, MOD_R_Y + 1.8)
             else:
-                group.append(pad_near(net, *at(x, MOD_R_Y - 0.51)))
+                group.append(pad_near(net, *at(x, MOD_R_Y - R_PAD)))
                 # Driver side of the series resistor continues to the tip.
                 side = f"{line}{i}_B" if line != "LED" else f"LED{i}_G"
-                rp = pad_near(side, *at(x, MOD_R_Y + 0.51))
-                draw([at(x, MOD_R_Y + 0.51), at(x, MOD_TIP_Y)], 0, side)
+                rp = pad_near(side, *at(x, MOD_R_Y + R_PAD))
+                draw([at(x, MOD_R_Y + R_PAD), at(x, MOD_TIP_Y)], 0, side)
                 set_tip(rp, *at(x, MOD_TIP_Y))
             for p in group:
                 set_tip(p, *at(*tip))
@@ -1778,6 +1788,41 @@ def hat_prewire(api):
             draw([at(ax, MOD_D_Y), at(ax, MOD_VIA_Y)], 0, "GND")
             via(*at(ax, MOD_VIA_Y), "GND")
             gp["plane_done"] = True
+            diode_gnd.append(at(ax, MOD_VIA_Y))
+            if line == "SD":
+                draw([pd_via, at(ax, MOD_VIA_Y)], 1, "GND")
+        if len(diode_gnd) >= 2:
+            draw(diode_gnd, 1, "GND")
+
+    via(2.2, 2.2, "GND")
+    via(HAT_W - 2.2, 2.2, "GND")
+    via(2.2, HAT_H - 2.2, "GND")
+    via(HAT_W - 2.2, HAT_H - 2.2, "GND")
+    via(1.5, 1.5, "GND")
+    via(HAT_W - 1.5, 1.5, "GND")
+    via(1.5, HAT_H - 1.5, "GND")
+    via(HAT_W - 1.5, HAT_H - 1.5, "GND")
+
+    # +3V3_MIC on B.Cu along both jack rows (contact 7 is PTH) and the east edge.
+    mic_bus = []
+    for i, _ref, jx, jy, s in hat_jacks():
+        p7 = (jx + s * 6.096, jy)
+        bus = (jx + s * 6.096, 3.2 if s > 0 else HAT_H - 3.2)
+        gp = pad_near("+3V3_MIC", *p7)
+        draw([p7, bus], 1, "+3V3_MIC")
+        via(*bus, "+3V3_MIC")
+        set_tip(gp, *bus)
+        gp["plane_done"] = True
+        mic_bus.append(bus)
+    north = sorted(p for p in mic_bus if p[1] < HAT_H / 2)
+    south = sorted(p for p in mic_bus if p[1] >= HAT_H / 2)
+    if len(north) >= 2:
+        draw(north, 1, "+3V3_MIC")
+    if len(south) >= 2:
+        draw(south, 1, "+3V3_MIC")
+    if north and south:
+        east_n, east_s = (HAT_W - 3.2, 3.2), (HAT_W - 3.2, HAT_H - 3.2)
+        draw([north[-1], east_n, east_s, south[-1]], 1, "+3V3_MIC")
 
     # Clock drivers: A1/A3/A5 = SCK tied under the body, A2/A4/A6 = WS tied
     # just outside the A row; both leave past pin 1. Pins 1/2 (VCCA, DIR)
@@ -1808,25 +1853,31 @@ def hat_prewire(api):
         return rot_at(*PIEZO_DRV, *wson8_pad(n))
 
     def joined(net, pts, others):
-        draw(pts, 0, net)
+        draw(pts, 0, net, 0.25)
         group = [pad_near(net, *pts[0])] + [pad_near(net, *q) for q in others]
         for p in group:
             set_tip(p, *pts[-1])
 
     (x1, y1), (x2, y2), (x3, y3), (x4, y4) = w(1), w(2), w(3), w(4)
     (x5, y5), (x6, y6), (x7, y7), (x8, y8) = w(5), w(6), w(7), w(8)
-    r40, r41 = (22.0, 74.0375), (25.8, 74.0375)
+    r40 = (R40_POS[0], R40_POS[1] - 1.4625)
+    r41 = (R41_POS[0], R41_POS[1] - 1.4625)
     joined("PIEZO_P", [(x2, y2), (x2, y2 + 0.65), (r40[0], y2 + 0.65 + (x2 - r40[0])), r40], [r40])
     joined("PIEZO_N", [(x3, y3), (x3, y3 + 0.65), (r41[0], y3 + 0.65 + (r41[0] - x3)), r41], [r41])
-    c11 = (21.09, 68.6)
-    knee = x1 - 0.75
-    joined("VSYS", [(x1, y1), (knee, y1), (c11[0], y1 - (knee - c11[0])), c11], [c11])
+    c11 = (C11_POS[0] - C_PAD, C11_POS[1])
+    # West first: pin 8 (+3V3) sits on the same X, 1.9 mm south of pin 1.
+    joined("VSYS", [(x1, y1), (x1 - 1.5, y1), (x1 - 1.5, 99.0), (c11[0], 99.0), c11], [c11])
+    pad_near("VSYS", x1, y1)["plane_done"] = True
+    g11 = (C11_POS[0] + C_PAD, C11_POS[1])
+    draw([g11, (g11[0] + 1.7, g11[1])], 0, "GND")
+    via(g11[0] + 1.7, g11[1], "GND")
+    pad_near("GND", *g11)["plane_done"] = True
     # GND pin onto the exposed pad, 3V3 pins bridged to one via.
     draw([(x4, y4), (x4, y4 - 0.55)], 0, "GND")
     pad_near("GND", x4, y4)["plane_done"] = True
-    draw([(x8, y8), (x7, y7)], 0, "+3V3")
+    draw([(x8, y8), (x7, y7)], 0, "+3V3", 0.25)
     v3 = (x8 - 0.35, y8 - 1.75)
-    draw([(x8, y8), (x8, y8 - 0.85), v3], 0, "+3V3")
+    draw([(x8, y8), (x8, y8 - 0.85), v3], 0, "+3V3", 0.25)
     via(*v3, "+3V3")
     for x, y in ((x7, y7), (x8, y8)):
         pad_near("+3V3", x, y)["plane_done"] = True
@@ -1835,6 +1886,93 @@ def hat_prewire(api):
     draw([(x6, y6), (x6, y6 - 0.55), (x6 - 0.5, y6 - 1.05), (x6 - 0.5, y6 - 2.05)], 0, "PIEZO_IN1")
     set_tip(pad_near("PIEZO_IN2", x5, y5), x5 + 0.75, y5 - 2.05)
     draw([(x5, y5), (x5, y5 - 0.55), (x5 + 0.75, y5 - 1.3), (x5 + 0.75, y5 - 2.05)], 0, "PIEZO_IN2")
+
+    # +3V3 on B.Cu east of the Pico (not under the header or antenna keepout).
+    p36 = rot_at(PICO_X0, PICO_Y0, 90, 17.78, 10.16)
+    spine_x, spine_y = 56.0, 50.0
+    draw([p36, (p36[0], spine_y), (spine_x, spine_y)], 1, "+3V3")
+    u4p = rot_at(*U4_POS, *tssop24_pad(1))
+    u4via = (u4p[0], u4p[1] - 1.8)
+    draw([u4p, u4via], 0, "+3V3")
+    via(*u4via, "+3V3")
+    pad_near("+3V3", *u4p)["plane_done"] = True
+    p2 = rot_at(*U4_POS, *tssop24_pad(2))
+    p11 = rot_at(*U4_POS, *tssop24_pad(11))
+    p12 = rot_at(*U4_POS, *tssop24_pad(12))
+    p13 = rot_at(*U4_POS, *tssop24_pad(13))
+    p22 = rot_at(*U4_POS, *tssop24_pad(22))
+    draw([p11, p12], 0, "GND")
+    v12 = (p12[0], p12[1] + 1.8)
+    draw([p12, v12], 0, "GND")
+    via(*v12, "GND")
+    v13 = (p13[0], p13[1] + 1.8)
+    draw([p13, v13], 0, "GND")
+    via(*v13, "GND")
+    draw([v12, v13], 0, "GND")
+    v22 = (p22[0] + 3.6, p22[1])
+    draw([p22, v22], 0, "GND")
+    via(*v22, "GND")
+    v2 = (p2[0] - 1.8, 62.5)
+    draw([p2, (v2[0], p2[1]), v2], 0, "GND")
+    via(*v2, "GND")
+    for pt in (p2, p11, p12, p13, p22):
+        pad_near("GND", *pt)["plane_done"] = True
+    vias_b = [v3, u4via]
+    for ux, uy, rot in CLOCK_DRIVERS.values():
+        vias_b.append(rot_at(ux, uy, rot, -1.2, -3.25))
+    u9via = (14.0, 16.0)
+    via(*u9via, "+3V3")
+    vias_b.append(u9via)
+    for p in by_net["+3V3"]:
+        if p["smd"] and p["ref"] == "U9":
+            dx, dy = p["x"] - 14.0, p["y"] - 22.0
+            if abs(dx) >= abs(dy):
+                ex = p["x"] + (2.4 if dx >= 0 else -2.4)
+                draw([(p["x"], p["y"]), (ex, p["y"]), (ex, u9via[1]), u9via], 0, "+3V3")
+            else:
+                ey = p["y"] + (2.4 if dy >= 0 else -2.4)
+                draw([(p["x"], p["y"]), (p["x"], ey), (u9via[0], ey), u9via], 0, "+3V3")
+            p["plane_done"] = True
+        elif p["smd"] and p["ref"] == "U5":
+            dx = 2.0 if p["x"] >= p["fx"] else -2.0
+            vx, vy = p["x"] + dx, p["y"]
+            draw([(p["x"], p["y"]), (vx, vy)], 0, "+3V3")
+            via(vx, vy, "+3V3")
+            p["plane_done"] = True
+            vias_b.append((vx, vy))
+    for x, y in vias_b:
+        # Horizontals at U4's Y would split the GND pour under the TSSOP.
+        ly = 60.0 if (x > spine_x and 61.0 < y < 76.0) else y
+        if ly != y:
+            draw([(x, y), (x, ly)], 1, "+3V3")
+        draw([(x, ly), (spine_x, ly), (spine_x, spine_y)], 1, "+3V3")
+    sd2u = rot_at(*U4_POS, *tssop24_pad(4))
+    sd2p = rot_at(PICO_X0, PICO_Y0, 90, 17.78, (40 - 22) * 2.54)
+    # F.Cu around the Pico: keepout on the module forbids B.Cu between the headers.
+    draw([sd2u, (sd2u[0] - 2.4, sd2u[1]), (56.0, sd2u[1]), (56.0, 50.0), (sd2p[0], 50.0), sd2p], 0, "SD2_3V3")
+    set_tip(pad_near("SD2_3V3", *sd2u), 56.0, 50.0)
+    set_tip(pad_near("SD2_3V3", *sd2p), 56.0, 50.0)
+    # GND vias on the 0603 decoupling caps that sit next to TSSOP bodies.
+    for ref in ("C1", "C2", "C7", "C10"):
+        for gp in by_net.get("GND", []):
+            if gp["ref"] != ref:
+                continue
+            dx = 1.6 if gp["x"] >= gp["fx"] else -1.6
+            vx, vy = gp["x"] + dx, gp["y"]
+            if abs(gp["x"] - gp["fx"]) < 0.15:
+                dx = 0
+                dy = 1.6 if gp["y"] >= gp["fy"] else -1.6
+                vx, vy = gp["x"], gp["y"] + dy
+            draw([(gp["x"], gp["y"]), (vx, vy)], 0, "GND")
+            via(vx, vy, "GND")
+            gp["plane_done"] = True
+    for p in by_net.get("GND", []):
+        if p["ref"] != "U5" or not p["smd"]:
+            continue
+        vx, vy = 93.0, p["y"]
+        draw([(p["x"], p["y"]), (vx, vy)], 0, "GND")
+        via(vx, vy, "GND")
+        p["plane_done"] = True
 
 
 def place_sat(board: Board, sch: Sch):
@@ -1846,7 +1984,7 @@ def place_sat(board: Board, sch: Sch):
     board.place(by["MK1"], 14, 40, 0)
     board.place(by["C3"], 8, 38, 0)
     board.place(by["R1"], 20, 36, 90)
-    board.place(by["R2"], 22, 36, 90)
+    board.place(by["R2"], 24.5, 36, 90)
     board.place(by["D1"], 22, 42, 0)
     board.place(by["C4"], 22, 46, 0)
 
@@ -1855,8 +1993,8 @@ def place_pwr(board: Board, sch: Sch):
     by = {p["ref"]: p for p in sch.parts}
     # Left: USB-C lab supply. Right: CT secondary, burden, LC, bridge, crowbar.
     board.place(by["J2"], 16, 28, 0)
-    board.place(by["R1"], 30, 36, 90)
-    board.place(by["R2"], 30, 32, 90)
+    board.place(by["R1"], 22, 52, 0)
+    board.place(by["R2"], 22, 48, 0)
     board.place(by["C3"], 24, 22, 0)
     board.place(by["D7"], 32, 42, 0)
     board.place(by["J1"], 92, 42, 0)
@@ -1880,22 +2018,54 @@ def place_pwr(board: Board, sch: Sch):
     board.place(by["J3"], 92, 22, 0)
 
 
+def pwr_prewire(api):
+    """CC resistors sit north of USB-C; each net has its own Y so they do not share a bus."""
+    by_net = api["by_net"]
+    draw, set_tip, via = api["draw_poly"], api["set_tip"], api["place_via"]
+    for net, rx, ry in (("CC1", 22.0, 52.0), ("CC2", 22.0, 48.0)):
+        pads = list(by_net.get(net, []))
+        if len(pads) < 2:
+            continue
+        usb = min(pads, key=lambda p: p["x"])
+        near = [p for p in pads if abs(p["x"] - rx) < 2 and abs(p["y"] - ry) < 2]
+        if not near:
+            continue
+        rp = min(near, key=lambda p: p["x"])
+        vx, vy = usb["x"] - 2.6, usb["y"] + 1.6
+        draw([(usb["x"], usb["y"]), (vx, usb["y"]), (vx, vy)], 0, net)
+        via(vx, vy, net)
+        draw([(vx, vy), (vx, ry), (rp["x"] - 1.2, ry)], 1, net)
+        via(rp["x"] - 1.2, ry, net)
+        draw([(rp["x"] - 1.2, ry), (rp["x"], ry)], 0, net)
+        set_tip(usb, vx, vy)
+        set_tip(rp, rp["x"], ry)
+        gnd = max((p for p in by_net.get("GND", []) if abs(p["x"] - rx) < 2 and abs(p["y"] - ry) < 2), key=lambda p: p["x"], default=None)
+        if gnd is not None:
+            draw([(gnd["x"], gnd["y"]), (rx + 2.2, ry)], 0, "GND")
+            via(rx + 2.2, ry, "GND")
+            gnd["plane_done"] = True
+
+
 def finish(board: Board, sch: Sch, out: Path, power_nets=None):
     board.outline()
     board.assign_nets()
     design_rules(board)
     if board.layers >= 4:
-        # In1 solid GND; In2 3V3 with the +3V3_MIC island under the jacks.
         board.add_zone("GND", pcbnew.In1_Cu, islands="always")
         board.add_zone("+3V3", pcbnew.In2_Cu, clearance=0.3, islands="always")
-        board.add_zone("+3V3_MIC", pcbnew.In2_Cu, pts=CZONE, priority=1, clearance=0.3, islands="always")
-        via_d, via_drill, hole_min = board.via_d, board.via_drill, board.via_drill
     else:
-        board.add_zone("GND", pcbnew.B_Cu)
-        via_d, via_drill, hole_min = 0.6, 0.3, 0.3
+        board.add_zone("GND", pcbnew.B_Cu, islands="area")
+    via_d = getattr(board, "via_d", 0.9)
+    via_drill = getattr(board, "via_drill", 0.5)
+    hole_min = via_drill
     from route2 import route_board
     missing = route_board(board)
     board.fill()
+    try:
+        board.b.BuildConnectivity()
+        board.b.GetConnectivity().RecalculateRatsnest()
+    except Exception:
+        pass
     pcb_path = out / f"{board.name}.kicad_pcb"
     board.save(pcb_path)
     sch_path = out / f"{board.name}.kicad_sch"
@@ -1930,8 +2100,7 @@ LCSC = {
     "DPS310": "C130156",
     "SHT40-AD1B-R2": "C2909890",
     "MMICT5848-00-012": "C20344623",
-    "RC0402FR-0733RL": "C138002",
-    "RC0402FR-07100RL": "C106232",
+    # 0603 passives: LCSC not confirmed for these exact MPN.
     "TYPE-C-31-M-12": "C165948",
     "RJHSE-5380": "C464586",
     "RJHSE-5380 (8P8C, bez magnetik)": "C464586",
@@ -2007,25 +2176,23 @@ def main():
     base_libs(hat)
     build_hat(hat)
     if not os.environ.get("SKIP_HAT"):
-        hb = Board("het68-hat", HAT_W, HAT_H, 4)
-        # 0.5 mm drill / 0.9 mm via: cheapest drill class at most fabs.
-        hb.via_d, hb.via_drill = 0.9, 0.5
-        # Supply currents are below 0.5 A; 0.3 mm stays inside the 0.25 mm grid halo.
+        hb = Board("het68-hat", HAT_W, HAT_H, 2)
+        # printed.cz prototyp: 2 vrstvy, vrták ≥ 0,5 mm, stopa/mezera ≥ 0,2 mm.
+        hb.via_d, hb.via_drill = 0.8, 0.5
         hb.power_w = 0.3
-        hb.plane_nets = {"GND": None, "+3V3": out_czone, "+3V3_MIC": in_czone}
+        hb.plane_nets = {"GND": None}
         hb.prewire = hat_prewire
         hb.no_escape = {(ref, str(n)) for ref in CLOCK_DRIVERS for n in range(1, 9)}
         hb.no_escape |= {("U6", str(n)) for n in range(1, 9)}
-        # Lines that reach a driver row from the side: the inner one goes first,
-        # the outer one then wraps around it instead of walling it in.
-        hb.route_first = ["+3V3A", "SCK1_B", "WS3_B", "SCK6_B", "WS4_B"]
+        hb.no_escape |= {("U4", str(n)) for n in (1, 2, 11, 12, 13, 22)}
+        hb.route_first = ["+3V3A", "+3V3_MIC", "SD2_3V3", "SCK1_B", "WS3_B", "SCK6_B", "WS4_B"]
         place_hat(hb, hat)
         for i, _ref, jx, jy, s in hat_jacks():
             hb.text(f"MIC{i}", jx + s * 3.56, jy + s * 16.4, size=1.0)
-        hb.text("het68 HAT rev E  4L", 76.0, 39.5, size=1.0)
-        hb.text("T568B 1 SCK 3 WS 4 SD 7 3V3 8 LED", 76.0, 41.5, size=0.8)
-        hb.text("PZ1-4  pin1 = A", 15.0, 94.5, size=0.8)
-        hb.text("UART 1 TX 2 RX", 11.0, 63.0, size=0.8)
+        hb.text("het68 HAT rev F  2L", 108.0, 58.0, size=1.0)
+        hb.text("T568B 1 SCK 3 WS 4 SD 7 3V3 8 LED", 108.0, 60.0, size=0.8)
+        hb.text("PZ1-4  pin1 = A", 15.0, 128.0, size=0.8)
+        hb.text("UART 1 TX 2 RX", 11.0, 83.0, size=0.8)
         hb.text("VSYS IN", 6.5, 11.0, size=0.8)
         out = ROOT / "het68-hat"
         out.mkdir(exist_ok=True)
@@ -2052,6 +2219,12 @@ def main():
     base_libs(sat)
     build_sat(sat)
     sb = Board("het68-sat", 28, 52, 2)
+    sb.via_d, sb.via_drill = 0.8, 0.5
+
+    def sat_prewire(api):
+        api["place_via"](2.2, 2.2, "GND")
+
+    sb.prewire = sat_prewire
     place_sat(sb, sat)
     sb.text("het68 SAT rev A", 14, 4, size=0.8)
     sb.text("port vzhuru", 14, 48, size=0.7)
@@ -2066,6 +2239,7 @@ def main():
     base_libs(pwr)
     build_pwr(pwr)
     pb = Board("het68-pwr", 100, 58, 2)
+    pb.via_d, pb.via_drill = 0.8, 0.5
     place_pwr(pb, pwr)
     pb.text("het68 PWR rev B", 50, 51, size=1.1)
     pb.text("JEN SEKUNDAR CT", 50, 6, size=1.0)

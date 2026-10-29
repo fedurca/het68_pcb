@@ -2,7 +2,26 @@
 
 Formát podle [Keep a Changelog](https://keepachangelog.com/cs/1.1.0/), verze podle [SemVer](https://semver.org/lang/cs/).
 
-Historie gitu je přepsaná; veřejné tagy `v1.1.1` až `v2.0.0`.
+Historie gitu je přepsaná; veřejné tagy `v1.1.1` až `v3.0.0`.
+
+## [3.0.0] — 2026-10-29
+
+Všechny tři desky jdou objednat jako printed.cz PROTOTYP (jedna osazená deska, 5 000 Kč, do týdne). Major verze proto, že HAT mění obrys, tloušťku a počet vrstev proti v2.0.0 — pouzdro z 100 × 100 mm nesedí. GPIO z v2.0.0 zůstává.
+
+### Changed
+
+- **HAT 140 × 140 mm, 2 vrstvy, FR4 1,5 mm (rev F).** F.Cu signál, B.Cu zemní výplň. Prokovy 0,8 / 0,5 mm. Ve v2.0.0 byl HAT 100 × 100 mm a 4 vrstvy — to PROTOTYP nebere.
+- **Pasiva 0603** (kondenzátory 10 µF zůstávají 0805). Na žádné desce není 0402 ani BGA.
+- **Povrch ENIG**, zelená lesklá maska, bílý potisk, obrys frézováním. HAL a drážkování u PROTOTYPu nejsou.
+- Satelit a power: stejné prokovy 0,8 / 0,5 mm a 0603. Díry M3 na HAT: [4; 4], [4; 136], [132; 50], [132; 90] mm.
+
+### Fixed
+
+- HAT, satelit i power: DRC 0, ERC 0, parita schéma ↔ deska 0. Satelit a power mají 0 nepřipojených padů. HAT má všechny sítě spojené; KiCad 10 hlásí 2× zone-to-self na vrcholu GND výplně (stejný bod, není to pad).
+
+### Removed
+
+- Vnitřní vrstvy HAT (In1 GND, In2 3V3). Napájení `+3V3` a `+3V3_MIC` je na B.Cu sběrnicích a prokovech.
 
 ## [2.0.0] — 2026-10-28
 
@@ -149,6 +168,7 @@ HAT rev E je kompletně propojený a vyrobitelný. Major verze proto, že se mě
 - Předpoklady objednatele k posouzení: UTP k mikrofonům, nové MEMS a převodníky úrovní, compute A = Pimoroni Pico Plus 2, compute B = vlastní deska s IPEX a SX1262.
 - GPIO tabulka [`docs/PINOUT.csv`](docs/PINOUT.csv) a checklist [`docs/CHECKLIST_NAVRHAR.md`](docs/CHECKLIST_NAVRHAR.md).
 
+[3.0.0]: https://github.com/fedurca/het68_pcb/releases/tag/v3.0.0
 [2.0.0]: https://github.com/fedurca/het68_pcb/releases/tag/v2.0.0
 [1.10.0]: https://github.com/fedurca/het68_pcb/releases/tag/v1.10.0
 [1.9.0]: https://github.com/fedurca/het68_pcb/releases/tag/v1.9.0

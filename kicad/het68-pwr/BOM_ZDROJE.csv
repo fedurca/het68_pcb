@@ -10,5 +10,5 @@ I2C power-path + boost 5 V,1,BQ25895RTWR,C80200,Vystup 5 V na Pico VSYS a HAT. N
 drzak 21700,1,BH-21700-B1BJ001,C20606791,SMT drzak. Clanek je tezky, desku podeprit.
 clanek,1,21700 s PCM,,Chraneny clanek. Holý 21700 bez ochrany na desku nedavat.
 4kanál V a I,1,PAC1934T-I/JQ,C623960,Panel baterie harvest vystup. Není na nakreslené desce.
-teploty NTC,4,NTC 10k 0402,,Clanek ma TS na BQ25895. Dalsi tri NTC: panel konektor kleště vystup.
+teploty NTC,4,NTC 10k 0603,,Clanek ma TS na BQ25895. Dalsi tri NTC: panel konektor kleště vystup. Ne 0402 (printed.cz prototyp).
 ADC pro NTC,1,ADS1115IDGSR,,I2C. LCSC kod dohledat pri objednavce (VSSOP-10).

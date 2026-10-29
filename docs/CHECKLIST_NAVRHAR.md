@@ -13,7 +13,7 @@
 
 ## Elektrika
 
-- [ ] I²S: GP8 WS, GP9 SCK, SD MIC1–6 = GP18/17/16/13/14/15 (rev E, v2.0.0)
+- [ ] I²S: GP8 WS, GP9 SCK, SD MIC1–6 = GP18/17/16/13/14/15 (rev E, od v2.0.0)
 - [ ] SCK/WS buffer na 6 jacků, stejná délka větví
 - [ ] 6× `LED_DIN`: MIC1–6 = GP21/20/19/10/11/12 (rev E); žádný daisy-chain `DOUT`
 - [ ] T568B: oranžový SCK, zelený WS, modrý SD, hnědý 3V3 + LED_DIN
@@ -34,3 +34,4 @@
 - [ ] CPL + STEP (HAT se zasunutým Plus 2)
 - [ ] T568B / pinout na silkscreenu u každého `MIC1`…`MIC6`
 - [ ] JLC nastavení / jlcpcb-tools
+- [ ] printed.cz PROTOTYP: 2 vrstvy, ≥ 0603, ne BGA, ENIG, zelená maska, bílý potisk, frézovaný obrys, ≤ 200 × 250 mm
