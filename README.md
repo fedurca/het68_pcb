@@ -18,19 +18,19 @@ v4 je sada **Core 6L + vyměnitelná silová deska + šest satelitů**. Na měď
 
 ## Prototyp (v4.5.0)
 
-![Core 6L](docs/img/core-3d.png)
+Náhledy níže jsou z desek v tomto commitu. Starší soubory v `docs/img/` GitHub dál kešuje, proto jsou aktuální obrázky v `docs/img/v450/`.
 
-Maska a schéma: [Core](docs/img/core-mask.svg) · [schéma](docs/img/core-sch.pdf) · [satelit](docs/img/sat-mask.svg) · [silová](docs/img/pwr-nn-mask.svg). Gerbery pro osazení: [`kicad/jlc/`](kicad/jlc/).
+![Core 6L](docs/img/v450/core-3d.png)
 
-![Satelit, venkovní strana: 8× SK6812](docs/img/sat-3d.png)
+![Satelit, venkovní strana: jen 8× SK6812 a otvor mikrofonu](docs/img/v450/sat-front-3d.png)
 
-Zadní strana, konektor a elektronika: [SVG](docs/img/sat-back.svg) · [3D](docs/img/sat-back-3d.png)
+![Satelit, zadní strana: RJ45 a elektronika](docs/img/v450/sat-back-3d.png)
 
-![Silová NN](docs/img/pwr-nn-3d.png)
+![Silová NN](docs/img/v450/pwr-nn-3d.png)
 
-Vrchní měď: [Core](docs/img/core-pcb.svg) · [Satelit](docs/img/sat-lvds.svg) · [Silová NN](docs/img/pwr-nn.svg)
+Měď: [Core](docs/img/v450/core-top.svg) · [satelit ven](docs/img/v450/sat-front.svg) · [satelit zadek](docs/img/v450/sat-back.svg) · [silová](docs/img/v450/pwr-nn-top.svg). Maska venkovní strany satelitu: [SVG](docs/img/v450/sat-front-mask.svg). Schémata: [Core](docs/img/core-sch.pdf) · [satelit](docs/img/sat-sch.pdf) · [silová](docs/img/pwr-nn-sch.pdf). Gerbery: [`kicad/jlc/`](kicad/jlc/).
 
-![Sestava](docs/img/sestava.svg)
+![Sestava v4.5.0](docs/img/v450/sestava.svg)
 
 ## Vyrobitelnost
 
