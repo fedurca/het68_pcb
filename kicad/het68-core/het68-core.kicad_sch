@@ -7,7 +7,7 @@
   (title_block
     (title "het68 Core 6L RP2350B + J_MESH Heltec V3")
     (date "2026-10-29")
-    (rev "4.3.0")
+    (rev "4.4.0")
     (comment 1 "het68 v4.1.0 — Core 6L Faraday + silova deska, KiCad 10")
   )
   (lib_symbols

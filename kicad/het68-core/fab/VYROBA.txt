@@ -2,4 +2,4 @@ het68 Core v4.1.0
 160 x 100 x 1.6 mm, 6 vrstev, ENIG, vnejsi Cu 1 oz, vnitrni 0.5 oz.
 Prokov 0.60/0.20 mm (mezikruzi 0.20 mm, JLCPCB 6L).
 J_MESH 1x8 Heltec V3 868. Stamp DNP. USB Heltec odpojit po flash.
-Signaly jsou vedeny. QFN-80 a par siti jeste nema vsechny pady. Zkraty z routeru jsou smazane.
+QFN-80 ma unik 0.15 mm po ose pinu. 67 paru jeste neni uzavrenych (stred rady). Nove spoje nemaji zkrat.

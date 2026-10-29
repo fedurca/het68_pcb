@@ -1,10 +1,10 @@
-# JLCPCB — podklady het68 v4.3.0
+# JLCPCB — podklady het68 v4.4.0
 
-## Signály jsou částečně spojené
+## Signály jsou z větší části spojené
 
-Router spojil většinu sítí na F.Cu a B.Cu. Stopy, které DRC označilo jako zkrat nebo podkročenou mezeru, jsou smazané. Core má 126 nepřipojených párů (hlavně QFN-80, rozteč 0,4 mm, bez fanoutu). Satelit 20. Silové desky kolem 75 a navíc překryté pady z rozmístění (desítky shorting_items mezi pady, ne mezi stopami).
+QFN-80 má únik 0,15 mm po ose každého signálového pinu. Prokov 0,60 mm se do rozteče 0,40 mm nevejde. Core má 67 nepřipojených párů, satelit 13, silové desky kolem 50. Nové spoje nemají zkrat. Silové desky mají dál překryté pady z rozmístění (shorting_items mezi pady).
 
-Objednávka z těchto gerberů vyrobí desku se spojenou většinou signálů. MCU a několik LVDS párů se nezapne, dokud nebudou ty pady vyvedené.
+Objednávka vyrobí desku, na které je většina signálů spojená. Několik pinů uprostřed řady QFN a pár LVDS sítí ještě nekončí u cíle.
 
 ## Košík
 

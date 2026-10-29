@@ -7,7 +7,7 @@
   (title_block
     (title "het68 satelit 6L LVDS + T5848 + 8x SK6812")
     (date "2026-10-29")
-    (rev "4.3.0")
+    (rev "4.4.0")
     (comment 1 "het68 v4.1.0 — Core 6L Faraday + silova deska, KiCad 10")
   )
   (lib_symbols

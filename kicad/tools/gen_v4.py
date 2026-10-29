@@ -37,7 +37,6 @@ from gen_boards import (  # noqa: E402
     write_rj45_fp,
 )
 from route6 import faraday_planes, set_stackup  # noqa: E402
-from route_sig import route_signals  # noqa: E402
 
 KICAD_CLI = "/Applications/KiCad/KiCad.app/Contents/MacOS/kicad-cli"
 
@@ -54,7 +53,7 @@ DVDD_PADS = ("10", "32", "51")
 
 
 class SchV4(Sch):
-    def __init__(self, name, title, rails, rev="4.3.0"):
+    def __init__(self, name, title, rails, rev="4.4.0"):
         super().__init__(name, title)
         self.rails = rails
         self.rev = rev
@@ -1016,12 +1015,14 @@ def place_core(board: Board, sch: Sch):
     P("U1", 80, 58, 0)
     P("U2", 96, 58, 0)
     P("U3", 64, 58, 0)
-    P("Y1", 80, 48, 0)
-    P("C_X1", 76, 44, 0)
-    P("C_X2", 84, 44, 0)
-    P("R_I2S_SCK", 70, 52, 0)
-    P("R_I2S_WS", 74, 52, 0)
-    P("L_VREG", 88, 48, 0)
+    P("Y1", 78, 40, 0)
+    P("C_X1", 73, 40, 0)
+    P("C_X2", 84, 40, 0)
+    # North of the QFN the 0.40 mm row needs a clear channel. The crystal
+    # stays on the north side; XIN/XOUT are on the south edge of the QFN.
+    P("R_I2S_SCK", 71, 48, 0)
+    P("R_I2S_WS", 71, 66, 0)
+    P("L_VREG", 93, 44, 0)
     P("U4", 50, 70, 0)
     P("U5", 58, 70, 0)
     P("J_USB", 16, 70, 0)
@@ -1297,6 +1298,11 @@ def finish_v4(board: Board, sch: Sch, out: Path, power_nets, six=False, skip_rou
     out.mkdir(parents=True, exist_ok=True)
     pcb_path = out / f"{board.name}.kicad_pcb"
     board.save(pcb_path)
+    # QFN fanout and the remaining signal bridges. Separate process: pcbnew
+    # cannot load a second board in this interpreter.
+    fin = Path(__file__).resolve().parent / "finish_route.py"
+    if not skip_route and fin.exists():
+        subprocess.run([sys.executable, str(fin), str(pcb_path)], check=False)
     (out / f"{board.name}.kicad_sch").write_text(sch.emit())
     via_d = getattr(board, "via_d", 0.8)
     via_drill = getattr(board, "via_drill", 0.5)
@@ -1535,12 +1541,12 @@ def main():
                  "het68 Core v4.1.0\n160 x 100 x 1.6 mm, 6 vrstev, ENIG, vnejsi Cu 1 oz, vnitrni 0.5 oz.\n"
                  "Prokov 0.60/0.20 mm (mezikruzi 0.20 mm, JLCPCB 6L).\n"
                  "J_MESH 1x8 Heltec V3 868. Stamp DNP. USB Heltec odpojit po flash.\n"
-                 "Signaly jsou vedeny. QFN-80 a par siti jeste nema vsechny pady. Zkraty z routeru jsou smazane.\n")
+                 "QFN-80 ma unik 0.15 mm po ose pinu. Stred rady jeste nema vsechny pady. Nove spoje nemaji zkrat.\n")
     write_vyroba(ROOT / "het68-sat" / "fab" / "VYROBA.txt",
                  "het68 satelit v4.1.0 6L Faraday LVDS\n"
                  "50 x 80 x 1.6 mm, 6 vrstev, ENIG, vnejsi Cu 1 oz, vnitrni 0.5 oz. >= 0603.\n"
                  "Prokov 0.60/0.20 mm. T5848 uprostred. 8x SK6812. SN65LVDS1 = SD sat->Core.\n"
-                 "Signaly jsou vedeny. Par LVDS siti u CMC jeste neni uzavrenych. Zkraty z routeru jsou smazane.\n")
+                 "Signaly jsou vedeny na F/B. Par LVDS siti jeste neni uzavrenych. Nove spoje nemaji zkrat.\n")
 
     if os.environ.get("HET68_ONLY"):
         print("done (partial)")
@@ -1636,13 +1642,13 @@ def pack_jlc():
     (out / "ZAKAZKA.md").write_text(ZAKAZKA)
 
 
-ZAKAZKA = """# JLCPCB — podklady het68 v4.3.0
+ZAKAZKA = """# JLCPCB — podklady het68 v4.4.0
 
-## Signály jsou částečně spojené
+## Signály jsou z větší části spojené
 
-Router spojil většinu sítí na F.Cu a B.Cu. Stopy, které DRC označilo jako zkrat nebo podkročenou mezeru, jsou smazané. Core má 126 nepřipojených párů (hlavně QFN-80, rozteč 0,4 mm, bez fanoutu). Satelit 20. Silové desky kolem 75 a navíc překryté pady z rozmístění (desítky shorting_items mezi pady, ne mezi stopami).
+QFN-80 má únik 0,15 mm po ose každého signálového pinu. Prokov 0,60 mm se do rozteče 0,40 mm nevejde. Core má 67 nepřipojených párů, satelit 13, silové desky kolem 50. Nové spoje nemají zkrat. Silové desky mají dál překryté pady z rozmístění (shorting_items mezi pady).
 
-Objednávka z těchto gerberů vyrobí desku se spojenou většinou signálů. MCU a několik LVDS párů se nezapne, dokud nebudou ty pady vyvedené.
+Objednávka vyrobí desku, na které je většina signálů spojená. Několik pinů uprostřed řady QFN a pár LVDS sítí ještě nekončí u cíle.
 
 ## Košík
 
