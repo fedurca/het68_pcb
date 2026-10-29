@@ -4,6 +4,13 @@ Formát podle [Keep a Changelog](https://keepachangelog.com/cs/1.1.0/), verze po
 
 Tento soubor drží řadu **4.x**. Starší tagy `v1.1.1` … `v3.0.0` zůstávají v gitu.
 
+## [4.3.0] — 2026-10-29
+
+### Added
+
+- Signálové spoje na Core, satelitu a silových deskách. Router nechá měď, která se spojila, a stopy označené DRC jako zkrat nebo podkročená mezera jsou smazané.
+- Core klesl ze 321 nepřipojených párů na 126. Satelit z 70 na 20. Silová deska zhruba ze 126 na 75. Zbývají vývody QFN-80 a několik LVDS párů u tlumivek.
+
 ## [4.2.0] — 2026-10-29
 
 ### Added
@@ -52,6 +59,7 @@ Nativní RP2350B na 6L Faraday Core, MeshCore na Heltec V3 (`J_MESH`) se spánke
 - Compute už není Pico Plus 2 + HAT. GP0/GP1 jsou UART MeshCore.
 - T568B jednovodičové I²S na UTP končí; na kabelu je LVDS.
 
+[4.3.0]: https://github.com/fedurca/het68_pcb/releases/tag/v4.3.0
 [4.2.0]: https://github.com/fedurca/het68_pcb/releases/tag/v4.2.0
 [4.1.0]: https://github.com/fedurca/het68_pcb/releases/tag/v4.1.0
 [4.0.0]: https://github.com/fedurca/het68_pcb/releases/tag/v4.0.0

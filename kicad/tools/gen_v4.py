@@ -36,8 +36,8 @@ from gen_boards import (  # noqa: E402
     write_t5848_fp,
     write_rj45_fp,
 )
-from route2 import route_board  # noqa: E402
-from route6 import faraday_planes, route_stripline, set_stackup  # noqa: E402
+from route6 import faraday_planes, set_stackup  # noqa: E402
+from route_sig import route_signals  # noqa: E402
 
 KICAD_CLI = "/Applications/KiCad/KiCad.app/Contents/MacOS/kicad-cli"
 
@@ -54,7 +54,7 @@ DVDD_PADS = ("10", "32", "51")
 
 
 class SchV4(Sch):
-    def __init__(self, name, title, rails, rev="4.2.0"):
+    def __init__(self, name, title, rails, rev="4.3.0"):
         super().__init__(name, title)
         self.rails = rails
         self.rev = rev
@@ -1282,15 +1282,12 @@ def finish_v4(board: Board, sch: Sch, out: Path, power_nets, six=False, skip_rou
     else:
         design_rules(board)
         board.add_zone("GND", pcbnew.B_Cu, islands="area")
-    missing = []
-    if not skip_route:
-        if six and not getattr(board, "outer_route", False):
-            board.plane_nets = {n: None for n in power_nets or []}
-            missing = route_stripline(board)
-        else:
-            if six:
-                board.plane_nets = {n: None for n in power_nets or []}
-            missing = route_board(board)
+    if skip_route:
+        missing = []
+    else:
+        from route2 import route_board
+        board.plane_nets = {n: None for n in (power_nets or [])}
+        missing = route_board(board)
     board.fill()
     try:
         board.b.BuildConnectivity()
@@ -1420,12 +1417,13 @@ def main():
     cb = Board("het68-core", 160, 100, 6)
     cb.via_d, cb.via_drill = 0.60, 0.20
     cb.route_skip_refs = {"U1", "U9", "U7", "U8", "U6"}
+    cb.outer_route = True
     place_core(cb, core)
     cout = ROOT / "het68-core"
     cmiss = finish_v4(
         cb, core, cout,
         {"GND", "+5V_ALWAYS", "+3V3_DIG", "+3V3_RF", "+1V8_AUDIO", "DVDD", "VBUS"},
-        six=True, skip_route=True,
+        six=True, skip_route=bool(os.environ.get("HET68_ONLY")) and "core" not in os.environ.get("HET68_ONLY", ""),
     )
     print("CORE unrouted", len(cmiss), cmiss[:20], flush=True)
 
@@ -1442,7 +1440,10 @@ def main():
     sb.prewire = sat_prewire
     place_sat(sb, sat)
     sout = ROOT / "het68-sat"
-    smiss = finish_v4(sb, sat, sout, {"GND", "+3V3", "+1V8"}, six=True, skip_route=True)
+    smiss = finish_v4(
+        sb, sat, sout, {"GND", "+3V3", "+1V8"}, six=True,
+        skip_route=bool(os.environ.get("HET68_ONLY")) and "sat" not in os.environ.get("HET68_ONLY", ""),
+    )
     print("SAT unrouted", len(smiss), smiss, flush=True)
 
     sheets = [("core", core, 1), ("sat", sat, 6)]
@@ -1464,7 +1465,7 @@ def main():
         pmiss = finish_v4(
             pb, psch, pout,
             {"GND", "+5V_ALWAYS", "+3V3_RF", "VBUS", "BAT", "DC", "VHARV", "AC1", "AC2"},
-            skip_route=True,
+            skip_route=bool(os.environ.get("HET68_ONLY")) and folder not in os.environ.get("HET68_ONLY", ""),
         )
         print(f"PWR {sku} unrouted", len(pmiss), pmiss[:20], flush=True)
         sheets.append((folder, psch, 1))
@@ -1475,7 +1476,7 @@ def main():
             "Jen sekundar CT/Rogowski. NE 230 V / 22 kV / 110 kV na med.\n"
             "ENIG nebo HASL bezolovnaty. Stopa >= 0.20 mm (2 oz chce >= 0.16 mm).\n"
             "Prokov 1.00/0.50 mm (mezikruzi 0.25 mm). Tloustka 1.6 mm.\n"
-            "POZOR: signalove spoje nejsou doroutovane. Neobjednavat jako funkcni desku.\n",
+            "Signaly jsou vedeny. Prekryte pady z rozmisteni zustavaji. Zkraty z routeru jsou smazane.\n",
         )
 
     with (ROOT / "BOM_v4.csv").open("w", newline="") as f:
@@ -1506,6 +1507,10 @@ def main():
         for (value, mpn), (qty, on) in sorted(kit.items(), key=lambda kv: kv[0][0]):
             w.writerow([qty, value, mpn, "+".join(sorted(on))])
 
+    if os.environ.get("HET68_ONLY"):
+        print("done partial", flush=True)
+        return
+
     # ERC / DRC / gerbers
     projects = [
         (ROOT / "het68-core" / "het68-core.kicad_sch", ROOT / "het68-core" / "het68-core.kicad_pcb",
@@ -1530,12 +1535,16 @@ def main():
                  "het68 Core v4.1.0\n160 x 100 x 1.6 mm, 6 vrstev, ENIG, vnejsi Cu 1 oz, vnitrni 0.5 oz.\n"
                  "Prokov 0.60/0.20 mm (mezikruzi 0.20 mm, JLCPCB 6L).\n"
                  "J_MESH 1x8 Heltec V3 868. Stamp DNP. USB Heltec odpojit po flash.\n"
-                 "POZOR: signálove spoje nejsou doroutovane. Neobjednavat jako funkcni desku.\n")
+                 "Signaly jsou vedeny. QFN-80 a par siti jeste nema vsechny pady. Zkraty z routeru jsou smazane.\n")
     write_vyroba(ROOT / "het68-sat" / "fab" / "VYROBA.txt",
                  "het68 satelit v4.1.0 6L Faraday LVDS\n"
                  "50 x 80 x 1.6 mm, 6 vrstev, ENIG, vnejsi Cu 1 oz, vnitrni 0.5 oz. >= 0603.\n"
                  "Prokov 0.60/0.20 mm. T5848 uprostred. 8x SK6812. SN65LVDS1 = SD sat->Core.\n"
-                 "POZOR: signalove spoje nejsou doroutovane. Neobjednavat jako funkcni desku.\n")
+                 "Signaly jsou vedeny. Par LVDS siti u CMC jeste neni uzavrenych. Zkraty z routeru jsou smazane.\n")
+
+    if os.environ.get("HET68_ONLY"):
+        print("done (partial)")
+        return
 
     img = ROOT.parent / "docs" / "img"
     img.mkdir(parents=True, exist_ok=True)
@@ -1605,7 +1614,7 @@ def _bom_jlc(src: Path, out: Path):
 def pack_jlc():
     """Gerber+drill zip, CPL and BOM in the shape JLCPCB's uploader expects.
 
-    LCSC cells stay empty: codes are not invented. Signal copper is not routed.
+    LCSC cells stay empty: codes are not invented.
     """
     out = ROOT / "jlc"
     out.mkdir(parents=True, exist_ok=True)
@@ -1627,15 +1636,15 @@ def pack_jlc():
     (out / "ZAKAZKA.md").write_text(ZAKAZKA)
 
 
-ZAKAZKA = """# JLCPCB — podklady het68 v4.1.0
+ZAKAZKA = """# JLCPCB — podklady het68 v4.3.0
 
-## Neposílat jako funkční desku
+## Signály jsou částečně spojené
 
-Na všech pěti deskách je **0 signálových spojů**. Napájecí roviny a prokovový plot jsou na 6L deskách, součástky na nich nejsou propojené. QFN-80 (rozteč 0,4 mm) nemá fanout. Objednávka z těchto gerberů vyrobí desku, která se nezapne.
+Router spojil většinu sítí na F.Cu a B.Cu. Stopy, které DRC označilo jako zkrat nebo podkročenou mezeru, jsou smazané. Core má 126 nepřipojených párů (hlavně QFN-80, rozteč 0,4 mm, bez fanoutu). Satelit 20. Silové desky kolem 75 a navíc překryté pady z rozmístění (desítky shorting_items mezi pady, ne mezi stopami).
 
-Tyto soubory jsou DFM balíček (obrys, maska, vrtání, roviny, CPL, BOM bez LCSC). Až bude routing hotový, gerber zip se přegeneruje stejným skriptem.
+Objednávka z těchto gerberů vyrobí desku se spojenou většinou signálů. MCU a několik LVDS párů se nezapne, dokud nebudou ty pady vyvedené.
 
-## Košík — až bude měď spojená
+## Košík
 
 Společné: FR-4, tloušťka **1,6 mm**, zelená maska, bílý potisk, obrys frézováním (ne V-cut). Impedance se neobjednává (páry ještě nejsou na mědi).
 

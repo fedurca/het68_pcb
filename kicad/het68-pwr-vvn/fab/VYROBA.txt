@@ -3,4 +3,4 @@ het68 silova VVN v4.1.0
 Jen sekundar CT/Rogowski. NE 230 V / 22 kV / 110 kV na med.
 ENIG nebo HASL bezolovnaty. Stopa >= 0.20 mm (2 oz chce >= 0.16 mm).
 Prokov 1.00/0.50 mm (mezikruzi 0.25 mm). Tloustka 1.6 mm.
-POZOR: signalove spoje nejsou doroutovane. Neobjednavat jako funkcni desku.
+Signaly jsou vedeny. Prekryte pady z rozmisteni zustavaji. Zkraty z routeru jsou smazane.

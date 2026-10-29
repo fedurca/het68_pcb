@@ -2,7 +2,7 @@
 
 Zadání a KiCad návrh PCB pro **het68** (akustická detekce dronů).
 
-Aktuální verze: **[v4.2.0](https://github.com/fedurca/het68_pcb/releases/tag/v4.2.0)** — viz [CHANGELOG.md](CHANGELOG.md). Kusovník sady: [kicad/BOM_KIT.csv](kicad/BOM_KIT.csv). Po deskách: [kicad/BOM_v4.csv](kicad/BOM_v4.csv).
+Aktuální verze: **[v4.3.0](https://github.com/fedurca/het68_pcb/releases/tag/v4.3.0)** — viz [CHANGELOG.md](CHANGELOG.md). Kusovník sady: [kicad/BOM_KIT.csv](kicad/BOM_KIT.csv). Po deskách: [kicad/BOM_v4.csv](kicad/BOM_v4.csv).
 
 Firmware a geometrie pole: [fedurca/het68](https://github.com/fedurca/het68). Zadání: [docs/ZADANI_PCB.md](docs/ZADANI_PCB.md). Projekty v KiCadu: [kicad/README.md](kicad/README.md).
 
@@ -16,7 +16,7 @@ v4 je sada **Core 6L + vyměnitelná silová deska + šest satelitů**. Na měď
 
 **Satelit** je šest destiček 6L: T5848 uprostřed, **8× SK6812** v kruhu, na kabelu LVDS. SD z mikrofonu jede párem (`SN65LVDS1` na satelitu, `SN65LVDS32` na Core, 100 Ω u přijímače). Mapa [`docs/PINOUT_SAT_v4.csv`](docs/PINOUT_SAT_v4.csv).
 
-## Prototyp (v4.2.0)
+## Prototyp (v4.3.0)
 
 ![Core 6L](docs/img/core-3d.png)
 
@@ -34,13 +34,13 @@ Vrchní měď: [Core](docs/img/core-pcb.svg) · [Satelit](docs/img/sat-lvds.svg)
 
 Na měď nejde 230 V / 22 kV / 110 kV. Gerbery z `kicad-cli` v `kicad/*/fab/`. TPV: JLC / standardní výroba, ENIG na 6L, ≥ 0603, ne BGA. QFN-80 0,4 mm a LGA chtějí ENIG.
 
-| Deska | Rozměr | ERC error | DRC / měď | Objednat? |
+| Deska | Rozměr | ERC error | DRC po smazání zkratů | Objednat? |
 |---|---|---|---|---|
-| Core | 160 × 100 mm, 6L Faraday, ENIG | 0 | schéma + stackup; spoje v4.2.0 | ne jako hotový interconnect |
-| Satelit | 50 × 80 mm, 6L Faraday, ENIG | 0 | courtyard 0; spoje v4.2.0 | ne jako hotový interconnect |
-| Silová NN/VN/VVN | 140 × 80 mm, 2L 70 µm | 0 | schéma; spoje v4.2.0 | ne jako hotový interconnect |
+| Core | 160 × 100 mm, 6L Faraday, ENIG | 0 | 0 zkratů, 126 nepřipojených (QFN-80) | ne, MCU nemá fanout |
+| Satelit | 50 × 80 mm, 6L Faraday, ENIG | 0 | 0 zkratů, 20 nepřipojených | ne, pár LVDS sítí je otevřených |
+| Silová NN/VN/VVN | 140 × 80 mm, 2L 70 µm | 0 | ~29 zkratů pad–pad z rozmístění, ~75 nepřipojených | ne |
 
-Schémata jsou elektricky uzavřená (ERC 0 chyb). Faraday stackup, via fence 1,5 mm, LVDS s CMC + TVS &lt; 1 pF + 100 Ω u RX a ferit na 3V3 satelitu v návrhu jsou. Auto-router 6L QFN-80 zatím nedoroutoval — gerbery ukazují osazení a roviny, ne hotový spoj.
+Schémata jsou elektricky uzavřená (ERC 0 chyb). Faraday stackup, via fence, LVDS s CMC + TVS &lt; 1 pF + 100 Ω u RX a ferit na 3V3 satelitu v návrhu jsou. Signály na F.Cu a B.Cu jsou z velké části spojené. Stopy, které DRC označilo jako zkrat nebo těsnou mezeru, jsou pryč. QFN-80 (0,4 mm) fanout ještě chybí.
 
 ## VF / EMC (silné rušení)
 
@@ -54,7 +54,7 @@ Schémata jsou elektricky uzavřená (ERC 0 chyb). Faraday stackup, via fence 1,
 ## Co je ještě potřeba
 
 1. **Firmware.** DSP = RP2350B. MeshCore na Heltecu: `Heltec_lora32_v3`, UART GPIO5/6, WAKE GPIO7.
-2. **Doroutování 6L** (Core QFN-80, satelit, silová). Cíl v4.2.0.
+2. **Fanout QFN-80** na Core a zbylé otevřené LVDS páry na satelitu. Silová deska má překryté pady z rozmístění.
 3. **Heltec je lab.** ~40–80 mA. Stamp nRF52 později. LTO povinná, minimální SOC repeateru 30 %.
 4. **110 kV.** Žádný externí kabel ze sféry. Anténa U.FL do slotu u stampu.
 5. **RGB na 3,3 V.** Firmware svítí nejvýš dvěma pixely naráz.

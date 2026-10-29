@@ -1056,15 +1056,8 @@ def route_board(board) -> list:
                 print(f"  open {n} {len(pending)}/{len(group)} {pts}", flush=True)
                 if keep_partial and len(group) >= 3 and len(pending) < len(group) - 1:
                     resume[n] = (targets, pending)
-                    failed.append(n)
-                    continue
-                for t in list(board.b.GetTracks()):
-                    if t.m_Uuid.AsString() not in before:
-                        board.b.Remove(t)
-                copper[0][:] = c_snap[0]
-                copper[1][:] = c_snap[1]
-                block[0][:] = b_snap[0]
-                block[1][:] = b_snap[1]
+                # Keep whatever copper did connect. Ripping it up left whole
+                # nets open when only one pad was blocked.
                 failed.append(n)
         return failed
 

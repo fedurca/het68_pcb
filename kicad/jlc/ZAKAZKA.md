@@ -1,12 +1,12 @@
-# JLCPCB — podklady het68 v4.1.0
+# JLCPCB — podklady het68 v4.3.0
 
-## Neposílat jako funkční desku
+## Signály jsou částečně spojené
 
-Na všech pěti deskách je **0 signálových spojů**. Napájecí roviny a prokovový plot jsou na 6L deskách, součástky na nich nejsou propojené. QFN-80 (rozteč 0,4 mm) nemá fanout. Objednávka z těchto gerberů vyrobí desku, která se nezapne.
+Router spojil většinu sítí na F.Cu a B.Cu. Stopy, které DRC označilo jako zkrat nebo podkročenou mezeru, jsou smazané. Core má 126 nepřipojených párů (hlavně QFN-80, rozteč 0,4 mm, bez fanoutu). Satelit 20. Silové desky kolem 75 a navíc překryté pady z rozmístění (desítky shorting_items mezi pady, ne mezi stopami).
 
-Tyto soubory jsou DFM balíček (obrys, maska, vrtání, roviny, CPL, BOM bez LCSC). Až bude routing hotový, gerber zip se přegeneruje stejným skriptem.
+Objednávka z těchto gerberů vyrobí desku se spojenou většinou signálů. MCU a několik LVDS párů se nezapne, dokud nebudou ty pady vyvedené.
 
-## Košík — až bude měď spojená
+## Košík
 
 Společné: FR-4, tloušťka **1,6 mm**, zelená maska, bílý potisk, obrys frézováním (ne V-cut). Impedance se neobjednává (páry ještě nejsou na mědi).
 
