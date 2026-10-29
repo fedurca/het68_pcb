@@ -28,12 +28,21 @@ POWER = {
     "GND", "+3V3_DIG", "+3V3_RF", "+3V3", "+5V_ALWAYS", "+1V8_AUDIO", "+1V8",
     "DVDD", "VBUS", "BAT", "DC", "VHARV", "AC1", "AC2", "VREG_LX",
 }
-# Routed before the other signals so the crystal and the buses own the channel.
-EARLY = {
-    "XIN", "XOUT", "VREG_LX", "DVDD",
-    "USB_DP", "USB_DM",
-    "QSPI_SS", "QSPI_SCLK", "QSPI_SD0", "QSPI_SD1", "QSPI_SD2", "QSPI_SD3",
-}
+# Lower runs first. Local power and the crystal before the long buses.
+def _rank(name: str) -> int:
+    if name in ("VREG_LX", "DVDD"):
+        return 0
+    if name in ("+3V3_DIG", "+3V3", "+1V8", "+1V8_AUDIO"):
+        return 1
+    if name.startswith("QSPI"):
+        return 2
+    if name in ("XIN", "XOUT"):
+        return 3
+    if any(tok in name for tok in ("_P", "_N", "SCK", "WS", "SD", "USB", "LED")):
+        return 4
+    if name in POWER:
+        return 6
+    return 5
 
 
 def _hypot(dx, dy):
@@ -103,19 +112,45 @@ def copper_gap(a, b):
     return _gap(a, b)
 
 
+def _ang(item) -> float:
+    if item[0] != "pad" or len(item) < 7:
+        return 0.0
+    if isinstance(item[6], (int, float)) and not isinstance(item[6], bool):
+        return float(item[6])
+    return 0.0
+
+
+def _to_local(px, py, cx, cy, deg):
+    a = math.radians(-deg)
+    dx, dy = px - cx, py - cy
+    c, s = math.cos(a), math.sin(a)
+    return dx * c - dy * s, dx * s + dy * c
+
+
+def dist_point_opad(px, py, pad):
+    lx, ly = _to_local(px, py, pad[1], pad[2], _ang(pad))
+    return dist_point_rect(lx, ly, -pad[3], -pad[4], pad[3], pad[4])
+
+
+def dist_seg_opad(x1, y1, x2, y2, pad):
+    n = max(1, int(_hypot(x2 - x1, y2 - y1) / 0.15))
+    best = dist_point_opad(x1, y1, pad)
+    for i in range(1, n + 1):
+        t = i / n
+        best = min(best, dist_point_opad(x1 + (x2 - x1) * t, y1 + (y2 - y1) * t, pad))
+    return best
+
+
 def _gap(a, b):
     ka, kb = a[0], b[0]
     if ka > kb:
         return _gap(b, a)
     if ka == "pad" and kb == "pad":
-        ax0, ay0, ax1, ay1 = a[1] - a[3], a[2] - a[4], a[1] + a[3], a[2] + a[4]
-        return dist_point_rect(b[1], b[2], ax0, ay0, ax1, ay1) - b[3] if False else dist_seg_rect(
-            b[1] - b[3], b[2], b[1] + b[3], b[2], ax0, ay0, ax1, ay1
-        )
+        return min(dist_point_opad(b[1], b[2], a), dist_point_opad(a[1], a[2], b))
     if ka == "pad" and kb == "seg":
-        return dist_seg_rect(b[1], b[2], b[3], b[4], a[1] - a[3], a[2] - a[4], a[1] + a[3], a[2] + a[4]) - b[5]
+        return dist_seg_opad(b[1], b[2], b[3], b[4], a) - b[5]
     if ka == "pad" and kb == "via":
-        return dist_point_rect(b[1], b[2], a[1] - a[3], a[2] - a[4], a[1] + a[3], a[2] + a[4]) - b[3]
+        return dist_point_opad(b[1], b[2], a) - b[3]
     if ka == "seg" and kb == "seg":
         return dist_seg_seg(a[1], a[2], a[3], a[4], b[1], b[2], b[3], b[4]) - a[5] - b[5]
     if ka == "seg" and kb == "via":
@@ -128,7 +163,11 @@ def _gap(a, b):
 def _bbox(item):
     k = item[0]
     if k == "pad":
-        return item[1] - item[3], item[2] - item[4], item[1] + item[3], item[2] + item[4]
+        a = math.radians(_ang(item))
+        c, s = abs(math.cos(a)), abs(math.sin(a))
+        ex = item[3] * c + item[4] * s
+        ey = item[3] * s + item[4] * c
+        return item[1] - ex, item[2] - ey, item[1] + ex, item[2] + ey
     if k == "seg":
         return min(item[1], item[3]), min(item[2], item[4]), max(item[1], item[3]), max(item[2], item[4])
     return item[1] - item[3], item[2] - item[3], item[1] + item[3], item[2] + item[3]
@@ -172,7 +211,9 @@ class NetState:
             for j in range(i):
                 if _bbox_gap(bi, _bbox(items[j])) > 0.8:
                     continue
-                if _gap(items[i], items[j]) <= 0.03:
+                # Overlap only. A rotated pad's box is larger than the copper,
+                # and a 0.03 mm slack glued tracks that do not actually touch.
+                if _gap(items[i], items[j]) <= 0.0:
                     self.union(i, j)
 
     def groups(self):
@@ -229,6 +270,7 @@ class Finish:
         self.blocks = []
         self.added = 0
         self.fanouts = 0
+        self.escapes = []
 
     def cell(self, x, y):
         return int(round(x / G)), int(round(y / G))
@@ -288,9 +330,17 @@ class Finish:
         if k == "pad":
             layer = item[5]
             grids = [self.own_f] if layer == 0 else [self.own_b] if layer == 1 else [self.own_f, self.own_b]
-            x0, y0, x1, y1 = item[1] - item[3] - rad, item[2] - item[4] - rad, item[1] + item[3] + rad, item[2] + item[4] + rad
+            ang = _ang(item)
+            reach = _hypot(item[3], item[4]) + rad
+            ix0, iy0 = self.cell(item[1] - reach, item[2] - reach)
+            ix1, iy1 = self.cell(item[1] + reach, item[2] + reach)
             for g in grids:
-                self._mark_rect(g, x0, y0, x1, y1, net)
+                for iy in range(min(iy0, iy1), max(iy0, iy1) + 1):
+                    for ix in range(min(ix0, ix1), max(ix0, ix1) + 1):
+                        cx, cy = self.xy(ix, iy)
+                        lx, ly = _to_local(cx, cy, item[1], item[2], ang)
+                        if abs(lx) <= item[3] + rad and abs(ly) <= item[4] + rad:
+                            self._mark(g, ix, iy, net)
             self._mark_disc(self.via_g, item[1], item[2], _hypot(item[3], item[4]) + self.via_r + CLEAR, net)
         elif k == "seg":
             g = self.own_f if item[6] == 0 else self.own_b
@@ -347,28 +397,23 @@ class Finish:
                 net = pad.GetNet()
                 name = pad.GetNetname()
                 pos = pad.GetPosition()
-                bb = pad.GetBoundingBox()
-                x = _mm(bb.GetX()) + _mm(bb.GetWidth()) / 2
-                y = _mm(bb.GetY()) + _mm(bb.GetHeight()) / 2
-                hw = _mm(bb.GetWidth()) / 2
-                hh = _mm(bb.GetHeight()) / 2
-                if hw < 0.04 or hh < 0.04:
-                    sz = pad.GetSize()
-                    x, y = _mm(pos.x), _mm(pos.y)
-                    hw, hh = _mm(sz.x) / 2, _mm(sz.y) / 2
+                sz = pad.GetSize()
+                x, y = _mm(pos.x), _mm(pos.y)
+                hw, hh = max(_mm(sz.x) / 2, 0.05), max(_mm(sz.y) / 2, 0.05)
+                ang = pad.GetOrientation().AsDegrees()
                 attr = pad.GetAttribute()
                 both = attr == pcbnew.PAD_ATTRIB_PTH
                 layer = 2 if both else (0 if pad.IsOnLayer(pcbnew.F_Cu) else 1)
-                item = ("pad", x, y, hw, hh, layer)
+                item = ("pad", x, y, hw, hh, layer, ang)
                 if attr == pcbnew.PAD_ATTRIB_NPTH or not name:
                     # A hole goes through the board, so it blocks both outer layers.
-                    self.blocks.append(("pad", x, y, hw, hh, 2))
+                    self.blocks.append(("pad", x, y, hw, hh, 2, ang))
                     continue
                 s = st(net)
                 if s is None:
                     self.blocks.append(item)
                     continue
-                s.add(("pad", x, y, hw, hh, layer, fp.GetReference(), pad.GetNumber()))
+                s.add(("pad", x, y, hw, hh, layer, ang, fp.GetReference(), pad.GetNumber()))
         for t in list(self.b.GetTracks()):
             net = t.GetNet()
             s = st(net)
@@ -515,14 +560,15 @@ class Finish:
                 gone += 1
         print(f"removed {gone}", flush=True)
 
-    def _legal_line(self, x1, y1, x2, y2, net):
+    def _legal_line(self, x1, y1, x2, y2, net, layer=0):
+        grid = self.own_f if layer == 0 else self.own_b
         step = max(1, int(_hypot(x2 - x1, y2 - y1) / (G * 0.5)))
         for i in range(step + 1):
             t = i / step
             ix, iy = self.cell(x1 + (x2 - x1) * t, y1 + (y2 - y1) * t)
             if not self.inside(ix, iy):
                 return False
-            v = self.own_f[self.idx(ix, iy)]
+            v = grid[self.idx(ix, iy)]
             if v not in (0, net):
                 return False
         return True
@@ -541,8 +587,13 @@ class Finish:
                 sw, sh = _mm(sz.x), _mm(sz.y)
                 if min(sw, sh) > 0.25 or max(sw, sh) > 1.2:
                     continue
-                if not pad.IsOnLayer(pcbnew.F_Cu):
+                on_f = pad.IsOnLayer(pcbnew.F_Cu)
+                on_b = pad.IsOnLayer(pcbnew.B_Cu)
+                if on_f and on_b:
                     continue
+                if not on_f and not on_b:
+                    continue
+                layer = 0 if on_f else 1
                 code = pad.GetNetCode()
                 s = self.nets.get(code)
                 if s is None:
@@ -574,7 +625,7 @@ class Finish:
                 # Keep the tip outside the pad, on the outward side.
                 if (tipx - x) * ux + (tipy - y) * uy < half + 0.3:
                     continue
-                if not self._legal_line(x, y, tipx, tipy, code):
+                if not self._legal_line(x, y, tipx, tipy, code, layer):
                     # Shorten in 0.2 mm steps until the escape fits.
                     ok = False
                     dist = reach
@@ -585,18 +636,73 @@ class Finish:
                         tipx, tipy = self.xy(ix, iy)
                         if (tipx - x) * ux + (tipy - y) * uy < half + 0.25:
                             break
-                        if self._legal_line(x, y, tipx, tipy, code):
+                        if self._legal_line(x, y, tipx, tipy, code, layer):
                             ok = True
                             break
                     if not ok:
                         continue
-                self._add_seg(x, y, tipx, tipy, 0, s)
+                self._add_seg(x, y, tipx, tipy, layer, s)
                 self.fanouts += 1
+                self.escapes.append((x, y, tipx, tipy, ux, uy, layer, s, fx, fy))
                 if name == "GND":
                     self._try_via(tipx, tipy, s)
-        # Staggered lanes were tried. They claim the only free row and trap
-        # the pins that cannot turn, so the straight escapes stay as they are.
+        self.stairs()
         print(f"fanout {self.fanouts}", flush=True)
+
+    def stairs(self):
+        """Spread a 0.40 mm QFN row on the same layer, outer pin first.
+
+        Every pin first steps 0.6 mm further out, still parallel, clear of
+        the neighbour halo. Then pin k, counting from the outside, steps
+        another k*0.50 mm and turns away from the middle of the row.
+        A turn is kept only when the whole segment is free, so an inner
+        pin is never asked to cross a pin that has not left yet.
+        """
+        groups = {}
+        for rec in self.escapes:
+            _x, _y, tipx, tipy, ux, uy, layer, s, fx, fy = rec
+            key = (round(fx, 1), round(fy, 1), round(ux), round(uy), layer)
+            groups.setdefault(key, []).append(rec)
+        drawn = 0
+        for recs in groups.values():
+            extended = []
+            for x, y, tipx, tipy, ux, uy, layer, s, fx, fy in recs:
+                farx, fary = tipx + ux * 0.6, tipy + uy * 0.6
+                ix, iy = self.cell(farx, fary)
+                farx, fary = self.xy(ix, iy)
+                if self._legal_line(tipx, tipy, farx, fary, s.code, layer):
+                    self._add_seg(tipx, tipy, farx, fary, layer, s)
+                    tipx, tipy = farx, fary
+                extended.append((x, y, tipx, tipy, ux, uy, layer, s, fx, fy))
+            ux, uy = extended[0][4], extended[0][5]
+            vertical = abs(uy) >= abs(ux)
+            center = extended[0][8] if vertical else extended[0][9]
+            def along(rec, vertical=vertical):
+                return rec[0] if vertical else rec[1]
+            extended.sort(key=lambda rec: -abs(along(rec) - center))
+            for k, rec in enumerate(extended):
+                x, y, tipx, tipy, ux, uy, layer, s, fx, fy = rec
+                if vertical:
+                    ax = 1.0 if x >= fx else -1.0
+                    ay = 0.0
+                else:
+                    ax, ay = 0.0, (1.0 if y >= fy else -1.0)
+                farx = tipx + ux * (k * 0.50)
+                fary = tipy + uy * (k * 0.50)
+                ix, iy = self.cell(farx, fary)
+                farx, fary = self.xy(ix, iy)
+                endx, endy = farx + ax * 1.0, fary + ay * 1.0
+                ix, iy = self.cell(endx, endy)
+                endx, endy = self.xy(ix, iy)
+                if not self._legal_line(tipx, tipy, farx, fary, s.code, layer):
+                    continue
+                if not self._legal_line(farx, fary, endx, endy, s.code, layer):
+                    continue
+                if _hypot(farx - tipx, fary - tipy) >= 0.15:
+                    self._add_seg(tipx, tipy, farx, fary, layer, s)
+                self._add_seg(farx, fary, endx, endy, layer, s)
+                drawn += 1
+        print(f"stairs {drawn}", flush=True)
 
     def _add_seg(self, x1, y1, x2, y2, layer, s):
         if _hypot(x2 - x1, y2 - y1) < 0.05:
@@ -809,10 +915,7 @@ class Finish:
             if s.name == "GND" or s.name.startswith("unconnected"):
                 continue
             s.rebuild()
-            pri = 0 if s.name in EARLY else 2 if s.name in POWER else 1
-            if any(tok in s.name for tok in ("_P", "_N", "SCK", "WS", "SD", "USB", "QSPI", "XIN", "XOUT")):
-                pri = min(pri, 1 if s.name not in EARLY else 0)
-            order.append((pri, s.name, s))
+            order.append((_rank(s.name), s.name, s))
         order.sort()
         fail = set()
         done = 0
@@ -848,6 +951,115 @@ class Finish:
                     print(f"  open {name} gap {d:.1f} mm", flush=True)
         print(f"links {done}", flush=True)
 
+    def ensure_vias(self):
+        """Give a pad that has no nearby via a short hop to one.
+
+        GND then meets the plane. A pad on the other side of the board
+        meets the copper the maze already has.
+        """
+        n = 0
+        for s in list(self.nets.values()):
+            if s.name.startswith("unconnected"):
+                continue
+            for it in list(s.items):
+                if it[0] != "pad" or max(it[3], it[4]) > 2.5:
+                    continue
+                if any(v[0] == "via" and _gap(it, v) <= 0.05 for v in s.items):
+                    continue
+                layer = 1 if it[5] == 1 else 0
+                near = [v for v in s.items if v[0] == "via" and _hypot(v[1] - it[1], v[2] - it[2]) < 3.0]
+                near.sort(key=lambda v: _hypot(v[1] - it[1], v[2] - it[2]))
+                joined = False
+                for v in near:
+                    if self._legal_line(it[1], it[2], v[1], v[2], s.code, layer):
+                        self._add_seg(it[1], it[2], v[1], v[2], layer, s)
+                        n += 1
+                        joined = True
+                        break
+                if joined:
+                    continue
+                placed = False
+                for radius in (1.2, 1.8):
+                    if placed:
+                        break
+                    for step in range(8):
+                        ang = math.radians(step * 45.0)
+                        vx = it[1] + radius * math.cos(ang)
+                        vy = it[2] + radius * math.sin(ang)
+                        ix, iy = self.cell(vx, vy)
+                        vx, vy = self.xy(ix, iy)
+                        if not self._legal_line(it[1], it[2], vx, vy, s.code, layer):
+                            continue
+                        if not self._try_via(vx, vy, s):
+                            continue
+                        self._add_seg(it[1], it[2], vx, vy, layer, s)
+                        n += 1
+                        placed = True
+                        break
+        print(f"escape vias {n}", flush=True)
+
+    def snap_close(self):
+        """Join same-net copper that already ends within a few millimetres."""
+        n = 0
+        tried = blocked = 0
+        for s in self.nets.values():
+            if not s.name or s.name.startswith("unconnected") or s.name == "GND":
+                continue
+            s.rebuild()
+            ends = []
+            for i, it in enumerate(s.items):
+                root = s.find(i)
+                if it[0] == "seg":
+                    ends.append((it[1], it[2], it[6], root))
+                    ends.append((it[3], it[4], it[6], root))
+                elif it[0] == "pad" and it[5] != 2:
+                    ends.append((it[1], it[2], 0 if it[5] != 1 else 1, root))
+                elif it[0] == "via":
+                    ends.append((it[1], it[2], 0, root))
+                    ends.append((it[1], it[2], 1, root))
+            ends.sort(key=lambda e: (e[0], e[1]))
+            for a in range(len(ends)):
+                x1, y1, l1, r1 = ends[a]
+                for b in range(a + 1, len(ends)):
+                    x2, y2, l2, r2 = ends[b]
+                    if x2 - x1 > 4.0:
+                        break
+                    if r1 == r2:
+                        continue
+                    dist = _hypot(x2 - x1, y2 - y1)
+                    if dist > 4.0:
+                        continue
+                    if dist < 0.05:
+                        # A pad moved to the other side and left its track behind.
+                        if l1 != l2 and self._try_via(x1, y1, s):
+                            ends[b] = (x2, y2, l2, r1)
+                            n += 1
+                        continue
+                    tried += 1
+                    hooked = False
+                    if l1 == l2 and self._legal_line(x1, y1, x2, y2, s.code, l1):
+                        self._add_seg(x1, y1, x2, y2, l1, s)
+                        hooked = True
+                    elif l1 == l2 and self._legal_line(x1, y1, x1, y2, s.code, l1) and self._legal_line(x1, y2, x2, y2, s.code, l1):
+                        self._add_seg(x1, y1, x1, y2, l1, s)
+                        self._add_seg(x1, y2, x2, y2, l1, s)
+                        hooked = True
+                    elif l1 == l2 and self._legal_line(x1, y1, x2, y1, s.code, l1) and self._legal_line(x2, y1, x2, y2, s.code, l1):
+                        self._add_seg(x1, y1, x2, y1, l1, s)
+                        self._add_seg(x2, y1, x2, y2, l1, s)
+                        hooked = True
+                    elif dist < 1.2 and self._try_via((x1 + x2) / 2.0, (y1 + y2) / 2.0, s):
+                        mx, my = (x1 + x2) / 2.0, (y1 + y2) / 2.0
+                        self._add_seg(x1, y1, mx, my, l1, s)
+                        self._add_seg(mx, my, x2, y2, l2, s)
+                        hooked = True
+                    if hooked:
+                        ends[b] = (x2, y2, l2, r1)
+                        n += 1
+                    else:
+                        blocked += 1
+        print(f"snap {n} tried {tried} blocked {blocked}", flush=True)
+
 
 def finish_board(board: pcbnew.BOARD, fill=True, prepared=False):
     fin = Finish(board)
@@ -865,6 +1077,8 @@ def finish_board(board: pcbnew.BOARD, fill=True, prepared=False):
         for it in s.items:
             fin.stamp_item(it, s.code)
     fin.fanout()
+    fin.ensure_vias()
+    fin.snap_close()
     for s in fin.nets.values():
         s.rebuild()
     fin.bridges()
@@ -902,9 +1116,136 @@ def relax_core(board: pcbnew.BOARD):
     print("relaxed core crystal and series parts", flush=True)
 
 
+SAT_FRONT = {f"D{i}" for i in range(4, 12)}
+
+
+def relax_sat(board: pcbnew.BOARD):
+    """Outward face is F.Cu: mic hole and the eight LEDs only.
+
+    T5848 is bottom-port, so the body moves to B.Cu and the hole stays
+    open toward F.Cu. The jack and every other part follow it to B.Cu.
+    """
+    refs = {fp.GetReference() for fp in board.GetFootprints()}
+    if "MK1" not in refs or "D4" not in refs:
+        return
+    n = 0
+    for fp in board.GetFootprints():
+        ref = fp.GetReference()
+        if ref in SAT_FRONT or ref.startswith("H"):
+            continue
+        if fp.GetLayer() == pcbnew.B_Cu:
+            continue
+        fp.Flip(fp.GetPosition(), False)
+        n += 1
+    for drawing in board.GetDrawings():
+        try:
+            if drawing.GetLayer() == pcbnew.F_SilkS:
+                drawing.SetLayer(pcbnew.B_SilkS)
+        except Exception:
+            pass
+    print(f"sat flipped to back {n}", flush=True)
+
+
+def _courtyard_box(fp, margin=0.15):
+    layer = pcbnew.B_CrtYd if fp.GetLayer() == pcbnew.B_Cu else pcbnew.F_CrtYd
+    bb = None
+    try:
+        shape = fp.GetCourtyard(layer)
+        if shape is not None:
+            cand = shape.BBox()
+            if cand.GetWidth() > 0 and cand.GetHeight() > 0:
+                bb = cand
+    except Exception:
+        bb = None
+    if bb is None:
+        bb = fp.GetBoundingBox(False, False)
+    return (
+        _mm(bb.GetLeft()) - margin,
+        _mm(bb.GetTop()) - margin,
+        _mm(bb.GetRight()) + margin,
+        _mm(bb.GetBottom()) + margin,
+    )
+
+
+def _boxes_hit(a, b):
+    return a[0] < b[2] and b[0] < a[2] and a[1] < b[3] and b[1] < a[3]
+
+
+def relax_power(board: pcbnew.BOARD):
+    """Pull the DO-201 and the two SOTs off the header and the diode row.
+
+    Leftovers that still touch a neighbour walk a coarse grid above the cell.
+    """
+    refs = {fp.GetReference() for fp in board.GetFootprints()}
+    if "BT1" not in refs or "U_BST" not in refs:
+        return
+    forced = {"DTVS": (40.0, 34.0), "U_BST": (28.0, 42.0), "U_RF": (40.0, 42.0)}
+    protect = {
+        "BT1", "J_CORE", "J1", "J2", "D1", "D2", "D3", "D4", "C1", "Q1",
+        "L1", "C4", "F1", "GDT1", "GDT2", "J_SOL", "J_RTD", "J_ROGO", "J3",
+        "U_INT", "U_BST", "U_RF", "DTVS",
+    }
+    by = {fp.GetReference(): fp for fp in board.GetFootprints()}
+    for ref, (x, y) in forced.items():
+        if ref in by:
+            by[ref].SetPosition(pcbnew.VECTOR2I(pcbnew.FromMM(x), pcbnew.FromMM(y)))
+    slots = [(x, y) for y in (28.0, 36.0, 44.0) for x in range(52, 124, 8)]
+    moved = 0
+    for _pass in range(4):
+        fps = list(board.GetFootprints())
+        boxes = {fp.GetReference(): _courtyard_box(fp) for fp in fps}
+        for fp in fps:
+            ref = fp.GetReference()
+            if ref in protect or ref.startswith("H"):
+                continue
+            mine = boxes[ref]
+            if not any(other != ref and _boxes_hit(mine, box) for other, box in boxes.items()):
+                continue
+            origin = fp.GetPosition()
+            parked = False
+            for x, y in slots:
+                fp.SetPosition(pcbnew.VECTOR2I(pcbnew.FromMM(x), pcbnew.FromMM(y)))
+                trial = _courtyard_box(fp)
+                if trial[0] < 1 or trial[2] > 139 or trial[1] < 1 or trial[3] > 79:
+                    continue
+                if any(other != ref and _boxes_hit(trial, box) for other, box in boxes.items()):
+                    continue
+                boxes[ref] = trial
+                parked = True
+                moved += 1
+                break
+            if not parked:
+                fp.SetPosition(origin)
+                boxes[ref] = _courtyard_box(fp)
+    print(f"power parts moved {moved}", flush=True)
+
+
+def shift_keepout_vias(board: pcbnew.BOARD):
+    """Through vias in the L3 keepout over an L4 split are not allowed."""
+    if board.GetCopperLayerCount() < 4 or _mm(board.GetBoardEdgesBoundingBox().GetWidth()) < 100:
+        return
+    strips = ((62.0, 64.0), (110.0, 112.0))
+    n = 0
+    for t in board.GetTracks():
+        if t.GetClass() != "PCB_VIA":
+            continue
+        p = t.GetPosition()
+        x, y = _mm(p.x), _mm(p.y)
+        for a, b in strips:
+            if a - 0.35 <= x <= b + 0.35:
+                newx = (a - 1.0) if (x - a) <= (b - x) else (b + 1.0)
+                t.SetPosition(pcbnew.VECTOR2I(pcbnew.FromMM(newx), pcbnew.FromMM(y)))
+                n += 1
+                break
+    print(f"keepout vias moved {n}", flush=True)
+
+
 def prepare(board: pcbnew.BOARD):
-    """Move the crystal off the fanout, drop blocking copper, then reload."""
+    """Move parts that block fanout or short pads, then drop that copper."""
     relax_core(board)
+    relax_sat(board)
+    relax_power(board)
+    shift_keepout_vias(board)
     fin = Finish(board)
     fin.collect()
     fin.delete_keys(fin.deletion_keys())

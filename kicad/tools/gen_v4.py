@@ -53,7 +53,7 @@ DVDD_PADS = ("10", "32", "51")
 
 
 class SchV4(Sch):
-    def __init__(self, name, title, rails, rev="4.4.0"):
+    def __init__(self, name, title, rails, rev="4.5.0"):
         super().__init__(name, title)
         self.rails = rails
         self.rev = rev
@@ -963,22 +963,67 @@ def build_pwr(sch: Sch, sku: str):
             {"1": "+5V_ALWAYS", "2": "GND"}, "5V lab")
 
 
-def place_remaining(board: Board, sch: Sch, placed: set, x0=8.0, y0=20.0, dx=5.0, dy=6.0, ymax=None):
+def _courtyard_box(fp, margin=0.15):
+    """Box around the courtyard, or the pads if the courtyard is empty.
+
+    Two boxes that do not overlap are at least 2*margin apart.
+    """
+    layer = pcbnew.B_CrtYd if fp.GetLayer() == pcbnew.B_Cu else pcbnew.F_CrtYd
+    bb = None
+    try:
+        shape = fp.GetCourtyard(layer)
+        if shape is not None:
+            cand = shape.BBox()
+            if cand.GetWidth() > 0 and cand.GetHeight() > 0:
+                bb = cand
+    except Exception:
+        bb = None
+    if bb is None:
+        bb = fp.GetBoundingBox(False, False)
+    return (
+        pcbnew.ToMM(bb.GetLeft()) - margin,
+        pcbnew.ToMM(bb.GetTop()) - margin,
+        pcbnew.ToMM(bb.GetRight()) + margin,
+        pcbnew.ToMM(bb.GetBottom()) + margin,
+    )
+
+
+def _boxes_hit(a, b):
+    return a[0] < b[2] and b[0] < a[2] and a[1] < b[3] and b[1] < a[3]
+
+
+def place_remaining(board: Board, sch: Sch, placed: set, x0=8.0, y0=20.0, dx=5.0, dy=6.0, ymax=None, back=False):
     x, y = x0, y0
     y_lim = (board.h - 6) if ymax is None else ymax
+    occupied = [_courtyard_box(fp) for _part, fp in board.fps]
     for p in sch.parts:
         if p["ref"] in placed:
             continue
-        if x > board.w - 8:
-            x = x0
-            y += dy
-        if y > y_lim:
-            y = y0
-            x0 = min(x0 + 12, board.w - 16)
-            x = x0
-        board.place(p, x, y, 0)
-        placed.add(p["ref"])
-        x += dx
+        kept = None
+        for _try in range(500):
+            if x > board.w - 8:
+                x = x0
+                y += dy
+            if y > y_lim:
+                y = 8.0
+                x0 = min(x0 + 14.0, board.w - 20.0)
+                x = x0
+            fp = board.place(p, x, y, 0, back=back)
+            box = _courtyard_box(fp)
+            if any(_boxes_hit(box, old) for old in occupied):
+                board.b.Remove(fp)
+                board.fps.pop()
+                x += dx
+                continue
+            occupied.append(box)
+            placed.add(p["ref"])
+            x += dx
+            kept = fp
+            break
+        if kept is None:
+            board.place(p, min(x, board.w - 8), min(y, y_lim), 0, back=back)
+            placed.add(p["ref"])
+            print("courtyard still overlaps", p["ref"], flush=True)
 
 
 def holes(board, pts):
@@ -1094,8 +1139,14 @@ def place_sat(board: Board, sch: Sch):
     by = {p["ref"]: p for p in sch.parts}
     placed = set()
 
+    # F.Cu is the face that points outward: only the mic port (a hole
+    # through the board) and the eight SK6812s. T5848 is bottom-port, so
+    # its body sits on B.Cu and the hole opens on F.Cu. The jack and every
+    # other part are on B.Cu as well.
+    front = {f"D{i}" for i in range(4, 12)}
+
     def P(ref, x, y, rot=0):
-        board.place(by[ref], x, y, rot)
+        board.place(by[ref], x, y, rot, back=ref not in front)
         placed.add(ref)
 
     cx, cy, led_r = 25.0, 58.0, 12.0
@@ -1130,10 +1181,10 @@ def place_sat(board: Board, sch: Sch):
         cap_r = led_r + 5.2
         P(f"C_L{i + 1}", cx + cap_r * math.sin(phi), cy - cap_r * math.cos(phi), i * 45)
     holes(board, ((42, 12), (8, 40), (42, 66), (8, 74)))
-    place_remaining(board, sch, placed, 8, 22, 4, 5)
-    board.text("het68 SAT v4 6L LVDS", 25, 4, size=0.8)
-    board.text("1/2 SCK  3/6 WS  4/5 SD  8x SK6812", 25, 8, size=0.45)
-    board.text("D4=N  daisy CW  DOUT NC", 25, 78, size=0.45)
+    place_remaining(board, sch, placed, 8, 22, 4, 5, back=True)
+    board.text("het68 SAT  ven: LED + port  zadni: elektronika", 25, 4, size=0.7, layer=pcbnew.B_SilkS)
+    board.text("1/2 SCK  3/6 WS  4/5 SD  8x SK6812", 25, 8, size=0.45, layer=pcbnew.B_SilkS)
+    board.text("D4=N  daisy CW  DOUT NC", 25, 78, size=0.45, layer=pcbnew.B_SilkS)
 
 
 def sat_prewire(api):
@@ -1221,13 +1272,16 @@ def place_pwr(board: Board, sch: Sch, sku: str):
     P("D4", 98, 12, 180)
     P("C1", 78, 16, 0)
     P("Q1", 70, 16, 0)
-    P("DTVS", 62, 16, 0)
+    # DO-201 is 15 mm long. At x=62 it covered C1 and Q1.
+    P("DTVS", 40, 34, 0)
     P("U_MPPT", 48, 16, 0)
     # Keystone 1122 body is 91.2 × 23.1 mm. Centre (78, 62) keeps the
     # pads inside 140 × 80 mm, south of the CT front-end.
     P("BT1", 78, 62, 0)
-    P("U_BST", 16, 48, 0)
-    P("U_RF", 24, 48, 0)
+    # J_CORE occupies x 17–22, y 47–72. The charger and the RF LDO sit
+    # above the battery, clear of that header.
+    P("U_BST", 28, 42, 0)
+    P("U_RF", 40, 42, 0)
     P("U_INA", 36, 16, 0)
     P("J_CORE", 18, 48, 0)
     P("J_SOL", 124, 48, 0)
@@ -1236,7 +1290,7 @@ def place_pwr(board: Board, sch: Sch, sku: str):
     P("J_ROGO", 124, 36, 0)
     P("U_INT", 108, 48, 0)
     holes(board, ((4, 4), (4, 76), (136, 4), (136, 76)))
-    place_remaining(board, sch, placed, 48, 8, 4.2, 5.0, ymax=46)
+    place_remaining(board, sch, placed, 56, 28, 8.0, 8.0, ymax=46)
     board.text(f"het68 PWR {sku}  JEN SEKUNDAR", 70, 4, size=0.9)
     board.text("NE 230 V / NE 22 kV / NE 110 kV", 70, 77, size=0.7)
 
@@ -1546,7 +1600,8 @@ def main():
                  "het68 satelit v4.1.0 6L Faraday LVDS\n"
                  "50 x 80 x 1.6 mm, 6 vrstev, ENIG, vnejsi Cu 1 oz, vnitrni 0.5 oz. >= 0603.\n"
                  "Prokov 0.60/0.20 mm. T5848 uprostred. 8x SK6812. SN65LVDS1 = SD sat->Core.\n"
-                 "Signaly jsou vedeny na F/B. Par LVDS siti jeste neni uzavrenych. Nove spoje nemaji zkrat.\n")
+                 "Ven (F.Cu): jen otvor mikrofonu a 8x SK6812. Zadni strana: RJ45 a ostatni elektronika.\n"
+                 "Par LVDS a LED siti jeste neni uzavrenych. Nove spoje nemaji zkrat.\n")
 
     if os.environ.get("HET68_ONLY"):
         print("done (partial)")

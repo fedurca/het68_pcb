@@ -4,6 +4,18 @@ Formát podle [Keep a Changelog](https://keepachangelog.com/cs/1.1.0/), verze po
 
 Tento soubor drží řadu **4.x**. Starší tagy `v1.1.1` … `v3.0.0` zůstávají v gitu.
 
+## [4.5.0] — 2026-10-29
+
+### Changed
+
+- Satelit je oboustranný. Ven (F.Cu) kouká jen akustický otvor T5848 a osm SK6812. Tělo mikrofonu, RJ45 a ostatní elektronika jsou na B.Cu.
+- Silové desky už nemají zkrat pad–pad. DO-201, FP6291 a AP2112 jsou mimo lištu a diodový můstek, zbytek součástek se nesmí courtyardem překrývat.
+- QFN-80 má schodovitý únik na F.Cu. Prokov 0,60 mm se do rozteče 0,40 mm nevejde.
+
+### Known
+
+- Core má pořád desítky otevřených párů (QSPI SD2/SD3, část I²S, LED, SWD, UART, pár LVDS). Satelit má otevřené části LVDS a dvě LED. Deska se ještě celá nezapne.
+
 ## [4.4.0] — 2026-10-29
 
 ### Added
@@ -67,6 +79,7 @@ Nativní RP2350B na 6L Faraday Core, MeshCore na Heltec V3 (`J_MESH`) se spánke
 - Compute už není Pico Plus 2 + HAT. GP0/GP1 jsou UART MeshCore.
 - T568B jednovodičové I²S na UTP končí; na kabelu je LVDS.
 
+[4.5.0]: https://github.com/fedurca/het68_pcb/releases/tag/v4.5.0
 [4.4.0]: https://github.com/fedurca/het68_pcb/releases/tag/v4.4.0
 [4.3.0]: https://github.com/fedurca/het68_pcb/releases/tag/v4.3.0
 [4.2.0]: https://github.com/fedurca/het68_pcb/releases/tag/v4.2.0

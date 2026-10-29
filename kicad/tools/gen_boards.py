@@ -577,7 +577,7 @@ class Board:
         self.parts = []  # schematic parts that are on the board
         self.fps = []
 
-    def place(self, part, x, y, rot=0):
+    def place(self, part, x, y, rot=0, back=False):
         lib, fpname = part["footprint"].split(":", 1)
         if lib == "het68":
             pretty = str(PRETTY)
@@ -590,6 +590,10 @@ class Board:
             raise SystemExit(f"footprint not found {part['footprint']} in {pretty}")
         fp.SetPosition(pcbnew.VECTOR2I(pcbnew.FromMM(x), pcbnew.FromMM(y)))
         fp.SetOrientation(pcbnew.EDA_ANGLE(rot, pcbnew.DEGREES_T))
+        if back:
+            # Body and pads on B.Cu. A bottom-port mic then opens its hole
+            # toward F.Cu, which is the outward face of the satellite.
+            fp.Flip(fp.GetPosition(), False)
         fp.SetReference(part["ref"])
         fp.SetValue(part["value"])
         fp.Reference().SetVisible(True)

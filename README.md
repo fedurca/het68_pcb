@@ -2,7 +2,7 @@
 
 Zadání a KiCad návrh PCB pro **het68** (akustická detekce dronů).
 
-Aktuální verze: **[v4.4.0](https://github.com/fedurca/het68_pcb/releases/tag/v4.4.0)** — viz [CHANGELOG.md](CHANGELOG.md). Kusovník sady: [kicad/BOM_KIT.csv](kicad/BOM_KIT.csv). Po deskách: [kicad/BOM_v4.csv](kicad/BOM_v4.csv).
+Aktuální verze: **[v4.5.0](https://github.com/fedurca/het68_pcb/releases/tag/v4.5.0)** — viz [CHANGELOG.md](CHANGELOG.md). Kusovník sady: [kicad/BOM_KIT.csv](kicad/BOM_KIT.csv). Po deskách: [kicad/BOM_v4.csv](kicad/BOM_v4.csv).
 
 Firmware a geometrie pole: [fedurca/het68](https://github.com/fedurca/het68). Zadání: [docs/ZADANI_PCB.md](docs/ZADANI_PCB.md). Projekty v KiCadu: [kicad/README.md](kicad/README.md).
 
@@ -14,15 +14,17 @@ v4 je sada **Core 6L + vyměnitelná silová deska + šest satelitů**. Na měď
 
 **Silová deska** má tři SKU se stejným interconnectem 2×10: NN (multiplex CT), VN (silnější GDT/TVS), VVN (harvest CT + Rogowski). Společný front-end je jen sekundár: GDT, TVS, LC, burden, crowbar, MPPT, článek 21700 (LiFePO4/LTO), 5 V a vždyživý `+3V3_RF`.
 
-**Satelit** je šest destiček 6L: T5848 uprostřed, **8× SK6812** v kruhu, na kabelu LVDS. SD z mikrofonu jede párem (`SN65LVDS1` na satelitu, `SN65LVDS32` na Core, 100 Ω u přijímače). Mapa [`docs/PINOUT_SAT_v4.csv`](docs/PINOUT_SAT_v4.csv).
+**Satelit** je šest destiček 6L. Ven z desky kouká jen akustický otvor T5848 a kruh **8× SK6812**. Tělo mikrofonu, RJ45 a ostatní elektronika jsou na druhé straně. SD z mikrofonu jede párem (`SN65LVDS1` na satelitu, `SN65LVDS32` na Core, 100 Ω u přijímače). Mapa [`docs/PINOUT_SAT_v4.csv`](docs/PINOUT_SAT_v4.csv).
 
-## Prototyp (v4.4.0)
+## Prototyp (v4.5.0)
 
 ![Core 6L](docs/img/core-3d.png)
 
 Maska a schéma: [Core](docs/img/core-mask.svg) · [schéma](docs/img/core-sch.pdf) · [satelit](docs/img/sat-mask.svg) · [silová](docs/img/pwr-nn-mask.svg). Gerbery pro osazení: [`kicad/jlc/`](kicad/jlc/).
 
-![Satelit 6L, 8× SK6812](docs/img/sat-3d.png)
+![Satelit, venkovní strana: 8× SK6812](docs/img/sat-3d.png)
+
+Zadní strana, konektor a elektronika: [SVG](docs/img/sat-back.svg) · [3D](docs/img/sat-back-3d.png)
 
 ![Silová NN](docs/img/pwr-nn-3d.png)
 
@@ -36,9 +38,9 @@ Na měď nejde 230 V / 22 kV / 110 kV. Gerbery z `kicad-cli` v `kicad/*/fab/`. T
 
 | Deska | Rozměr | ERC error | DRC | Objednat? |
 |---|---|---|---|---|
-| Core | 160 × 100 mm, 6L Faraday, ENIG | 0 | 0 zkratů na nových spojích, 67 nepřipojených | ne, část QSPI a GPIO ještě nekončí u cíle |
-| Satelit | 50 × 80 mm, 6L Faraday, ENIG | 0 | 0 zkratů, 13 nepřipojených | ne, několik LVDS sítí je otevřených |
-| Silová NN/VN/VVN | 140 × 80 mm, 2L 70 µm | 0 | ~29 zkratů pad–pad z rozmístění, ~50 nepřipojených | ne |
+| Core | 160 × 100 mm, 6L Faraday, ENIG | 0 | 0 zkratů, desítky otevřených párů | ne |
+| Satelit | 50 × 80 mm, 6L, ven jen LED a port | 0 | 0 zkratů, otevřené části LVDS a dvě LED | ne |
+| Silová NN/VN/VVN | 140 × 80 mm, 2L 70 µm | 0 | 0 zkratů pad–pad, část sítí otevřená | ne jako hotový zdroj |
 
 Schémata jsou elektricky uzavřená (ERC 0 chyb). QFN-80 má únik 0,15 mm po ose pinu. Krystal je odsunutý od severní hrany, aby ta řada měla koridor. Z rovnoběžného svazku o rozteči 0,40 mm odbočí jen krajní vodiče, proto několik pinů uprostřed řady zůstává otevřených.
 

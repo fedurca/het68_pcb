@@ -1,7 +1,7 @@
 {
     "$schema": "https://schemas.kicad.org/drc.v1.json",
     "coordinate_units": "mm",
-    "date": "2026-10-29T13:22:47",
+    "date": "2026-10-29T14:01:52",
     "ignored_checks": [
         {
             "description": "Footprint has no courtyard defined",
@@ -39,20 +39,20 @@
             "description": "Missing connection between items",
             "items": [
                 {
-                    "description": "Zone [GND] on B.Cu, priority 0",
+                    "description": "PTH pad SH [GND] of J2",
                     "pos": {
-                        "x": 1.2,
-                        "y": 1.2
+                        "x": 20.32,
+                        "y": 24.87
                     },
-                    "uuid": "9a2db215-7732-478e-bcb5-27cdba38c209"
+                    "uuid": "e864ce7c-697c-4dcc-a44e-976699f45760"
                 },
                 {
-                    "description": "Zone [GND] on B.Cu, priority 0",
+                    "description": "Track [GND] on F.Cu, length 1.2526 mm",
                     "pos": {
-                        "x": 1.2,
-                        "y": 1.2
+                        "x": 20.32,
+                        "y": 29.05
                     },
-                    "uuid": "9a2db215-7732-478e-bcb5-27cdba38c209"
+                    "uuid": "14ed6122-0664-40f0-8a86-45561ab576fe"
                 }
             ],
             "severity": "error",
@@ -62,20 +62,20 @@
             "description": "Missing connection between items",
             "items": [
                 {
-                    "description": "Track [GND] on F.Cu, length 1.7125 mm",
+                    "description": "Track [GND] on F.Cu, length 1.3625 mm",
                     "pos": {
-                        "x": 35.025,
-                        "y": 17.8625
+                        "x": 22.8625,
+                        "y": 48.0
                     },
-                    "uuid": "08d4e4e8-ec69-4b92-a49d-99ed71242ddb"
+                    "uuid": "408ce8b1-4216-4a40-867a-3e0cbb5de605"
                 },
                 {
-                    "description": "Track [GND] on F.Cu, length 1.7125 mm",
+                    "description": "Pad 2 [GND] of U_BST on F.Cu",
                     "pos": {
-                        "x": 34.1375,
-                        "y": 16.325
+                        "x": 26.8625,
+                        "y": 42.0
                     },
-                    "uuid": "a4b65b39-e4b9-4cac-84d3-7b8a9d4cd3b3"
+                    "uuid": "a01b1480-cac3-460f-adec-8bbf70e72c7b"
                 }
             ],
             "severity": "error",
@@ -131,12 +131,35 @@
             "description": "Missing connection between items",
             "items": [
                 {
+                    "description": "Via [GND] on F.Cu - B.Cu",
+                    "pos": {
+                        "x": 49.0,
+                        "y": 13.0
+                    },
+                    "uuid": "3f956f01-40fe-4a90-a21d-fbf5b402b888"
+                },
+                {
+                    "description": "Track [GND] on F.Cu, length 0.8750 mm",
+                    "pos": {
+                        "x": 57.225,
+                        "y": 13.0
+                    },
+                    "uuid": "c5cf39f4-aa99-45e3-adee-80f50f638cdf"
+                }
+            ],
+            "severity": "error",
+            "type": "unconnected_items"
+        },
+        {
+            "description": "Missing connection between items",
+            "items": [
+                {
                     "description": "Track [GND] on F.Cu, length 0.9014 mm",
                     "pos": {
                         "x": 49.05,
                         "y": 8.0
                     },
-                    "uuid": "d4c9c445-1eb4-4b51-b50a-10c40ac19dd6"
+                    "uuid": "3646a394-a95e-4af0-b62b-bb931c323ca7"
                 },
                 {
                     "description": "Via [GND] on F.Cu - B.Cu",
@@ -145,6 +168,75 @@
                         "y": 13.0
                     },
                     "uuid": "3f956f01-40fe-4a90-a21d-fbf5b402b888"
+                }
+            ],
+            "severity": "error",
+            "type": "unconnected_items"
+        },
+        {
+            "description": "Missing connection between items",
+            "items": [
+                {
+                    "description": "Track [GND] on F.Cu, length 1.2001 mm",
+                    "pos": {
+                        "x": 60.7875,
+                        "y": 36.0
+                    },
+                    "uuid": "36ea24ae-6475-4b72-9005-605eb499ae87"
+                },
+                {
+                    "description": "Via [GND] on F.Cu - B.Cu",
+                    "pos": {
+                        "x": 57.6,
+                        "y": 40.8
+                    },
+                    "uuid": "2f70990f-e695-4b91-a0bf-26cbd882c7e0"
+                }
+            ],
+            "severity": "error",
+            "type": "unconnected_items"
+        },
+        {
+            "description": "Missing connection between items",
+            "items": [
+                {
+                    "description": "Track [GND] on F.Cu, length 1.2001 mm",
+                    "pos": {
+                        "x": 60.7875,
+                        "y": 36.0
+                    },
+                    "uuid": "36ea24ae-6475-4b72-9005-605eb499ae87"
+                },
+                {
+                    "description": "Track [GND] on F.Cu, length 1.1600 mm",
+                    "pos": {
+                        "x": 55.239999,
+                        "y": 34.0
+                    },
+                    "uuid": "46eec70a-fb2e-4dc5-9e79-6bdfd52e55c8"
+                }
+            ],
+            "severity": "error",
+            "type": "unconnected_items"
+        },
+        {
+            "description": "Missing connection between items",
+            "items": [
+                {
+                    "description": "Track [GND] on F.Cu, length 0.8750 mm",
+                    "pos": {
+                        "x": 61.425,
+                        "y": 8.0
+                    },
+                    "uuid": "643f1826-53a6-4caf-8638-239791c75fed"
+                },
+                {
+                    "description": "Track [GND] on F.Cu, length 0.8750 mm",
+                    "pos": {
+                        "x": 57.225,
+                        "y": 13.0
+                    },
+                    "uuid": "c5cf39f4-aa99-45e3-adee-80f50f638cdf"
                 }
             ],
             "severity": "error",
@@ -164,10 +256,79 @@
                 {
                     "description": "Via [GND] on F.Cu - B.Cu",
                     "pos": {
-                        "x": 58.1,
+                        "x": 65.6,
                         "y": 13.0
                     },
-                    "uuid": "9443bf42-07bf-4afc-8125-3eb112362a2b"
+                    "uuid": "2ead7d4a-a129-43da-99eb-fed10509a4d4"
+                }
+            ],
+            "severity": "error",
+            "type": "unconnected_items"
+        },
+        {
+            "description": "Missing connection between items",
+            "items": [
+                {
+                    "description": "Pad 2 [GND] of R_HG on F.Cu",
+                    "pos": {
+                        "x": 68.825,
+                        "y": 28.0
+                    },
+                    "uuid": "0943a967-67a4-4075-8a54-bf081afe8253"
+                },
+                {
+                    "description": "Track [GND] on F.Cu, length 1.2001 mm",
+                    "pos": {
+                        "x": 60.7875,
+                        "y": 36.0
+                    },
+                    "uuid": "36ea24ae-6475-4b72-9005-605eb499ae87"
+                }
+            ],
+            "severity": "error",
+            "type": "unconnected_items"
+        },
+        {
+            "description": "Missing connection between items",
+            "items": [
+                {
+                    "description": "Zone [GND] on B.Cu, priority 0",
+                    "pos": {
+                        "x": 1.2,
+                        "y": 1.2
+                    },
+                    "uuid": "9a2db215-7732-478e-bcb5-27cdba38c209"
+                },
+                {
+                    "description": "Zone [GND] on B.Cu, priority 0",
+                    "pos": {
+                        "x": 1.2,
+                        "y": 1.2
+                    },
+                    "uuid": "9a2db215-7732-478e-bcb5-27cdba38c209"
+                }
+            ],
+            "severity": "error",
+            "type": "unconnected_items"
+        },
+        {
+            "description": "Missing connection between items",
+            "items": [
+                {
+                    "description": "Pad 2 [GND] of R_SH on F.Cu",
+                    "pos": {
+                        "x": 76.825,
+                        "y": 36.0
+                    },
+                    "uuid": "2a601193-ead1-4013-97ef-3e7e5d4e313f"
+                },
+                {
+                    "description": "Track [GND] on F.Cu, length 1.2003 mm",
+                    "pos": {
+                        "x": 76.825,
+                        "y": 44.0
+                    },
+                    "uuid": "c6c0d737-f0f4-4259-b1d8-0ec72bc52940"
                 }
             ],
             "severity": "error",
@@ -179,18 +340,18 @@
                 {
                     "description": "Pad 2 [GND] of C_RF on F.Cu",
                     "pos": {
-                        "x": 65.575,
-                        "y": 13.0
+                        "x": 84.775,
+                        "y": 36.0
                     },
                     "uuid": "14865aae-9bfe-440b-8ce7-e35f330cbcdc"
                 },
                 {
-                    "description": "Via [GND] on F.Cu - B.Cu",
+                    "description": "Pad 2 [GND] of R_SH on F.Cu",
                     "pos": {
-                        "x": 62.3,
-                        "y": 8.0
+                        "x": 76.825,
+                        "y": 36.0
                     },
-                    "uuid": "e5571abe-df4c-4190-b27a-32d44285e20f"
+                    "uuid": "2a601193-ead1-4013-97ef-3e7e5d4e313f"
                 }
             ],
             "severity": "error",
@@ -200,110 +361,18 @@
             "description": "Missing connection between items",
             "items": [
                 {
-                    "description": "Pad 2 [GND] of C_OA on F.Cu",
+                    "description": "Pad 2 [GND] of C_RF on F.Cu",
                     "pos": {
-                        "x": 73.975,
-                        "y": 8.0
+                        "x": 84.775,
+                        "y": 36.0
                     },
-                    "uuid": "dc7cde61-74c9-414f-932a-1328db590290"
-                },
-                {
-                    "description": "Pad 2 [GND] of C_INA on F.Cu",
-                    "pos": {
-                        "x": 73.975,
-                        "y": 13.0
-                    },
-                    "uuid": "62722cee-cc66-4eee-bed2-faf67bfb98bd"
-                }
-            ],
-            "severity": "error",
-            "type": "unconnected_items"
-        },
-        {
-            "description": "Missing connection between items",
-            "items": [
-                {
-                    "description": "Zone [GND] on B.Cu, priority 0",
-                    "pos": {
-                        "x": 1.2,
-                        "y": 1.2
-                    },
-                    "uuid": "9a2db215-7732-478e-bcb5-27cdba38c209"
-                },
-                {
-                    "description": "Zone [GND] on B.Cu, priority 0",
-                    "pos": {
-                        "x": 1.2,
-                        "y": 1.2
-                    },
-                    "uuid": "9a2db215-7732-478e-bcb5-27cdba38c209"
-                }
-            ],
-            "severity": "error",
-            "type": "unconnected_items"
-        },
-        {
-            "description": "Missing connection between items",
-            "items": [
-                {
-                    "description": "PTH pad 2 [GND] of DTVS",
-                    "pos": {
-                        "x": 77.24,
-                        "y": 16.0
-                    },
-                    "uuid": "839daba7-d64c-4ab5-a781-79126c7007a2"
-                },
-                {
-                    "description": "Zone [GND] on B.Cu, priority 0",
-                    "pos": {
-                        "x": 1.2,
-                        "y": 1.2
-                    },
-                    "uuid": "9a2db215-7732-478e-bcb5-27cdba38c209"
-                }
-            ],
-            "severity": "error",
-            "type": "unconnected_items"
-        },
-        {
-            "description": "Missing connection between items",
-            "items": [
-                {
-                    "description": "Track [GND] on F.Cu, length 0.8750 mm",
-                    "pos": {
-                        "x": 90.825,
-                        "y": 8.0
-                    },
-                    "uuid": "2efc9240-7649-460c-b7f8-b8be9278c825"
-                },
-                {
-                    "description": "Via [GND] on F.Cu - B.Cu",
-                    "pos": {
-                        "x": 87.5,
-                        "y": 8.0
-                    },
-                    "uuid": "74c11e23-83b8-4729-af96-b8beedbe68a6"
-                }
-            ],
-            "severity": "error",
-            "type": "unconnected_items"
-        },
-        {
-            "description": "Missing connection between items",
-            "items": [
-                {
-                    "description": "Via [GND] on F.Cu - B.Cu",
-                    "pos": {
-                        "x": 96.0,
-                        "y": 11.1
-                    },
-                    "uuid": "be85b75a-8eab-48eb-b3b0-62cb8b1e49f1"
+                    "uuid": "14865aae-9bfe-440b-8ce7-e35f330cbcdc"
                 },
                 {
                     "description": "Pad 2 [GND] of R2 on F.Cu",
                     "pos": {
-                        "x": 95.025,
-                        "y": 8.0
+                        "x": 84.825,
+                        "y": 28.0
                     },
                     "uuid": "1121e084-08cb-4a2a-ba37-eaa4d8bfb285"
                 }
@@ -315,20 +384,66 @@
             "description": "Missing connection between items",
             "items": [
                 {
+                    "description": "Track [GND] on F.Cu, length 0.8750 mm",
+                    "pos": {
+                        "x": 86.625,
+                        "y": 8.0
+                    },
+                    "uuid": "28085319-b45c-42f1-97ea-f867972ac442"
+                },
+                {
+                    "description": "Track [GND] on F.Cu, length 0.8750 mm",
+                    "pos": {
+                        "x": 90.825,
+                        "y": 8.0
+                    },
+                    "uuid": "2efc9240-7649-460c-b7f8-b8be9278c825"
+                }
+            ],
+            "severity": "error",
+            "type": "unconnected_items"
+        },
+        {
+            "description": "Missing connection between items",
+            "items": [
+                {
+                    "description": "Track [GND] on F.Cu, length 0.8750 mm",
+                    "pos": {
+                        "x": 86.625,
+                        "y": 8.0
+                    },
+                    "uuid": "28085319-b45c-42f1-97ea-f867972ac442"
+                },
+                {
+                    "description": "Pad 2 [GND] of D2 on F.Cu",
+                    "pos": {
+                        "x": 88.0,
+                        "y": 12.0
+                    },
+                    "uuid": "8c909876-186b-45a2-a782-91d440469d72"
+                }
+            ],
+            "severity": "error",
+            "type": "unconnected_items"
+        },
+        {
+            "description": "Missing connection between items",
+            "items": [
+                {
                     "description": "Pad 2 [GND] of C_MC on F.Cu",
                     "pos": {
-                        "x": 111.775,
-                        "y": 8.0
+                        "x": 92.775,
+                        "y": 36.0
                     },
                     "uuid": "5f1de869-24f1-450e-908a-b363c3dc9d67"
                 },
                 {
-                    "description": "Via [GND] on F.Cu - B.Cu",
+                    "description": "Pad 2 [GND] of C_RF on F.Cu",
                     "pos": {
-                        "x": 107.8,
-                        "y": 8.0
+                        "x": 84.775,
+                        "y": 36.0
                     },
-                    "uuid": "a22e5161-19bf-480d-a76a-1327be664e42"
+                    "uuid": "14865aae-9bfe-440b-8ce7-e35f330cbcdc"
                 }
             ],
             "severity": "error",
@@ -338,66 +453,20 @@
             "description": "Missing connection between items",
             "items": [
                 {
-                    "description": "Via [DC] on F.Cu - B.Cu",
+                    "description": "Track [DC] on B.Cu, length 0.4000 mm",
                     "pos": {
-                        "x": 35.5,
-                        "y": 11.5
+                        "x": 67.6,
+                        "y": 20.4
                     },
-                    "uuid": "8b902fd2-dc4a-444a-8416-9f3df4807012"
+                    "uuid": "94706518-7257-4d23-a3ab-314a101ba91f"
                 },
                 {
-                    "description": "Via [DC] on F.Cu - B.Cu",
+                    "description": "Pad 2 [DC] of Q1 on F.Cu",
                     "pos": {
-                        "x": 50.4,
-                        "y": 8.0
-                    },
-                    "uuid": "bf9d64df-2978-4686-9b82-1b400ff32298"
-                }
-            ],
-            "severity": "error",
-            "type": "unconnected_items"
-        },
-        {
-            "description": "Missing connection between items",
-            "items": [
-                {
-                    "description": "PTH pad 1 [DC] of DTVS",
-                    "pos": {
-                        "x": 62.0,
+                        "x": 66.85,
                         "y": 16.0
                     },
-                    "uuid": "fda8e90b-1692-4fbb-b68c-a886bdb01160"
-                },
-                {
-                    "description": "Pad 2 [DC] of D6 on F.Cu",
-                    "pos": {
-                        "x": 59.8,
-                        "y": 8.0
-                    },
-                    "uuid": "105b0f38-52db-45d7-b8b5-86c6c19a2006"
-                }
-            ],
-            "severity": "error",
-            "type": "unconnected_items"
-        },
-        {
-            "description": "Missing connection between items",
-            "items": [
-                {
-                    "description": "Via [DC] on F.Cu - B.Cu",
-                    "pos": {
-                        "x": 66.8,
-                        "y": 16.0
-                    },
-                    "uuid": "3fd739be-b269-471c-a136-88814d7fdab4"
-                },
-                {
-                    "description": "Track [DC] on B.Cu, length 3.8000 mm",
-                    "pos": {
-                        "x": 62.6,
-                        "y": 17.2
-                    },
-                    "uuid": "b244c0d8-bdad-4415-92fb-c7b9f61c247b"
+                    "uuid": "1e1b479a-55bd-476f-b841-13dc1c8eb7d5"
                 }
             ],
             "severity": "error",
@@ -415,12 +484,12 @@
                     "uuid": "3ddfebee-73ca-4bef-a8ae-8d2a54be7f88"
                 },
                 {
-                    "description": "PTH pad 1 [DC] of C1",
+                    "description": "Track [DC] on F.Cu, length 1.2000 mm",
                     "pos": {
                         "x": 78.0,
                         "y": 16.0
                     },
-                    "uuid": "791c57a7-8ac0-43be-b5c6-c733d4304cfe"
+                    "uuid": "e4ebb6c6-9a36-4c90-aba9-d0fa9168fce5"
                 }
             ],
             "severity": "error",
@@ -438,12 +507,12 @@
                     "uuid": "0fe309fa-c09c-4c47-8d21-5e05c501dffb"
                 },
                 {
-                    "description": "PTH pad 1 [DC] of C1",
+                    "description": "Track [DC] on F.Cu, length 1.2000 mm",
                     "pos": {
                         "x": 78.0,
                         "y": 16.0
                     },
-                    "uuid": "791c57a7-8ac0-43be-b5c6-c733d4304cfe"
+                    "uuid": "e4ebb6c6-9a36-4c90-aba9-d0fa9168fce5"
                 }
             ],
             "severity": "error",
@@ -453,12 +522,58 @@
             "description": "Missing connection between items",
             "items": [
                 {
-                    "description": "PTH pad 2 [AC2] of J1",
+                    "description": "Track [AC2] on F.Cu, length 7.2000 mm",
+                    "pos": {
+                        "x": 62.8,
+                        "y": 28.8
+                    },
+                    "uuid": "91f73f30-d000-4082-ba62-71920fd18f14"
+                },
+                {
+                    "description": "Track [AC2] on F.Cu, length 1.1600 mm",
+                    "pos": {
+                        "x": 62.16,
+                        "y": 28.0
+                    },
+                    "uuid": "fbfbeca4-4b26-4c3c-a074-9d8de2666a90"
+                }
+            ],
+            "severity": "error",
+            "type": "unconnected_items"
+        },
+        {
+            "description": "Missing connection between items",
+            "items": [
+                {
+                    "description": "Track [AC2] on F.Cu, length 1.2015 mm",
                     "pos": {
                         "x": 128.0,
                         "y": 24.54
                     },
-                    "uuid": "38930ff0-3ec7-4e97-977d-f5b467f6a72b"
+                    "uuid": "809b0a8a-d080-48a8-90eb-3ca5fdf0a164"
+                },
+                {
+                    "description": "Track [AC2] on B.Cu, length 11.0000 mm",
+                    "pos": {
+                        "x": 116.2,
+                        "y": 25.2
+                    },
+                    "uuid": "c42acf04-275a-4cbc-a278-2b23f420f255"
+                }
+            ],
+            "severity": "error",
+            "type": "unconnected_items"
+        },
+        {
+            "description": "Missing connection between items",
+            "items": [
+                {
+                    "description": "Track [AC2] on F.Cu, length 1.2015 mm",
+                    "pos": {
+                        "x": 128.0,
+                        "y": 24.54
+                    },
+                    "uuid": "809b0a8a-d080-48a8-90eb-3ca5fdf0a164"
                 },
                 {
                     "description": "Track [AC2] on B.Cu, length 0.6000 mm",
@@ -467,52 +582,6 @@
                         "y": 23.2
                     },
                     "uuid": "be44c9fb-fc11-49c6-8a55-5d27f2480f0a"
-                }
-            ],
-            "severity": "error",
-            "type": "unconnected_items"
-        },
-        {
-            "description": "Missing connection between items",
-            "items": [
-                {
-                    "description": "PTH pad 2 [AC2] of R4",
-                    "pos": {
-                        "x": 128.16,
-                        "y": 22.0
-                    },
-                    "uuid": "5ebb9c91-7804-4f1c-a0da-4d6183f82577"
-                },
-                {
-                    "description": "Track [AC2] on B.Cu, length 0.4000 mm",
-                    "pos": {
-                        "x": 126.8,
-                        "y": 23.2
-                    },
-                    "uuid": "75b1665c-6e7c-43be-992b-fc5d36e74f6c"
-                }
-            ],
-            "severity": "error",
-            "type": "unconnected_items"
-        },
-        {
-            "description": "Missing connection between items",
-            "items": [
-                {
-                    "description": "Pad 1 [BST_SW] of U_BST on F.Cu",
-                    "pos": {
-                        "x": 14.8625,
-                        "y": 47.05
-                    },
-                    "uuid": "ac69f254-811f-4265-935f-03a44041f13e"
-                },
-                {
-                    "description": "Pad 1 [BST_SW] of L_BST on F.Cu",
-                    "pos": {
-                        "x": 118.3375,
-                        "y": 8.0
-                    },
-                    "uuid": "cff90e57-2af4-4c22-9e24-241fa70103d4"
                 }
             ],
             "severity": "error",
@@ -545,20 +614,20 @@
             "description": "Missing connection between items",
             "items": [
                 {
-                    "description": "Track [ADC_I] on F.Cu, length 0.6950 mm",
-                    "pos": {
-                        "x": 18.0,
-                        "y": 58.16
-                    },
-                    "uuid": "be11d144-7fdb-42b3-ae91-37f34143c85e"
-                },
-                {
                     "description": "Track [ADC_I] on F.Cu, length 0.6000 mm",
                     "pos": {
                         "x": 18.8,
                         "y": 56.8
                     },
                     "uuid": "76d8a6d1-646c-4ae8-ba8c-933c51ddeb33"
+                },
+                {
+                    "description": "Track [ADC_I] on F.Cu, length 0.6950 mm",
+                    "pos": {
+                        "x": 18.0,
+                        "y": 58.16
+                    },
+                    "uuid": "be11d144-7fdb-42b3-ae91-37f34143c85e"
                 }
             ],
             "severity": "error",
@@ -591,20 +660,66 @@
             "description": "Missing connection between items",
             "items": [
                 {
+                    "description": "Track [+3V3_RF] on F.Cu, length 1.8000 mm",
+                    "pos": {
+                        "x": 74.2,
+                        "y": 12.0
+                    },
+                    "uuid": "6b6e9847-f930-47c4-a96e-2cef01a9a261"
+                },
+                {
                     "description": "Via [+3V3_RF] on F.Cu - B.Cu",
                     "pos": {
                         "x": 72.4,
                         "y": 8.0
                     },
                     "uuid": "3198ca52-402d-4bf9-89e5-2b8eff14ecd6"
+                }
+            ],
+            "severity": "error",
+            "type": "unconnected_items"
+        },
+        {
+            "description": "Missing connection between items",
+            "items": [
+                {
+                    "description": "Track [AC1] on F.Cu, length 1.1314 mm",
+                    "pos": {
+                        "x": 52.0,
+                        "y": 28.0
+                    },
+                    "uuid": "864f9931-2f83-4b88-89ea-75906de376cb"
                 },
                 {
-                    "description": "Via [+3V3_RF] on F.Cu - B.Cu",
+                    "description": "Track [AC1] on B.Cu, length 0.2000 mm",
                     "pos": {
-                        "x": 72.4,
-                        "y": 13.0
+                        "x": 52.8,
+                        "y": 27.2
                     },
-                    "uuid": "aae9e108-cf08-4080-b562-9ca6cdf8df68"
+                    "uuid": "99a1721d-cde7-4518-be28-de035a7f4ae3"
+                }
+            ],
+            "severity": "error",
+            "type": "unconnected_items"
+        },
+        {
+            "description": "Missing connection between items",
+            "items": [
+                {
+                    "description": "Track [AC1] on F.Cu, length 1.1314 mm",
+                    "pos": {
+                        "x": 104.0,
+                        "y": 22.0
+                    },
+                    "uuid": "56b28c32-611b-4f3a-b5cb-32ee55193304"
+                },
+                {
+                    "description": "Track [AC1] on F.Cu, length 2.6000 mm",
+                    "pos": {
+                        "x": 100.2,
+                        "y": 23.0
+                    },
+                    "uuid": "195fcd42-e407-422c-9077-8e7d3b5add6f"
                 }
             ],
             "severity": "error",
@@ -622,12 +737,12 @@
                     "uuid": "47729fc5-7266-439d-a1be-be960f0e4e61"
                 },
                 {
-                    "description": "PTH pad 1 [AC1] of L1",
+                    "description": "Track [AC1] on F.Cu, length 1.1314 mm",
                     "pos": {
                         "x": 104.0,
                         "y": 22.0
                     },
-                    "uuid": "e285ae22-c95a-4133-bc09-66ab7a65a406"
+                    "uuid": "56b28c32-611b-4f3a-b5cb-32ee55193304"
                 }
             ],
             "severity": "error",
@@ -636,60 +751,6 @@
         {
             "description": "Missing connection between items",
             "items": [
-                {
-                    "description": "PTH pad 1 [AC1] of R4",
-                    "pos": {
-                        "x": 118.0,
-                        "y": 22.0
-                    },
-                    "uuid": "35ebf43e-43f4-4549-9efc-101868df0ceb"
-                },
-                {
-                    "description": "Track [AC1] on F.Cu, length 2.0000 mm",
-                    "pos": {
-                        "x": 117.2,
-                        "y": 19.2
-                    },
-                    "uuid": "ebe29ccb-3e66-46e5-ae31-7a5b8be3132e"
-                }
-            ],
-            "severity": "error",
-            "type": "unconnected_items"
-        },
-        {
-            "description": "Missing connection between items",
-            "items": [
-                {
-                    "description": "PTH pad 1 [AC1] of R4",
-                    "pos": {
-                        "x": 118.0,
-                        "y": 22.0
-                    },
-                    "uuid": "35ebf43e-43f4-4549-9efc-101868df0ceb"
-                },
-                {
-                    "description": "PTH pad 1 [AC1] of J1",
-                    "pos": {
-                        "x": 128.0,
-                        "y": 22.0
-                    },
-                    "uuid": "917fc75b-715d-4736-94d6-3eadec63a159"
-                }
-            ],
-            "severity": "error",
-            "type": "unconnected_items"
-        },
-        {
-            "description": "Missing connection between items",
-            "items": [
-                {
-                    "description": "Track [BURDEN_EN] on F.Cu, length 0.6950 mm",
-                    "pos": {
-                        "x": 18.0,
-                        "y": 63.24
-                    },
-                    "uuid": "3cb87d0d-fea9-4895-b2e7-0f590e094d02"
-                },
                 {
                     "description": "Track [BURDEN_EN] on B.Cu, length 0.4000 mm",
                     "pos": {
@@ -697,6 +758,14 @@
                         "y": 62.0
                     },
                     "uuid": "49ce2414-2bbd-4c70-9334-2a31a9a82841"
+                },
+                {
+                    "description": "Track [BURDEN_EN] on F.Cu, length 0.6950 mm",
+                    "pos": {
+                        "x": 18.0,
+                        "y": 63.24
+                    },
+                    "uuid": "3cb87d0d-fea9-4895-b2e7-0f590e094d02"
                 }
             ],
             "severity": "error",
@@ -705,14 +774,6 @@
         {
             "description": "Missing connection between items",
             "items": [
-                {
-                    "description": "Track [ADC_HARVEST] on B.Cu, length 0.2000 mm",
-                    "pos": {
-                        "x": 18.8,
-                        "y": 59.8
-                    },
-                    "uuid": "48b52ba1-fafd-4136-abe3-52195d331653"
-                },
                 {
                     "description": "Track [ADC_HARVEST] on F.Cu, length 0.6950 mm",
                     "pos": {
@@ -720,6 +781,14 @@
                         "y": 60.7
                     },
                     "uuid": "15cfdc67-3248-4568-b09a-c5260b5d3793"
+                },
+                {
+                    "description": "Track [ADC_HARVEST] on B.Cu, length 0.2000 mm",
+                    "pos": {
+                        "x": 18.8,
+                        "y": 59.8
+                    },
+                    "uuid": "48b52ba1-fafd-4136-abe3-52195d331653"
                 }
             ],
             "severity": "error",
@@ -729,12 +798,12 @@
             "description": "Missing connection between items",
             "items": [
                 {
-                    "description": "PTH pad 1 [+5V_ALWAYS] of J_CORE",
+                    "description": "Track [+5V_ALWAYS] on F.Cu, length 1.2000 mm",
                     "pos": {
                         "x": 18.0,
                         "y": 48.0
                     },
-                    "uuid": "308b2c32-4738-41f2-bff6-514f29d0d6d3"
+                    "uuid": "73c113f4-b152-4ee6-9216-c6d959a4ac27"
                 },
                 {
                     "description": "Track [+5V_ALWAYS] on F.Cu, length 1.0625 mm",
@@ -752,66 +821,43 @@
             "description": "Missing connection between items",
             "items": [
                 {
-                    "description": "Track [+5V_ALWAYS] on B.Cu, length 3.0000 mm",
+                    "description": "Via [VHARV] on F.Cu - B.Cu",
                     "pos": {
-                        "x": 67.4,
-                        "y": 16.8
+                        "x": 37.2,
+                        "y": 12.4
                     },
-                    "uuid": "e5d9865e-0f1d-4140-b9ee-19b563a8f36d"
+                    "uuid": "21ac5af8-aad4-47d9-b709-f11b14cf025b"
                 },
                 {
-                    "description": "Via [+5V_ALWAYS] on F.Cu - B.Cu",
+                    "description": "Via [VHARV] on F.Cu - B.Cu",
                     "pos": {
-                        "x": 62.3,
+                        "x": 54.6,
+                        "y": 8.0
+                    },
+                    "uuid": "26592e38-0af2-46de-bdfa-e94d413bee16"
+                }
+            ],
+            "severity": "error",
+            "type": "unconnected_items"
+        },
+        {
+            "description": "Missing connection between items",
+            "items": [
+                {
+                    "description": "Via [VHARV] on F.Cu - B.Cu",
+                    "pos": {
+                        "x": 54.6,
+                        "y": 8.0
+                    },
+                    "uuid": "26592e38-0af2-46de-bdfa-e94d413bee16"
+                },
+                {
+                    "description": "Via [VHARV] on F.Cu - B.Cu",
+                    "pos": {
+                        "x": 75.7,
                         "y": 13.0
                     },
-                    "uuid": "bc8887a2-d59e-439f-af36-bb97d32f72d6"
-                }
-            ],
-            "severity": "error",
-            "type": "unconnected_items"
-        },
-        {
-            "description": "Missing connection between items",
-            "items": [
-                {
-                    "description": "Pad 2 [SCR_G] of R5 on F.Cu",
-                    "pos": {
-                        "x": 53.1125,
-                        "y": 8.0
-                    },
-                    "uuid": "3df722ab-93c9-48a0-9776-e65284efae56"
-                },
-                {
-                    "description": "Track [SCR_G] on F.Cu, length 0.4000 mm",
-                    "pos": {
-                        "x": 51.5,
-                        "y": 11.2
-                    },
-                    "uuid": "2c8b253d-80c8-4fc9-b35f-76c925925cf4"
-                }
-            ],
-            "severity": "error",
-            "type": "unconnected_items"
-        },
-        {
-            "description": "Missing connection between items",
-            "items": [
-                {
-                    "description": "Track [VHARV] on F.Cu, length 0.8754 mm",
-                    "pos": {
-                        "x": 36.324999,
-                        "y": 12.424999
-                    },
-                    "uuid": "8134be81-5efa-4df5-afa4-95494343cf55"
-                },
-                {
-                    "description": "Pad 1 [VHARV] of D6 on F.Cu",
-                    "pos": {
-                        "x": 53.0,
-                        "y": 8.0
-                    },
-                    "uuid": "7b3b277b-7630-49bb-8ba1-884ea85a6760"
+                    "uuid": "b9061840-50ac-46f7-8977-89430d4c66cd"
                 }
             ],
             "severity": "error",
@@ -829,12 +875,12 @@
                     "uuid": "8f909c77-e8bc-45db-8699-ab27eb1f6159"
                 },
                 {
-                    "description": "Via [VHARV] on F.Cu - B.Cu",
+                    "description": "Pad 1 [VHARV] of R_HS on F.Cu",
                     "pos": {
-                        "x": 54.6,
-                        "y": 8.0
+                        "x": 91.175,
+                        "y": 28.0
                     },
-                    "uuid": "26592e38-0af2-46de-bdfa-e94d413bee16"
+                    "uuid": "be67d1d6-d77c-4588-ae51-8dede479416f"
                 }
             ],
             "severity": "error",
@@ -890,20 +936,20 @@
             "description": "Missing connection between items",
             "items": [
                 {
+                    "description": "Track [PT1000_RTN] on F.Cu, length 1.2015 mm",
+                    "pos": {
+                        "x": 132.0,
+                        "y": 50.54
+                    },
+                    "uuid": "bffdf806-68fe-420d-accd-dee0427f09bd"
+                },
+                {
                     "description": "Track [PT1000_RTN] on B.Cu, length 0.6000 mm",
                     "pos": {
                         "x": 131.2,
                         "y": 49.2
                     },
                     "uuid": "f21e0464-ed90-400d-80a6-5d81d4ff3e1a"
-                },
-                {
-                    "description": "PTH pad 2 [PT1000_RTN] of J_RTD",
-                    "pos": {
-                        "x": 132.0,
-                        "y": 50.54
-                    },
-                    "uuid": "be446004-b4c2-45a6-b100-dbaf20193c8c"
                 }
             ],
             "severity": "error",
@@ -936,20 +982,20 @@
             "description": "Missing connection between items",
             "items": [
                 {
+                    "description": "Track [INT_IN] on F.Cu, length 1.1430 mm",
+                    "pos": {
+                        "x": 109.137499,
+                        "y": 48.949999
+                    },
+                    "uuid": "d0fcdc7b-8f7b-44ff-97ce-63b96e1091c6"
+                },
+                {
                     "description": "Track [INT_IN] on F.Cu, length 0.3200 mm",
                     "pos": {
                         "x": 68.225,
                         "y": 8.0
                     },
                     "uuid": "23c1d3b3-8606-4f56-923e-55d8aa003203"
-                },
-                {
-                    "description": "Track [INT_IN] on F.Cu, length 1.8625 mm",
-                    "pos": {
-                        "x": 109.137499,
-                        "y": 48.949999
-                    },
-                    "uuid": "85370d4d-87e5-4ef1-9267-68e361d2d8b9"
                 }
             ],
             "severity": "error",
@@ -958,6 +1004,14 @@
         {
             "description": "Missing connection between items",
             "items": [
+                {
+                    "description": "Track [I2C0_SCL] on F.Cu, length 1.7125 mm",
+                    "pos": {
+                        "x": 35.675,
+                        "y": 17.8625
+                    },
+                    "uuid": "195a84cc-5be8-49c1-8a8f-cb6ff8453bc3"
+                },
                 {
                     "description": "Track [I2C0_SCL] on F.Cu, length 0.6950 mm",
                     "pos": {
@@ -965,14 +1019,6 @@
                         "y": 55.62
                     },
                     "uuid": "846bb7b7-e143-4ef8-8b30-66a21ce53271"
-                },
-                {
-                    "description": "Track [I2C0_SCL] on F.Cu, length 1.7125 mm",
-                    "pos": {
-                        "x": 35.675,
-                        "y": 17.8625
-                    },
-                    "uuid": "195a84cc-5be8-49c1-8a8f-cb6ff8453bc3"
                 }
             ],
             "severity": "error",
@@ -982,20 +1028,20 @@
             "description": "Missing connection between items",
             "items": [
                 {
-                    "description": "Pad 1 [I2C0_SCL] of R_SCL on F.Cu",
-                    "pos": {
-                        "x": 97.575,
-                        "y": 13.0
-                    },
-                    "uuid": "156332ac-1a7d-4dad-8285-2bfecaf4f9ab"
-                },
-                {
                     "description": "Track [I2C0_SCL] on F.Cu, length 1.7125 mm",
                     "pos": {
                         "x": 35.675,
                         "y": 17.8625
                     },
                     "uuid": "195a84cc-5be8-49c1-8a8f-cb6ff8453bc3"
+                },
+                {
+                    "description": "Via [I2C0_SCL] on F.Cu - B.Cu",
+                    "pos": {
+                        "x": 114.0,
+                        "y": 28.0
+                    },
+                    "uuid": "7f0762eb-c52d-414e-a9f7-06eb0b8b780f"
                 }
             ],
             "severity": "error",
@@ -1005,12 +1051,35 @@
             "description": "Missing connection between items",
             "items": [
                 {
-                    "description": "Pad 2 [PG_5V] of R_PG on F.Cu",
+                    "description": "Via [PG_5V] on F.Cu - B.Cu",
                     "pos": {
-                        "x": 53.025,
+                        "x": 68.8,
+                        "y": 34.8
+                    },
+                    "uuid": "cc8d005b-79c0-43eb-8726-fcca0e4f7f77"
+                },
+                {
+                    "description": "Pad 1 [PG_5V] of R_PG2 on F.Cu",
+                    "pos": {
+                        "x": 55.575,
                         "y": 13.0
                     },
-                    "uuid": "04883234-9550-42f7-b427-1de3fc5ce0db"
+                    "uuid": "3fb6e742-bad5-4eea-8d50-18bd64a24d33"
+                }
+            ],
+            "severity": "error",
+            "type": "unconnected_items"
+        },
+        {
+            "description": "Missing connection between items",
+            "items": [
+                {
+                    "description": "Track [PG_5V] on F.Cu, length 1.2003 mm",
+                    "pos": {
+                        "x": 68.825,
+                        "y": 36.0
+                    },
+                    "uuid": "2d46eb4a-0e5f-4259-9c7b-fdbc59f40ea6"
                 },
                 {
                     "description": "Track [PG_5V] on F.Cu, length 0.6950 mm",
@@ -1028,28 +1097,13 @@
             "description": "Missing connection between items",
             "items": [
                 {
-                    "description": "Pad 1 [PG_5V] of R_PG2 on F.Cu",
+                    "description": "Track [SHIELD] on B.Cu, length 0.2000 mm",
                     "pos": {
-                        "x": 55.575,
-                        "y": 13.0
+                        "x": 21.2,
+                        "y": 67.4
                     },
-                    "uuid": "3fb6e742-bad5-4eea-8d50-18bd64a24d33"
+                    "uuid": "04c94624-6f0a-4dba-aa36-1f6463fdbc02"
                 },
-                {
-                    "description": "Pad 2 [PG_5V] of R_PG on F.Cu",
-                    "pos": {
-                        "x": 53.025,
-                        "y": 13.0
-                    },
-                    "uuid": "04883234-9550-42f7-b427-1de3fc5ce0db"
-                }
-            ],
-            "severity": "error",
-            "type": "unconnected_items"
-        },
-        {
-            "description": "Missing connection between items",
-            "items": [
                 {
                     "description": "Track [SHIELD] on F.Cu, length 0.6950 mm",
                     "pos": {
@@ -1057,14 +1111,6 @@
                         "y": 68.32
                     },
                     "uuid": "ab967a5c-4d43-466b-bbd2-3410856b601c"
-                },
-                {
-                    "description": "Track [SHIELD] on B.Cu, length 0.2000 mm",
-                    "pos": {
-                        "x": 21.2,
-                        "y": 67.4
-                    },
-                    "uuid": "04c94624-6f0a-4dba-aa36-1f6463fdbc02"
                 }
             ],
             "severity": "error",
@@ -1073,14 +1119,6 @@
         {
             "description": "Missing connection between items",
             "items": [
-                {
-                    "description": "Track [I2C0_SDA] on F.Cu, length 0.6950 mm",
-                    "pos": {
-                        "x": 18.0,
-                        "y": 55.62
-                    },
-                    "uuid": "40e4dc6e-1554-42e0-a2ed-a3cd65c94b96"
-                },
                 {
                     "description": "Track [I2C0_SDA] on F.Cu, length 1.7125 mm",
                     "pos": {
@@ -1088,29 +1126,14 @@
                         "y": 17.8625
                     },
                     "uuid": "7592bcab-b22f-4ea5-bfdf-82a849b59009"
-                }
-            ],
-            "severity": "error",
-            "type": "unconnected_items"
-        },
-        {
-            "description": "Missing connection between items",
-            "items": [
-                {
-                    "description": "Pad 1 [I2C0_SDA] of R_SDA on F.Cu",
-                    "pos": {
-                        "x": 93.375,
-                        "y": 13.0
-                    },
-                    "uuid": "393cf1bd-939b-4cf8-bc8f-cceba709378d"
                 },
                 {
-                    "description": "Pad 7 [I2C0_SDA] of U_INA on F.Cu",
+                    "description": "Track [I2C0_SDA] on F.Cu, length 0.6950 mm",
                     "pos": {
-                        "x": 36.325,
-                        "y": 17.8625
+                        "x": 18.0,
+                        "y": 55.62
                     },
-                    "uuid": "eb882db4-10d8-4e2d-9a7e-941703110231"
+                    "uuid": "40e4dc6e-1554-42e0-a2ed-a3cd65c94b96"
                 }
             ],
             "severity": "error",
@@ -1119,6 +1142,37 @@
         {
             "description": "Missing connection between items",
             "items": [
+                {
+                    "description": "Track [I2C0_SDA] on F.Cu, length 1.7125 mm",
+                    "pos": {
+                        "x": 36.324999,
+                        "y": 17.8625
+                    },
+                    "uuid": "7592bcab-b22f-4ea5-bfdf-82a849b59009"
+                },
+                {
+                    "description": "Track [I2C0_SDA] on F.Cu, length 1.2003 mm",
+                    "pos": {
+                        "x": 83.175,
+                        "y": 44.0
+                    },
+                    "uuid": "3faa3f9d-e3e8-410f-b360-d0bc33589250"
+                }
+            ],
+            "severity": "error",
+            "type": "unconnected_items"
+        },
+        {
+            "description": "Missing connection between items",
+            "items": [
+                {
+                    "description": "Track [ROGO_N] on F.Cu, length 0.6000 mm",
+                    "pos": {
+                        "x": 123.2,
+                        "y": 37.2
+                    },
+                    "uuid": "15aa701c-e0eb-464e-853d-ea24c10425bc"
+                },
                 {
                     "description": "Track [ROGO_N] on F.Cu, length 0.6950 mm",
                     "pos": {
@@ -1126,14 +1180,6 @@
                         "y": 38.54
                     },
                     "uuid": "64bfb193-3b5d-4d35-81ea-97c139796665"
-                },
-                {
-                    "description": "Pad 1 [ROGO_N] of R_RN on F.Cu",
-                    "pos": {
-                        "x": 59.775,
-                        "y": 8.0
-                    },
-                    "uuid": "d200f6f4-1b3c-4f86-8292-9ae7310f0a82"
                 }
             ],
             "severity": "error",
@@ -1141,788 +1187,6 @@
         }
     ],
     "violations": [
-        {
-            "description": "Items shorting two nets (nets AC1F and GND)",
-            "items": [
-                {
-                    "description": "Pad 1 [AC1F] of D2 on F.Cu",
-                    "pos": {
-                        "x": 92.0,
-                        "y": 12.0
-                    },
-                    "uuid": "9bb99a5d-a708-49f6-85aa-e383f11f6950"
-                },
-                {
-                    "description": "Pad 2 [GND] of R_SH on F.Cu",
-                    "pos": {
-                        "x": 90.825,
-                        "y": 13.0
-                    },
-                    "uuid": "2a601193-ead1-4013-97ef-3e7e5d4e313f"
-                }
-            ],
-            "severity": "error",
-            "type": "shorting_items"
-        },
-        {
-            "description": "Items shorting two nets (nets DC and GND)",
-            "items": [
-                {
-                    "description": "PTH pad 1 [DC] of C1",
-                    "pos": {
-                        "x": 78.0,
-                        "y": 16.0
-                    },
-                    "uuid": "791c57a7-8ac0-43be-b5c6-c733d4304cfe"
-                },
-                {
-                    "description": "PTH pad 2 [GND] of DTVS",
-                    "pos": {
-                        "x": 77.24,
-                        "y": 16.0
-                    },
-                    "uuid": "839daba7-d64c-4ab5-a781-79126c7007a2"
-                }
-            ],
-            "severity": "error",
-            "type": "shorting_items"
-        },
-        {
-            "description": "Items shorting two nets (nets AC1F and I2C0_SDA)",
-            "items": [
-                {
-                    "description": "Pad 1 [AC1F] of D2 on F.Cu",
-                    "pos": {
-                        "x": 92.0,
-                        "y": 12.0
-                    },
-                    "uuid": "9bb99a5d-a708-49f6-85aa-e383f11f6950"
-                },
-                {
-                    "description": "Pad 1 [I2C0_SDA] of R_SDA on F.Cu",
-                    "pos": {
-                        "x": 93.375,
-                        "y": 13.0
-                    },
-                    "uuid": "393cf1bd-939b-4cf8-bc8f-cceba709378d"
-                }
-            ],
-            "severity": "error",
-            "type": "shorting_items"
-        },
-        {
-            "description": "Items shorting two nets (nets GND and SHIELD)",
-            "items": [
-                {
-                    "description": "Pad 2 [GND] of D2 on F.Cu",
-                    "pos": {
-                        "x": 88.0,
-                        "y": 12.0
-                    },
-                    "uuid": "8c909876-186b-45a2-a782-91d440469d72"
-                },
-                {
-                    "description": "Pad 1 [SHIELD] of R_SH on F.Cu",
-                    "pos": {
-                        "x": 89.175,
-                        "y": 13.0
-                    },
-                    "uuid": "a98d5bfd-f168-4ca0-9b78-94d7a2fbd3e4"
-                }
-            ],
-            "severity": "error",
-            "type": "shorting_items"
-        },
-        {
-            "description": "Items shorting two nets (nets DC and GND)",
-            "items": [
-                {
-                    "description": "PTH pad 1 [DC] of C1",
-                    "pos": {
-                        "x": 78.0,
-                        "y": 16.0
-                    },
-                    "uuid": "791c57a7-8ac0-43be-b5c6-c733d4304cfe"
-                },
-                {
-                    "description": "PTH pad 2 [GND] of DTVS",
-                    "pos": {
-                        "x": 77.24,
-                        "y": 16.0
-                    },
-                    "uuid": "839daba7-d64c-4ab5-a781-79126c7007a2"
-                }
-            ],
-            "severity": "error",
-            "type": "shorting_items"
-        },
-        {
-            "description": "Items shorting two nets (nets AC2 and AC1)",
-            "items": [
-                {
-                    "description": "PTH pad 2 [AC2] of R4",
-                    "pos": {
-                        "x": 128.16,
-                        "y": 22.0
-                    },
-                    "uuid": "5ebb9c91-7804-4f1c-a0da-4d6183f82577"
-                },
-                {
-                    "description": "PTH pad 1 [AC1] of J1",
-                    "pos": {
-                        "x": 128.0,
-                        "y": 22.0
-                    },
-                    "uuid": "917fc75b-715d-4736-94d6-3eadec63a159"
-                }
-            ],
-            "severity": "error",
-            "type": "shorting_items"
-        },
-        {
-            "description": "Items shorting two nets (nets AC2 and AC1)",
-            "items": [
-                {
-                    "description": "PTH pad 2 [AC2] of R4",
-                    "pos": {
-                        "x": 128.16,
-                        "y": 22.0
-                    },
-                    "uuid": "5ebb9c91-7804-4f1c-a0da-4d6183f82577"
-                },
-                {
-                    "description": "PTH pad 1 [AC1] of J1",
-                    "pos": {
-                        "x": 128.0,
-                        "y": 22.0
-                    },
-                    "uuid": "917fc75b-715d-4736-94d6-3eadec63a159"
-                }
-            ],
-            "severity": "error",
-            "type": "shorting_items"
-        },
-        {
-            "description": "Items shorting two nets (nets +5V_ALWAYS and AC2)",
-            "items": [
-                {
-                    "description": "Pad 1 [+5V_ALWAYS] of R3 on F.Cu",
-                    "pos": {
-                        "x": 105.975,
-                        "y": 13.0
-                    },
-                    "uuid": "ef772165-ecb4-48bb-bfb3-4372e3dbd152"
-                },
-                {
-                    "description": "Pad 2 [AC2] of C4 on F.Cu",
-                    "pos": {
-                        "x": 105.475,
-                        "y": 14.0
-                    },
-                    "uuid": "9c5e6371-cf83-491c-8a11-328daa3869cf"
-                }
-            ],
-            "severity": "error",
-            "type": "shorting_items"
-        },
-        {
-            "description": "Items shorting two nets (nets BAT and +5V_ALWAYS)",
-            "items": [
-                {
-                    "description": "Pad 4 [BAT] of U_BST on F.Cu",
-                    "pos": {
-                        "x": 17.1375,
-                        "y": 48.95
-                    },
-                    "uuid": "090f387c-1b0e-4c53-9316-c4551e2ff446"
-                },
-                {
-                    "description": "PTH pad 1 [+5V_ALWAYS] of J_CORE",
-                    "pos": {
-                        "x": 18.0,
-                        "y": 48.0
-                    },
-                    "uuid": "308b2c32-4738-41f2-bff6-514f29d0d6d3"
-                }
-            ],
-            "severity": "error",
-            "type": "shorting_items"
-        },
-        {
-            "description": "Items shorting two nets (nets CC2 and +5V_ALWAYS)",
-            "items": [
-                {
-                    "description": "Pad 1 [CC2] of R2 on F.Cu",
-                    "pos": {
-                        "x": 93.375,
-                        "y": 8.0
-                    },
-                    "uuid": "a3cfa9ec-3dff-4c82-87f5-cbf498fd3bcc"
-                },
-                {
-                    "description": "Pad 1 [+5V_ALWAYS] of D7 on F.Cu",
-                    "pos": {
-                        "x": 95.0,
-                        "y": 8.0
-                    },
-                    "uuid": "98ca3a3d-1caf-4d14-93e3-b3c49f63b3d7"
-                }
-            ],
-            "severity": "error",
-            "type": "shorting_items"
-        },
-        {
-            "description": "Items shorting two nets (nets BAT and +5V_ALWAYS)",
-            "items": [
-                {
-                    "description": "Pad 5 [BAT] of U_BST on F.Cu",
-                    "pos": {
-                        "x": 17.1375,
-                        "y": 48.0
-                    },
-                    "uuid": "f9bb5520-7582-420e-b8b5-238d3732a929"
-                },
-                {
-                    "description": "PTH pad 1 [+5V_ALWAYS] of J_CORE",
-                    "pos": {
-                        "x": 18.0,
-                        "y": 48.0
-                    },
-                    "uuid": "308b2c32-4738-41f2-bff6-514f29d0d6d3"
-                }
-            ],
-            "severity": "error",
-            "type": "shorting_items"
-        },
-        {
-            "description": "Items shorting two nets (nets GND and +5V_ALWAYS)",
-            "items": [
-                {
-                    "description": "Pad 2 [GND] of R2 on F.Cu",
-                    "pos": {
-                        "x": 95.025,
-                        "y": 8.0
-                    },
-                    "uuid": "1121e084-08cb-4a2a-ba37-eaa4d8bfb285"
-                },
-                {
-                    "description": "Pad 1 [+5V_ALWAYS] of D7 on F.Cu",
-                    "pos": {
-                        "x": 95.0,
-                        "y": 8.0
-                    },
-                    "uuid": "98ca3a3d-1caf-4d14-93e3-b3c49f63b3d7"
-                }
-            ],
-            "severity": "error",
-            "type": "shorting_items"
-        },
-        {
-            "description": "Items shorting two nets (nets BAT and +5V_ALWAYS)",
-            "items": [
-                {
-                    "description": "Pad 6 [BAT] of U_BST on F.Cu",
-                    "pos": {
-                        "x": 17.1375,
-                        "y": 47.05
-                    },
-                    "uuid": "9a7c95ef-4fa4-4c4c-8ba3-4abc58c62c8d"
-                },
-                {
-                    "description": "PTH pad 1 [+5V_ALWAYS] of J_CORE",
-                    "pos": {
-                        "x": 18.0,
-                        "y": 48.0
-                    },
-                    "uuid": "308b2c32-4738-41f2-bff6-514f29d0d6d3"
-                }
-            ],
-            "severity": "error",
-            "type": "shorting_items"
-        },
-        {
-            "description": "Items shorting two nets (nets I2C0_SCL and GND)",
-            "items": [
-                {
-                    "description": "Pad 1 [I2C0_SCL] of R_SCL on F.Cu",
-                    "pos": {
-                        "x": 97.575,
-                        "y": 13.0
-                    },
-                    "uuid": "156332ac-1a7d-4dad-8285-2bfecaf4f9ab"
-                },
-                {
-                    "description": "Pad 2 [GND] of D4 on F.Cu",
-                    "pos": {
-                        "x": 96.0,
-                        "y": 12.0
-                    },
-                    "uuid": "92884ae4-5d74-49f3-86de-9208a4f93359"
-                }
-            ],
-            "severity": "error",
-            "type": "shorting_items"
-        },
-        {
-            "description": "Clearance violation ( clearance 0.2000 mm; actual 0.1324 mm)",
-            "items": [
-                {
-                    "description": "Pad 1 [LED_A] of D8 on F.Cu",
-                    "pos": {
-                        "x": 101.8125,
-                        "y": 13.0
-                    },
-                    "uuid": "4738e299-bbaa-489e-865a-af29fa23cc03"
-                },
-                {
-                    "description": "Pad 1 [AC2] of D4 on F.Cu",
-                    "pos": {
-                        "x": 100.0,
-                        "y": 12.0
-                    },
-                    "uuid": "ae0adea5-db89-4ee9-90e8-5ac144aa7558"
-                }
-            ],
-            "severity": "error",
-            "type": "clearance"
-        },
-        {
-            "description": "Items shorting two nets (nets +3V3_RF and AC2)",
-            "items": [
-                {
-                    "description": "Pad 2 [+3V3_RF] of R_SCL on F.Cu",
-                    "pos": {
-                        "x": 99.225,
-                        "y": 13.0
-                    },
-                    "uuid": "2ba29faf-e355-4568-8102-c80935283bf2"
-                },
-                {
-                    "description": "Pad 1 [AC2] of D4 on F.Cu",
-                    "pos": {
-                        "x": 100.0,
-                        "y": 12.0
-                    },
-                    "uuid": "ae0adea5-db89-4ee9-90e8-5ac144aa7558"
-                }
-            ],
-            "severity": "error",
-            "type": "shorting_items"
-        },
-        {
-            "description": "Items shorting two nets (nets LED_A and AC1L)",
-            "items": [
-                {
-                    "description": "Pad 1 [LED_A] of D8 on F.Cu",
-                    "pos": {
-                        "x": 101.8125,
-                        "y": 13.0
-                    },
-                    "uuid": "4738e299-bbaa-489e-865a-af29fa23cc03"
-                },
-                {
-                    "description": "Pad 1 [AC1L] of C4 on F.Cu",
-                    "pos": {
-                        "x": 102.525,
-                        "y": 14.0
-                    },
-                    "uuid": "950a01e5-4046-4c65-8dce-f27946bcb630"
-                }
-            ],
-            "severity": "error",
-            "type": "shorting_items"
-        },
-        {
-            "description": "Items shorting two nets (nets GND and AC1L)",
-            "items": [
-                {
-                    "description": "Pad 2 [GND] of D8 on F.Cu",
-                    "pos": {
-                        "x": 103.3875,
-                        "y": 13.0
-                    },
-                    "uuid": "4772a9e3-51c0-4641-b97b-f28534f2b5a0"
-                },
-                {
-                    "description": "Pad 1 [AC1L] of C4 on F.Cu",
-                    "pos": {
-                        "x": 102.525,
-                        "y": 14.0
-                    },
-                    "uuid": "950a01e5-4046-4c65-8dce-f27946bcb630"
-                }
-            ],
-            "severity": "error",
-            "type": "shorting_items"
-        },
-        {
-            "description": "Items shorting two nets (nets MPPT_C and BAT)",
-            "items": [
-                {
-                    "description": "Pad 1 [MPPT_C] of C_MC on F.Cu",
-                    "pos": {
-                        "x": 110.225,
-                        "y": 8.0
-                    },
-                    "uuid": "65a00046-df54-4fcf-ad7a-0e6f5483ea66"
-                },
-                {
-                    "description": "Pad 1 [BAT] of D_HV on F.Cu",
-                    "pos": {
-                        "x": 111.8,
-                        "y": 8.0
-                    },
-                    "uuid": "9a447b48-9171-4572-88c5-b2f71889f353"
-                }
-            ],
-            "severity": "error",
-            "type": "shorting_items"
-        },
-        {
-            "description": "Items shorting two nets (nets GND and BAT)",
-            "items": [
-                {
-                    "description": "Pad 2 [GND] of C_MC on F.Cu",
-                    "pos": {
-                        "x": 111.775,
-                        "y": 8.0
-                    },
-                    "uuid": "5f1de869-24f1-450e-908a-b363c3dc9d67"
-                },
-                {
-                    "description": "Pad 1 [BAT] of D_HV on F.Cu",
-                    "pos": {
-                        "x": 111.8,
-                        "y": 8.0
-                    },
-                    "uuid": "9a447b48-9171-4572-88c5-b2f71889f353"
-                }
-            ],
-            "severity": "error",
-            "type": "shorting_items"
-        },
-        {
-            "description": "Items shorting two nets (nets GND and +3V3_RF)",
-            "items": [
-                {
-                    "description": "Pad 2 [GND] of D4 on F.Cu",
-                    "pos": {
-                        "x": 96.0,
-                        "y": 12.0
-                    },
-                    "uuid": "92884ae4-5d74-49f3-86de-9208a4f93359"
-                },
-                {
-                    "description": "Pad 2 [+3V3_RF] of R_SDA on F.Cu",
-                    "pos": {
-                        "x": 95.025,
-                        "y": 13.0
-                    },
-                    "uuid": "fb49b580-30e5-4aa5-95b6-c59129b3c48f"
-                }
-            ],
-            "severity": "error",
-            "type": "shorting_items"
-        },
-        {
-            "description": "Items shorting two nets (nets 5V_IN and GND)",
-            "items": [
-                {
-                    "description": "Pad 1 [5V_IN] of R_SH5 on F.Cu",
-                    "pos": {
-                        "x": 68.0875,
-                        "y": 13.0
-                    },
-                    "uuid": "d746bf60-ea1a-430d-a617-be010cd94817"
-                },
-                {
-                    "description": "Pad 1 [GND] of Q1 on F.Cu",
-                    "pos": {
-                        "x": 66.85,
-                        "y": 13.7
-                    },
-                    "uuid": "eb5e169a-8fa7-4ce3-a341-80c696d82e7b"
-                }
-            ],
-            "severity": "error",
-            "type": "shorting_items"
-        },
-        {
-            "description": "Items shorting two nets (nets VHARV and BST_SW)",
-            "items": [
-                {
-                    "description": "Pad 2 [VHARV] of D_HV on F.Cu",
-                    "pos": {
-                        "x": 118.6,
-                        "y": 8.0
-                    },
-                    "uuid": "86141bb3-6b6d-4b09-a31c-283ac416c8d1"
-                },
-                {
-                    "description": "Pad 1 [BST_SW] of L_BST on F.Cu",
-                    "pos": {
-                        "x": 118.3375,
-                        "y": 8.0
-                    },
-                    "uuid": "cff90e57-2af4-4c22-9e24-241fa70103d4"
-                }
-            ],
-            "severity": "error",
-            "type": "shorting_items"
-        },
-        {
-            "description": "Clearance violation ( clearance 0.2000 mm; actual 0.1750 mm)",
-            "items": [
-                {
-                    "description": "Pad 2 [VHARV] of D_HV on F.Cu",
-                    "pos": {
-                        "x": 118.6,
-                        "y": 8.0
-                    },
-                    "uuid": "86141bb3-6b6d-4b09-a31c-283ac416c8d1"
-                },
-                {
-                    "description": "Pad 2 [+5V_ALWAYS] of L_BST on F.Cu",
-                    "pos": {
-                        "x": 120.4625,
-                        "y": 8.0
-                    },
-                    "uuid": "16e541e7-a266-4a97-b064-b0c379f8a1d3"
-                }
-            ],
-            "severity": "error",
-            "type": "clearance"
-        },
-        {
-            "description": "Items shorting two nets (nets VHARV and DC)",
-            "items": [
-                {
-                    "description": "Pad 1 [VHARV] of D6 on F.Cu",
-                    "pos": {
-                        "x": 53.0,
-                        "y": 8.0
-                    },
-                    "uuid": "7b3b277b-7630-49bb-8ba1-884ea85a6760"
-                },
-                {
-                    "description": "Pad 1 [DC] of R5 on F.Cu",
-                    "pos": {
-                        "x": 51.2875,
-                        "y": 8.0
-                    },
-                    "uuid": "eca10526-a025-4b69-9836-825364503a6a"
-                }
-            ],
-            "severity": "error",
-            "type": "shorting_items"
-        },
-        {
-            "description": "Items shorting two nets (nets VHARV and SCR_G)",
-            "items": [
-                {
-                    "description": "Pad 1 [VHARV] of D6 on F.Cu",
-                    "pos": {
-                        "x": 53.0,
-                        "y": 8.0
-                    },
-                    "uuid": "7b3b277b-7630-49bb-8ba1-884ea85a6760"
-                },
-                {
-                    "description": "Pad 2 [SCR_G] of R5 on F.Cu",
-                    "pos": {
-                        "x": 53.1125,
-                        "y": 8.0
-                    },
-                    "uuid": "3df722ab-93c9-48a0-9776-e65284efae56"
-                }
-            ],
-            "severity": "error",
-            "type": "shorting_items"
-        },
-        {
-            "description": "Items shorting two nets (nets DC and GND)",
-            "items": [
-                {
-                    "description": "Pad 2 [DC] of D6 on F.Cu",
-                    "pos": {
-                        "x": 59.8,
-                        "y": 8.0
-                    },
-                    "uuid": "105b0f38-52db-45d7-b8b5-86c6c19a2006"
-                },
-                {
-                    "description": "Pad 2 [GND] of R_RN on F.Cu",
-                    "pos": {
-                        "x": 61.425,
-                        "y": 8.0
-                    },
-                    "uuid": "1b4780e2-89e2-41dc-ad49-184b0913de1e"
-                }
-            ],
-            "severity": "error",
-            "type": "shorting_items"
-        },
-        {
-            "description": "Items shorting two nets (nets DC and ROGO_N)",
-            "items": [
-                {
-                    "description": "Pad 2 [DC] of D6 on F.Cu",
-                    "pos": {
-                        "x": 59.8,
-                        "y": 8.0
-                    },
-                    "uuid": "105b0f38-52db-45d7-b8b5-86c6c19a2006"
-                },
-                {
-                    "description": "Pad 1 [ROGO_N] of R_RN on F.Cu",
-                    "pos": {
-                        "x": 59.775,
-                        "y": 8.0
-                    },
-                    "uuid": "d200f6f4-1b3c-4f86-8292-9ae7310f0a82"
-                }
-            ],
-            "severity": "error",
-            "type": "shorting_items"
-        },
-        {
-            "description": "Items shorting two nets (nets GND and VBUS)",
-            "items": [
-                {
-                    "description": "Pad 2 [GND] of C3 on F.Cu",
-                    "pos": {
-                        "x": 103.55,
-                        "y": 8.0
-                    },
-                    "uuid": "89d6eb4d-552d-49f5-928f-53ca2f726ccb"
-                },
-                {
-                    "description": "Pad 2 [VBUS] of D7 on F.Cu",
-                    "pos": {
-                        "x": 101.8,
-                        "y": 8.0
-                    },
-                    "uuid": "3cfaf620-e8b1-4152-9bee-747b447c01c0"
-                }
-            ],
-            "severity": "error",
-            "type": "shorting_items"
-        },
-        {
-            "description": "Courtyards overlap",
-            "items": [
-                {
-                    "description": "Footprint D2",
-                    "pos": {
-                        "x": 90.0,
-                        "y": 12.0
-                    },
-                    "uuid": "0607bf64-7660-420b-b483-b29540b3a567"
-                },
-                {
-                    "description": "Footprint R_SH",
-                    "pos": {
-                        "x": 90.0,
-                        "y": 13.0
-                    },
-                    "uuid": "7fd8c046-8a8d-498b-8f94-d2df291201ca"
-                }
-            ],
-            "severity": "error",
-            "type": "courtyards_overlap"
-        },
-        {
-            "description": "Courtyards overlap",
-            "items": [
-                {
-                    "description": "Footprint D2",
-                    "pos": {
-                        "x": 90.0,
-                        "y": 12.0
-                    },
-                    "uuid": "0607bf64-7660-420b-b483-b29540b3a567"
-                },
-                {
-                    "description": "Footprint R_RTN",
-                    "pos": {
-                        "x": 85.8,
-                        "y": 13.0
-                    },
-                    "uuid": "e5288218-6b9a-4c3d-8aa8-517aa1622b48"
-                }
-            ],
-            "severity": "error",
-            "type": "courtyards_overlap"
-        },
-        {
-            "description": "Courtyards overlap",
-            "items": [
-                {
-                    "description": "Footprint D2",
-                    "pos": {
-                        "x": 90.0,
-                        "y": 12.0
-                    },
-                    "uuid": "0607bf64-7660-420b-b483-b29540b3a567"
-                },
-                {
-                    "description": "Footprint R_SDA",
-                    "pos": {
-                        "x": 94.2,
-                        "y": 13.0
-                    },
-                    "uuid": "e927b1c0-8ebb-4d86-8b85-dab7c34553d5"
-                }
-            ],
-            "severity": "error",
-            "type": "courtyards_overlap"
-        },
-        {
-            "description": "Courtyards overlap",
-            "items": [
-                {
-                    "description": "Footprint U_BST",
-                    "pos": {
-                        "x": 16.0,
-                        "y": 48.0
-                    },
-                    "uuid": "0f61f3d0-1c02-4d03-a18f-58cc969f1139"
-                },
-                {
-                    "description": "Footprint J_CORE",
-                    "pos": {
-                        "x": 18.0,
-                        "y": 48.0
-                    },
-                    "uuid": "ad23a30e-7812-463d-a89e-54216506459a"
-                }
-            ],
-            "severity": "error",
-            "type": "courtyards_overlap"
-        },
-        {
-            "description": "PTH inside courtyard",
-            "items": [
-                {
-                    "description": "PTH pad 1 [+5V_ALWAYS] of J_CORE",
-                    "pos": {
-                        "x": 18.0,
-                        "y": 48.0
-                    },
-                    "uuid": "308b2c32-4738-41f2-bff6-514f29d0d6d3"
-                },
-                {
-                    "description": "Footprint U_BST",
-                    "pos": {
-                        "x": 16.0,
-                        "y": 48.0
-                    },
-                    "uuid": "0f61f3d0-1c02-4d03-a18f-58cc969f1139"
-                }
-            ],
-            "severity": "error",
-            "type": "pth_inside_courtyard"
-        },
         {
             "description": "Courtyards overlap",
             "items": [
@@ -1968,1363 +1232,6 @@
             ],
             "severity": "error",
             "type": "pth_inside_courtyard"
-        },
-        {
-            "description": "Courtyards overlap",
-            "items": [
-                {
-                    "description": "Footprint C1",
-                    "pos": {
-                        "x": 78.0,
-                        "y": 16.0
-                    },
-                    "uuid": "1860b970-3a00-4e21-8094-5e80f0a1fcfd"
-                },
-                {
-                    "description": "Footprint R_HG",
-                    "pos": {
-                        "x": 81.6,
-                        "y": 13.0
-                    },
-                    "uuid": "28f02e42-85e5-4937-a9ac-62fe3a57833d"
-                }
-            ],
-            "severity": "error",
-            "type": "courtyards_overlap"
-        },
-        {
-            "description": "Courtyards overlap",
-            "items": [
-                {
-                    "description": "Footprint C1",
-                    "pos": {
-                        "x": 78.0,
-                        "y": 16.0
-                    },
-                    "uuid": "1860b970-3a00-4e21-8094-5e80f0a1fcfd"
-                },
-                {
-                    "description": "Footprint R_HS",
-                    "pos": {
-                        "x": 77.4,
-                        "y": 13.0
-                    },
-                    "uuid": "3c675067-ac23-4280-9d4e-d43ca7eb4252"
-                }
-            ],
-            "severity": "error",
-            "type": "courtyards_overlap"
-        },
-        {
-            "description": "Courtyards overlap",
-            "items": [
-                {
-                    "description": "Footprint C1",
-                    "pos": {
-                        "x": 78.0,
-                        "y": 16.0
-                    },
-                    "uuid": "1860b970-3a00-4e21-8094-5e80f0a1fcfd"
-                },
-                {
-                    "description": "Footprint DTVS",
-                    "pos": {
-                        "x": 62.0,
-                        "y": 16.0
-                    },
-                    "uuid": "8134ea93-306b-4a7d-8aa5-970977b206bd"
-                }
-            ],
-            "severity": "error",
-            "type": "courtyards_overlap"
-        },
-        {
-            "description": "PTH inside courtyard",
-            "items": [
-                {
-                    "description": "PTH pad 2 [GND] of DTVS",
-                    "pos": {
-                        "x": 77.24,
-                        "y": 16.0
-                    },
-                    "uuid": "839daba7-d64c-4ab5-a781-79126c7007a2"
-                },
-                {
-                    "description": "Footprint C1",
-                    "pos": {
-                        "x": 78.0,
-                        "y": 16.0
-                    },
-                    "uuid": "1860b970-3a00-4e21-8094-5e80f0a1fcfd"
-                }
-            ],
-            "severity": "error",
-            "type": "pth_inside_courtyard"
-        },
-        {
-            "description": "PTH inside courtyard",
-            "items": [
-                {
-                    "description": "PTH pad 1 [DC] of C1",
-                    "pos": {
-                        "x": 78.0,
-                        "y": 16.0
-                    },
-                    "uuid": "791c57a7-8ac0-43be-b5c6-c733d4304cfe"
-                },
-                {
-                    "description": "Footprint DTVS",
-                    "pos": {
-                        "x": 62.0,
-                        "y": 16.0
-                    },
-                    "uuid": "8134ea93-306b-4a7d-8aa5-970977b206bd"
-                }
-            ],
-            "severity": "error",
-            "type": "pth_inside_courtyard"
-        },
-        {
-            "description": "Courtyards overlap",
-            "items": [
-                {
-                    "description": "Footprint C1",
-                    "pos": {
-                        "x": 78.0,
-                        "y": 16.0
-                    },
-                    "uuid": "1860b970-3a00-4e21-8094-5e80f0a1fcfd"
-                },
-                {
-                    "description": "Footprint R_RTN",
-                    "pos": {
-                        "x": 85.8,
-                        "y": 13.0
-                    },
-                    "uuid": "e5288218-6b9a-4c3d-8aa8-517aa1622b48"
-                }
-            ],
-            "severity": "error",
-            "type": "courtyards_overlap"
-        },
-        {
-            "description": "Courtyards overlap",
-            "items": [
-                {
-                    "description": "Footprint R4",
-                    "pos": {
-                        "x": 118.0,
-                        "y": 22.0
-                    },
-                    "uuid": "254f1d92-5ee9-47a4-871b-5a502d0965dc"
-                },
-                {
-                    "description": "Footprint J1",
-                    "pos": {
-                        "x": 128.0,
-                        "y": 22.0
-                    },
-                    "uuid": "8d75b496-172b-4f17-83bd-32ce1863bb30"
-                }
-            ],
-            "severity": "error",
-            "type": "courtyards_overlap"
-        },
-        {
-            "description": "PTH inside courtyard",
-            "items": [
-                {
-                    "description": "PTH pad 1 [AC1] of J1",
-                    "pos": {
-                        "x": 128.0,
-                        "y": 22.0
-                    },
-                    "uuid": "917fc75b-715d-4736-94d6-3eadec63a159"
-                },
-                {
-                    "description": "Footprint R4",
-                    "pos": {
-                        "x": 118.0,
-                        "y": 22.0
-                    },
-                    "uuid": "254f1d92-5ee9-47a4-871b-5a502d0965dc"
-                }
-            ],
-            "severity": "error",
-            "type": "pth_inside_courtyard"
-        },
-        {
-            "description": "PTH inside courtyard",
-            "items": [
-                {
-                    "description": "PTH pad 2 [AC2] of R4",
-                    "pos": {
-                        "x": 128.16,
-                        "y": 22.0
-                    },
-                    "uuid": "5ebb9c91-7804-4f1c-a0da-4d6183f82577"
-                },
-                {
-                    "description": "Footprint J1",
-                    "pos": {
-                        "x": 128.0,
-                        "y": 22.0
-                    },
-                    "uuid": "8d75b496-172b-4f17-83bd-32ce1863bb30"
-                }
-            ],
-            "severity": "error",
-            "type": "pth_inside_courtyard"
-        },
-        {
-            "description": "Courtyards overlap",
-            "items": [
-                {
-                    "description": "Footprint R3",
-                    "pos": {
-                        "x": 106.8,
-                        "y": 13.0
-                    },
-                    "uuid": "2b78c36c-761f-42ec-b09a-032ea6f8ee7c"
-                },
-                {
-                    "description": "Footprint C4",
-                    "pos": {
-                        "x": 104.0,
-                        "y": 14.0
-                    },
-                    "uuid": "998f6015-5972-4d26-a4c1-c1cb69f78735"
-                }
-            ],
-            "severity": "error",
-            "type": "courtyards_overlap"
-        },
-        {
-            "description": "Courtyards overlap",
-            "items": [
-                {
-                    "description": "Footprint R2",
-                    "pos": {
-                        "x": 94.2,
-                        "y": 8.0
-                    },
-                    "uuid": "35c61ae7-35b6-43ae-bde4-bcaf3091c36c"
-                },
-                {
-                    "description": "Footprint D7",
-                    "pos": {
-                        "x": 98.4,
-                        "y": 8.0
-                    },
-                    "uuid": "efdd0ccf-d6a0-4fc9-995f-a841f9790d60"
-                }
-            ],
-            "severity": "error",
-            "type": "courtyards_overlap"
-        },
-        {
-            "description": "Courtyards overlap",
-            "items": [
-                {
-                    "description": "Footprint R_HS",
-                    "pos": {
-                        "x": 77.4,
-                        "y": 13.0
-                    },
-                    "uuid": "3c675067-ac23-4280-9d4e-d43ca7eb4252"
-                },
-                {
-                    "description": "Footprint DTVS",
-                    "pos": {
-                        "x": 62.0,
-                        "y": 16.0
-                    },
-                    "uuid": "8134ea93-306b-4a7d-8aa5-970977b206bd"
-                }
-            ],
-            "severity": "error",
-            "type": "courtyards_overlap"
-        },
-        {
-            "description": "Courtyards overlap",
-            "items": [
-                {
-                    "description": "Footprint R_SCL",
-                    "pos": {
-                        "x": 98.4,
-                        "y": 13.0
-                    },
-                    "uuid": "5bb065f1-d35c-4993-97fd-2e18925e4df4"
-                },
-                {
-                    "description": "Footprint D4",
-                    "pos": {
-                        "x": 98.0,
-                        "y": 12.0
-                    },
-                    "uuid": "9411b72d-858d-4872-a7c7-143e30a0dd0a"
-                }
-            ],
-            "severity": "error",
-            "type": "courtyards_overlap"
-        },
-        {
-            "description": "Courtyards overlap",
-            "items": [
-                {
-                    "description": "Footprint D8",
-                    "pos": {
-                        "x": 102.6,
-                        "y": 13.0
-                    },
-                    "uuid": "6bbd8905-5654-44ae-96d2-57e63211cb4c"
-                },
-                {
-                    "description": "Footprint D4",
-                    "pos": {
-                        "x": 98.0,
-                        "y": 12.0
-                    },
-                    "uuid": "9411b72d-858d-4872-a7c7-143e30a0dd0a"
-                }
-            ],
-            "severity": "error",
-            "type": "courtyards_overlap"
-        },
-        {
-            "description": "Courtyards overlap",
-            "items": [
-                {
-                    "description": "Footprint D8",
-                    "pos": {
-                        "x": 102.6,
-                        "y": 13.0
-                    },
-                    "uuid": "6bbd8905-5654-44ae-96d2-57e63211cb4c"
-                },
-                {
-                    "description": "Footprint C4",
-                    "pos": {
-                        "x": 104.0,
-                        "y": 14.0
-                    },
-                    "uuid": "998f6015-5972-4d26-a4c1-c1cb69f78735"
-                }
-            ],
-            "severity": "error",
-            "type": "courtyards_overlap"
-        },
-        {
-            "description": "Courtyards overlap",
-            "items": [
-                {
-                    "description": "Footprint R_PG",
-                    "pos": {
-                        "x": 52.2,
-                        "y": 13.0
-                    },
-                    "uuid": "6f749e89-5846-4201-81ba-62f061c944f4"
-                },
-                {
-                    "description": "Footprint U_MPPT",
-                    "pos": {
-                        "x": 48.0,
-                        "y": 16.0
-                    },
-                    "uuid": "d5864514-38c2-4ce8-aeb1-3ca6a8ea59d7"
-                }
-            ],
-            "severity": "error",
-            "type": "courtyards_overlap"
-        },
-        {
-            "description": "Courtyards overlap",
-            "items": [
-                {
-                    "description": "Footprint C_RF",
-                    "pos": {
-                        "x": 64.8,
-                        "y": 13.0
-                    },
-                    "uuid": "810e1c37-baa9-4a4c-8c9a-488a973e590f"
-                },
-                {
-                    "description": "Footprint DTVS",
-                    "pos": {
-                        "x": 62.0,
-                        "y": 16.0
-                    },
-                    "uuid": "8134ea93-306b-4a7d-8aa5-970977b206bd"
-                }
-            ],
-            "severity": "error",
-            "type": "courtyards_overlap"
-        },
-        {
-            "description": "Courtyards overlap",
-            "items": [
-                {
-                    "description": "Footprint C_RF",
-                    "pos": {
-                        "x": 64.8,
-                        "y": 13.0
-                    },
-                    "uuid": "810e1c37-baa9-4a4c-8c9a-488a973e590f"
-                },
-                {
-                    "description": "Footprint Q1",
-                    "pos": {
-                        "x": 70.0,
-                        "y": 16.0
-                    },
-                    "uuid": "d06b0f93-72ad-4d94-9fa2-0d3d05895c85"
-                }
-            ],
-            "severity": "error",
-            "type": "courtyards_overlap"
-        },
-        {
-            "description": "Courtyards overlap",
-            "items": [
-                {
-                    "description": "Footprint DTVS",
-                    "pos": {
-                        "x": 62.0,
-                        "y": 16.0
-                    },
-                    "uuid": "8134ea93-306b-4a7d-8aa5-970977b206bd"
-                },
-                {
-                    "description": "Footprint R_SH5",
-                    "pos": {
-                        "x": 69.0,
-                        "y": 13.0
-                    },
-                    "uuid": "a219df8b-f062-49ed-aba3-18bd2fe63eb3"
-                }
-            ],
-            "severity": "error",
-            "type": "courtyards_overlap"
-        },
-        {
-            "description": "Courtyards overlap",
-            "items": [
-                {
-                    "description": "Footprint DTVS",
-                    "pos": {
-                        "x": 62.0,
-                        "y": 16.0
-                    },
-                    "uuid": "8134ea93-306b-4a7d-8aa5-970977b206bd"
-                },
-                {
-                    "description": "Footprint C_INA",
-                    "pos": {
-                        "x": 73.2,
-                        "y": 13.0
-                    },
-                    "uuid": "c5dbf03e-5f31-48c6-869e-7976d2bc6d2d"
-                }
-            ],
-            "severity": "error",
-            "type": "courtyards_overlap"
-        },
-        {
-            "description": "Courtyards overlap",
-            "items": [
-                {
-                    "description": "Footprint DTVS",
-                    "pos": {
-                        "x": 62.0,
-                        "y": 16.0
-                    },
-                    "uuid": "8134ea93-306b-4a7d-8aa5-970977b206bd"
-                },
-                {
-                    "description": "Footprint Q1",
-                    "pos": {
-                        "x": 70.0,
-                        "y": 16.0
-                    },
-                    "uuid": "d06b0f93-72ad-4d94-9fa2-0d3d05895c85"
-                }
-            ],
-            "severity": "error",
-            "type": "courtyards_overlap"
-        },
-        {
-            "description": "Courtyards overlap",
-            "items": [
-                {
-                    "description": "Footprint DTVS",
-                    "pos": {
-                        "x": 62.0,
-                        "y": 16.0
-                    },
-                    "uuid": "8134ea93-306b-4a7d-8aa5-970977b206bd"
-                },
-                {
-                    "description": "Footprint R_RFEN",
-                    "pos": {
-                        "x": 60.6,
-                        "y": 13.0
-                    },
-                    "uuid": "f77caa51-4165-4153-ba80-4a89d5652932"
-                }
-            ],
-            "severity": "error",
-            "type": "courtyards_overlap"
-        },
-        {
-            "description": "Courtyards overlap",
-            "items": [
-                {
-                    "description": "Footprint C_MC",
-                    "pos": {
-                        "x": 111.0,
-                        "y": 8.0
-                    },
-                    "uuid": "86c07f1e-aefd-4ad4-8c5e-853bdfffac31"
-                },
-                {
-                    "description": "Footprint D_HV",
-                    "pos": {
-                        "x": 115.2,
-                        "y": 8.0
-                    },
-                    "uuid": "9803e071-8d6b-4f0b-83ce-b0e1845bc664"
-                }
-            ],
-            "severity": "error",
-            "type": "courtyards_overlap"
-        },
-        {
-            "description": "Courtyards overlap",
-            "items": [
-                {
-                    "description": "Footprint D4",
-                    "pos": {
-                        "x": 98.0,
-                        "y": 12.0
-                    },
-                    "uuid": "9411b72d-858d-4872-a7c7-143e30a0dd0a"
-                },
-                {
-                    "description": "Footprint R_SDA",
-                    "pos": {
-                        "x": 94.2,
-                        "y": 13.0
-                    },
-                    "uuid": "e927b1c0-8ebb-4d86-8b85-dab7c34553d5"
-                }
-            ],
-            "severity": "error",
-            "type": "courtyards_overlap"
-        },
-        {
-            "description": "Courtyards overlap",
-            "items": [
-                {
-                    "description": "Footprint D4",
-                    "pos": {
-                        "x": 98.0,
-                        "y": 12.0
-                    },
-                    "uuid": "9411b72d-858d-4872-a7c7-143e30a0dd0a"
-                },
-                {
-                    "description": "Footprint D7",
-                    "pos": {
-                        "x": 98.4,
-                        "y": 8.0
-                    },
-                    "uuid": "efdd0ccf-d6a0-4fc9-995f-a841f9790d60"
-                }
-            ],
-            "severity": "error",
-            "type": "courtyards_overlap"
-        },
-        {
-            "description": "Courtyards overlap",
-            "items": [
-                {
-                    "description": "Footprint D_HV",
-                    "pos": {
-                        "x": 115.2,
-                        "y": 8.0
-                    },
-                    "uuid": "9803e071-8d6b-4f0b-83ce-b0e1845bc664"
-                },
-                {
-                    "description": "Footprint L_BST",
-                    "pos": {
-                        "x": 119.4,
-                        "y": 8.0
-                    },
-                    "uuid": "a2a2eca1-4667-40b8-b28a-d350eb97470e"
-                }
-            ],
-            "severity": "error",
-            "type": "courtyards_overlap"
-        },
-        {
-            "description": "Courtyards overlap",
-            "items": [
-                {
-                    "description": "Footprint R_SH5",
-                    "pos": {
-                        "x": 69.0,
-                        "y": 13.0
-                    },
-                    "uuid": "a219df8b-f062-49ed-aba3-18bd2fe63eb3"
-                },
-                {
-                    "description": "Footprint Q1",
-                    "pos": {
-                        "x": 70.0,
-                        "y": 16.0
-                    },
-                    "uuid": "d06b0f93-72ad-4d94-9fa2-0d3d05895c85"
-                }
-            ],
-            "severity": "error",
-            "type": "courtyards_overlap"
-        },
-        {
-            "description": "Courtyards overlap",
-            "items": [
-                {
-                    "description": "Footprint J_CORE",
-                    "pos": {
-                        "x": 18.0,
-                        "y": 48.0
-                    },
-                    "uuid": "ad23a30e-7812-463d-a89e-54216506459a"
-                },
-                {
-                    "description": "Footprint U_RF",
-                    "pos": {
-                        "x": 24.0,
-                        "y": 48.0
-                    },
-                    "uuid": "f4eb7d11-68e1-4c65-b73f-7791594219fa"
-                }
-            ],
-            "severity": "error",
-            "type": "courtyards_overlap"
-        },
-        {
-            "description": "Courtyards overlap",
-            "items": [
-                {
-                    "description": "Footprint D6",
-                    "pos": {
-                        "x": 56.4,
-                        "y": 8.0
-                    },
-                    "uuid": "b2f43e68-6c31-4582-9658-f3bfcf09b8fb"
-                },
-                {
-                    "description": "Footprint R_RN",
-                    "pos": {
-                        "x": 60.6,
-                        "y": 8.0
-                    },
-                    "uuid": "ca2d2f19-6587-4da5-8b7c-08f2e35d7cb7"
-                }
-            ],
-            "severity": "error",
-            "type": "courtyards_overlap"
-        },
-        {
-            "description": "Courtyards overlap",
-            "items": [
-                {
-                    "description": "Footprint D6",
-                    "pos": {
-                        "x": 56.4,
-                        "y": 8.0
-                    },
-                    "uuid": "b2f43e68-6c31-4582-9658-f3bfcf09b8fb"
-                },
-                {
-                    "description": "Footprint R5",
-                    "pos": {
-                        "x": 52.2,
-                        "y": 8.0
-                    },
-                    "uuid": "f646f07d-c52b-4c04-a50b-7a6f5f5422de"
-                }
-            ],
-            "severity": "error",
-            "type": "courtyards_overlap"
-        },
-        {
-            "description": "Courtyards overlap",
-            "items": [
-                {
-                    "description": "Footprint C_INA",
-                    "pos": {
-                        "x": 73.2,
-                        "y": 13.0
-                    },
-                    "uuid": "c5dbf03e-5f31-48c6-869e-7976d2bc6d2d"
-                },
-                {
-                    "description": "Footprint Q1",
-                    "pos": {
-                        "x": 70.0,
-                        "y": 16.0
-                    },
-                    "uuid": "d06b0f93-72ad-4d94-9fa2-0d3d05895c85"
-                }
-            ],
-            "severity": "error",
-            "type": "courtyards_overlap"
-        },
-        {
-            "description": "Courtyards overlap",
-            "items": [
-                {
-                    "description": "Footprint U_MPPT",
-                    "pos": {
-                        "x": 48.0,
-                        "y": 16.0
-                    },
-                    "uuid": "d5864514-38c2-4ce8-aeb1-3ca6a8ea59d7"
-                },
-                {
-                    "description": "Footprint C_5V",
-                    "pos": {
-                        "x": 48.0,
-                        "y": 13.0
-                    },
-                    "uuid": "e8f2d918-c1da-4fb3-84dd-e7a13291f87e"
-                }
-            ],
-            "severity": "error",
-            "type": "courtyards_overlap"
-        },
-        {
-            "description": "Courtyards overlap",
-            "items": [
-                {
-                    "description": "Footprint C3",
-                    "pos": {
-                        "x": 102.6,
-                        "y": 8.0
-                    },
-                    "uuid": "d99f7245-db82-41e0-9359-8c5cabf0a5cd"
-                },
-                {
-                    "description": "Footprint D7",
-                    "pos": {
-                        "x": 98.4,
-                        "y": 8.0
-                    },
-                    "uuid": "efdd0ccf-d6a0-4fc9-995f-a841f9790d60"
-                }
-            ],
-            "severity": "error",
-            "type": "courtyards_overlap"
-        },
-        {
-            "description": "Front solder mask aperture bridges items with different nets",
-            "items": [
-                {
-                    "description": "Pad 1 [AC1F] of D2 on F.Cu",
-                    "pos": {
-                        "x": 92.0,
-                        "y": 12.0
-                    },
-                    "uuid": "9bb99a5d-a708-49f6-85aa-e383f11f6950"
-                },
-                {
-                    "description": "Pad 2 [GND] of R_SH on F.Cu",
-                    "pos": {
-                        "x": 90.825,
-                        "y": 13.0
-                    },
-                    "uuid": "2a601193-ead1-4013-97ef-3e7e5d4e313f"
-                }
-            ],
-            "severity": "error",
-            "type": "solder_mask_bridge"
-        },
-        {
-            "description": "Front solder mask aperture bridges items with different nets",
-            "items": [
-                {
-                    "description": "Pad 1 [AC1F] of D2 on F.Cu",
-                    "pos": {
-                        "x": 92.0,
-                        "y": 12.0
-                    },
-                    "uuid": "9bb99a5d-a708-49f6-85aa-e383f11f6950"
-                },
-                {
-                    "description": "Pad 1 [I2C0_SDA] of R_SDA on F.Cu",
-                    "pos": {
-                        "x": 93.375,
-                        "y": 13.0
-                    },
-                    "uuid": "393cf1bd-939b-4cf8-bc8f-cceba709378d"
-                }
-            ],
-            "severity": "error",
-            "type": "solder_mask_bridge"
-        },
-        {
-            "description": "Front solder mask aperture bridges items with different nets",
-            "items": [
-                {
-                    "description": "Pad 2 [GND] of D2 on F.Cu",
-                    "pos": {
-                        "x": 88.0,
-                        "y": 12.0
-                    },
-                    "uuid": "8c909876-186b-45a2-a782-91d440469d72"
-                },
-                {
-                    "description": "Pad 1 [SHIELD] of R_SH on F.Cu",
-                    "pos": {
-                        "x": 89.175,
-                        "y": 13.0
-                    },
-                    "uuid": "a98d5bfd-f168-4ca0-9b78-94d7a2fbd3e4"
-                }
-            ],
-            "severity": "error",
-            "type": "solder_mask_bridge"
-        },
-        {
-            "description": "Front solder mask aperture bridges items with different nets",
-            "items": [
-                {
-                    "description": "Pad 4 [BAT] of U_BST on F.Cu",
-                    "pos": {
-                        "x": 17.1375,
-                        "y": 48.95
-                    },
-                    "uuid": "090f387c-1b0e-4c53-9316-c4551e2ff446"
-                },
-                {
-                    "description": "PTH pad 1 [+5V_ALWAYS] of J_CORE",
-                    "pos": {
-                        "x": 18.0,
-                        "y": 48.0
-                    },
-                    "uuid": "308b2c32-4738-41f2-bff6-514f29d0d6d3"
-                }
-            ],
-            "severity": "error",
-            "type": "solder_mask_bridge"
-        },
-        {
-            "description": "Front solder mask aperture bridges items with different nets",
-            "items": [
-                {
-                    "description": "Pad 5 [BAT] of U_BST on F.Cu",
-                    "pos": {
-                        "x": 17.1375,
-                        "y": 48.0
-                    },
-                    "uuid": "f9bb5520-7582-420e-b8b5-238d3732a929"
-                },
-                {
-                    "description": "PTH pad 1 [+5V_ALWAYS] of J_CORE",
-                    "pos": {
-                        "x": 18.0,
-                        "y": 48.0
-                    },
-                    "uuid": "308b2c32-4738-41f2-bff6-514f29d0d6d3"
-                }
-            ],
-            "severity": "error",
-            "type": "solder_mask_bridge"
-        },
-        {
-            "description": "Front solder mask aperture bridges items with different nets",
-            "items": [
-                {
-                    "description": "Pad 6 [BAT] of U_BST on F.Cu",
-                    "pos": {
-                        "x": 17.1375,
-                        "y": 47.05
-                    },
-                    "uuid": "9a7c95ef-4fa4-4c4c-8ba3-4abc58c62c8d"
-                },
-                {
-                    "description": "PTH pad 1 [+5V_ALWAYS] of J_CORE",
-                    "pos": {
-                        "x": 18.0,
-                        "y": 48.0
-                    },
-                    "uuid": "308b2c32-4738-41f2-bff6-514f29d0d6d3"
-                }
-            ],
-            "severity": "error",
-            "type": "solder_mask_bridge"
-        },
-        {
-            "description": "Front solder mask aperture bridges items with different nets",
-            "items": [
-                {
-                    "description": "PTH pad 1 [DC] of C1",
-                    "pos": {
-                        "x": 78.0,
-                        "y": 16.0
-                    },
-                    "uuid": "791c57a7-8ac0-43be-b5c6-c733d4304cfe"
-                },
-                {
-                    "description": "PTH pad 2 [GND] of DTVS",
-                    "pos": {
-                        "x": 77.24,
-                        "y": 16.0
-                    },
-                    "uuid": "839daba7-d64c-4ab5-a781-79126c7007a2"
-                }
-            ],
-            "severity": "error",
-            "type": "solder_mask_bridge"
-        },
-        {
-            "description": "Rear solder mask aperture bridges items with different nets",
-            "items": [
-                {
-                    "description": "PTH pad 1 [DC] of C1",
-                    "pos": {
-                        "x": 78.0,
-                        "y": 16.0
-                    },
-                    "uuid": "791c57a7-8ac0-43be-b5c6-c733d4304cfe"
-                },
-                {
-                    "description": "PTH pad 2 [GND] of DTVS",
-                    "pos": {
-                        "x": 77.24,
-                        "y": 16.0
-                    },
-                    "uuid": "839daba7-d64c-4ab5-a781-79126c7007a2"
-                }
-            ],
-            "severity": "error",
-            "type": "solder_mask_bridge"
-        },
-        {
-            "description": "Front solder mask aperture bridges items with different nets",
-            "items": [
-                {
-                    "description": "PTH pad 2 [AC2] of R4",
-                    "pos": {
-                        "x": 128.16,
-                        "y": 22.0
-                    },
-                    "uuid": "5ebb9c91-7804-4f1c-a0da-4d6183f82577"
-                },
-                {
-                    "description": "PTH pad 1 [AC1] of J1",
-                    "pos": {
-                        "x": 128.0,
-                        "y": 22.0
-                    },
-                    "uuid": "917fc75b-715d-4736-94d6-3eadec63a159"
-                }
-            ],
-            "severity": "error",
-            "type": "solder_mask_bridge"
-        },
-        {
-            "description": "Rear solder mask aperture bridges items with different nets",
-            "items": [
-                {
-                    "description": "PTH pad 2 [AC2] of R4",
-                    "pos": {
-                        "x": 128.16,
-                        "y": 22.0
-                    },
-                    "uuid": "5ebb9c91-7804-4f1c-a0da-4d6183f82577"
-                },
-                {
-                    "description": "PTH pad 1 [AC1] of J1",
-                    "pos": {
-                        "x": 128.0,
-                        "y": 22.0
-                    },
-                    "uuid": "917fc75b-715d-4736-94d6-3eadec63a159"
-                }
-            ],
-            "severity": "error",
-            "type": "solder_mask_bridge"
-        },
-        {
-            "description": "Front solder mask aperture bridges items with different nets",
-            "items": [
-                {
-                    "description": "Pad 1 [+5V_ALWAYS] of R3 on F.Cu",
-                    "pos": {
-                        "x": 105.975,
-                        "y": 13.0
-                    },
-                    "uuid": "ef772165-ecb4-48bb-bfb3-4372e3dbd152"
-                },
-                {
-                    "description": "Pad 2 [AC2] of C4 on F.Cu",
-                    "pos": {
-                        "x": 105.475,
-                        "y": 14.0
-                    },
-                    "uuid": "9c5e6371-cf83-491c-8a11-328daa3869cf"
-                }
-            ],
-            "severity": "error",
-            "type": "solder_mask_bridge"
-        },
-        {
-            "description": "Front solder mask aperture bridges items with different nets",
-            "items": [
-                {
-                    "description": "Pad 1 [CC2] of R2 on F.Cu",
-                    "pos": {
-                        "x": 93.375,
-                        "y": 8.0
-                    },
-                    "uuid": "a3cfa9ec-3dff-4c82-87f5-cbf498fd3bcc"
-                },
-                {
-                    "description": "Pad 1 [+5V_ALWAYS] of D7 on F.Cu",
-                    "pos": {
-                        "x": 95.0,
-                        "y": 8.0
-                    },
-                    "uuid": "98ca3a3d-1caf-4d14-93e3-b3c49f63b3d7"
-                }
-            ],
-            "severity": "error",
-            "type": "solder_mask_bridge"
-        },
-        {
-            "description": "Front solder mask aperture bridges items with different nets",
-            "items": [
-                {
-                    "description": "Pad 2 [GND] of R2 on F.Cu",
-                    "pos": {
-                        "x": 95.025,
-                        "y": 8.0
-                    },
-                    "uuid": "1121e084-08cb-4a2a-ba37-eaa4d8bfb285"
-                },
-                {
-                    "description": "Pad 1 [+5V_ALWAYS] of D7 on F.Cu",
-                    "pos": {
-                        "x": 95.0,
-                        "y": 8.0
-                    },
-                    "uuid": "98ca3a3d-1caf-4d14-93e3-b3c49f63b3d7"
-                }
-            ],
-            "severity": "error",
-            "type": "solder_mask_bridge"
-        },
-        {
-            "description": "Front solder mask aperture bridges items with different nets",
-            "items": [
-                {
-                    "description": "Pad 1 [I2C0_SCL] of R_SCL on F.Cu",
-                    "pos": {
-                        "x": 97.575,
-                        "y": 13.0
-                    },
-                    "uuid": "156332ac-1a7d-4dad-8285-2bfecaf4f9ab"
-                },
-                {
-                    "description": "Pad 2 [GND] of D4 on F.Cu",
-                    "pos": {
-                        "x": 96.0,
-                        "y": 12.0
-                    },
-                    "uuid": "92884ae4-5d74-49f3-86de-9208a4f93359"
-                }
-            ],
-            "severity": "error",
-            "type": "solder_mask_bridge"
-        },
-        {
-            "description": "Front solder mask aperture bridges items with different nets",
-            "items": [
-                {
-                    "description": "Pad 2 [+3V3_RF] of R_SCL on F.Cu",
-                    "pos": {
-                        "x": 99.225,
-                        "y": 13.0
-                    },
-                    "uuid": "2ba29faf-e355-4568-8102-c80935283bf2"
-                },
-                {
-                    "description": "Pad 1 [AC2] of D4 on F.Cu",
-                    "pos": {
-                        "x": 100.0,
-                        "y": 12.0
-                    },
-                    "uuid": "ae0adea5-db89-4ee9-90e8-5ac144aa7558"
-                }
-            ],
-            "severity": "error",
-            "type": "solder_mask_bridge"
-        },
-        {
-            "description": "Front solder mask aperture bridges items with different nets",
-            "items": [
-                {
-                    "description": "Pad 1 [LED_A] of D8 on F.Cu",
-                    "pos": {
-                        "x": 101.8125,
-                        "y": 13.0
-                    },
-                    "uuid": "4738e299-bbaa-489e-865a-af29fa23cc03"
-                },
-                {
-                    "description": "Pad 1 [AC1L] of C4 on F.Cu",
-                    "pos": {
-                        "x": 102.525,
-                        "y": 14.0
-                    },
-                    "uuid": "950a01e5-4046-4c65-8dce-f27946bcb630"
-                }
-            ],
-            "severity": "error",
-            "type": "solder_mask_bridge"
-        },
-        {
-            "description": "Front solder mask aperture bridges items with different nets",
-            "items": [
-                {
-                    "description": "Pad 2 [GND] of D8 on F.Cu",
-                    "pos": {
-                        "x": 103.3875,
-                        "y": 13.0
-                    },
-                    "uuid": "4772a9e3-51c0-4641-b97b-f28534f2b5a0"
-                },
-                {
-                    "description": "Pad 1 [AC1L] of C4 on F.Cu",
-                    "pos": {
-                        "x": 102.525,
-                        "y": 14.0
-                    },
-                    "uuid": "950a01e5-4046-4c65-8dce-f27946bcb630"
-                }
-            ],
-            "severity": "error",
-            "type": "solder_mask_bridge"
-        },
-        {
-            "description": "Front solder mask aperture bridges items with different nets",
-            "items": [
-                {
-                    "description": "Pad 1 [MPPT_C] of C_MC on F.Cu",
-                    "pos": {
-                        "x": 110.225,
-                        "y": 8.0
-                    },
-                    "uuid": "65a00046-df54-4fcf-ad7a-0e6f5483ea66"
-                },
-                {
-                    "description": "Pad 1 [BAT] of D_HV on F.Cu",
-                    "pos": {
-                        "x": 111.8,
-                        "y": 8.0
-                    },
-                    "uuid": "9a447b48-9171-4572-88c5-b2f71889f353"
-                }
-            ],
-            "severity": "error",
-            "type": "solder_mask_bridge"
-        },
-        {
-            "description": "Front solder mask aperture bridges items with different nets",
-            "items": [
-                {
-                    "description": "Pad 2 [GND] of C_MC on F.Cu",
-                    "pos": {
-                        "x": 111.775,
-                        "y": 8.0
-                    },
-                    "uuid": "5f1de869-24f1-450e-908a-b363c3dc9d67"
-                },
-                {
-                    "description": "Pad 1 [BAT] of D_HV on F.Cu",
-                    "pos": {
-                        "x": 111.8,
-                        "y": 8.0
-                    },
-                    "uuid": "9a447b48-9171-4572-88c5-b2f71889f353"
-                }
-            ],
-            "severity": "error",
-            "type": "solder_mask_bridge"
-        },
-        {
-            "description": "Front solder mask aperture bridges items with different nets",
-            "items": [
-                {
-                    "description": "Pad 2 [GND] of D4 on F.Cu",
-                    "pos": {
-                        "x": 96.0,
-                        "y": 12.0
-                    },
-                    "uuid": "92884ae4-5d74-49f3-86de-9208a4f93359"
-                },
-                {
-                    "description": "Pad 2 [+3V3_RF] of R_SDA on F.Cu",
-                    "pos": {
-                        "x": 95.025,
-                        "y": 13.0
-                    },
-                    "uuid": "fb49b580-30e5-4aa5-95b6-c59129b3c48f"
-                }
-            ],
-            "severity": "error",
-            "type": "solder_mask_bridge"
-        },
-        {
-            "description": "Front solder mask aperture bridges items with different nets",
-            "items": [
-                {
-                    "description": "Pad 2 [VHARV] of D_HV on F.Cu",
-                    "pos": {
-                        "x": 118.6,
-                        "y": 8.0
-                    },
-                    "uuid": "86141bb3-6b6d-4b09-a31c-283ac416c8d1"
-                },
-                {
-                    "description": "Pad 1 [BST_SW] of L_BST on F.Cu",
-                    "pos": {
-                        "x": 118.3375,
-                        "y": 8.0
-                    },
-                    "uuid": "cff90e57-2af4-4c22-9e24-241fa70103d4"
-                }
-            ],
-            "severity": "error",
-            "type": "solder_mask_bridge"
-        },
-        {
-            "description": "Front solder mask aperture bridges items with different nets",
-            "items": [
-                {
-                    "description": "Pad 1 [5V_IN] of R_SH5 on F.Cu",
-                    "pos": {
-                        "x": 68.0875,
-                        "y": 13.0
-                    },
-                    "uuid": "d746bf60-ea1a-430d-a617-be010cd94817"
-                },
-                {
-                    "description": "Pad 1 [GND] of Q1 on F.Cu",
-                    "pos": {
-                        "x": 66.85,
-                        "y": 13.7
-                    },
-                    "uuid": "eb5e169a-8fa7-4ce3-a341-80c696d82e7b"
-                }
-            ],
-            "severity": "error",
-            "type": "solder_mask_bridge"
-        },
-        {
-            "description": "Front solder mask aperture bridges items with different nets",
-            "items": [
-                {
-                    "description": "Pad 1 [VHARV] of D6 on F.Cu",
-                    "pos": {
-                        "x": 53.0,
-                        "y": 8.0
-                    },
-                    "uuid": "7b3b277b-7630-49bb-8ba1-884ea85a6760"
-                },
-                {
-                    "description": "Pad 2 [SCR_G] of R5 on F.Cu",
-                    "pos": {
-                        "x": 53.1125,
-                        "y": 8.0
-                    },
-                    "uuid": "3df722ab-93c9-48a0-9776-e65284efae56"
-                }
-            ],
-            "severity": "error",
-            "type": "solder_mask_bridge"
-        },
-        {
-            "description": "Front solder mask aperture bridges items with different nets",
-            "items": [
-                {
-                    "description": "Pad 1 [VHARV] of D6 on F.Cu",
-                    "pos": {
-                        "x": 53.0,
-                        "y": 8.0
-                    },
-                    "uuid": "7b3b277b-7630-49bb-8ba1-884ea85a6760"
-                },
-                {
-                    "description": "Pad 1 [DC] of R5 on F.Cu",
-                    "pos": {
-                        "x": 51.2875,
-                        "y": 8.0
-                    },
-                    "uuid": "eca10526-a025-4b69-9836-825364503a6a"
-                }
-            ],
-            "severity": "error",
-            "type": "solder_mask_bridge"
-        },
-        {
-            "description": "Front solder mask aperture bridges items with different nets",
-            "items": [
-                {
-                    "description": "Pad 2 [DC] of D6 on F.Cu",
-                    "pos": {
-                        "x": 59.8,
-                        "y": 8.0
-                    },
-                    "uuid": "105b0f38-52db-45d7-b8b5-86c6c19a2006"
-                },
-                {
-                    "description": "Pad 1 [ROGO_N] of R_RN on F.Cu",
-                    "pos": {
-                        "x": 59.775,
-                        "y": 8.0
-                    },
-                    "uuid": "d200f6f4-1b3c-4f86-8292-9ae7310f0a82"
-                }
-            ],
-            "severity": "error",
-            "type": "solder_mask_bridge"
-        },
-        {
-            "description": "Front solder mask aperture bridges items with different nets",
-            "items": [
-                {
-                    "description": "Pad 2 [DC] of D6 on F.Cu",
-                    "pos": {
-                        "x": 59.8,
-                        "y": 8.0
-                    },
-                    "uuid": "105b0f38-52db-45d7-b8b5-86c6c19a2006"
-                },
-                {
-                    "description": "Pad 2 [GND] of R_RN on F.Cu",
-                    "pos": {
-                        "x": 61.425,
-                        "y": 8.0
-                    },
-                    "uuid": "1b4780e2-89e2-41dc-ad49-184b0913de1e"
-                }
-            ],
-            "severity": "error",
-            "type": "solder_mask_bridge"
         }
     ]
 }
