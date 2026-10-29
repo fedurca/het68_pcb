@@ -1,5 +1,7 @@
-het68 satelit v4.1.0 6L Faraday LVDS
-50 x 80 x 1.6 mm, 6 vrstev, ENIG, vnejsi Cu 1 oz, vnitrni 0.5 oz. >= 0603.
-Prokov 0.60/0.20 mm. T5848 uprostred. 8x SK6812. SN65LVDS1 = SD sat->Core.
-Ven (F.Cu): jen otvor mikrofonu a 8x SK6812. Zadni strana: RJ45, T5848 a ostatni elektronika.
-Par LVDS a LED siti jeste neni uzavrenych. Nove spoje nemaji zkrat.
+het68 satelit v4.6.0
+50 x 80 x 1.6 mm, 6 vrstev, ENIG, vnejsi Cu 1 oz, vnitrni 0.5 oz.
+Prokov 0.60/0.20 mm.
+Ven (F.Cu): otvor mikrofonu a 8x SK6812. Zadni strana: RJ45 a ostatni elektronika.
+U2 je na (13, 33), mimo montazni diru. Signalove site jsou spojene.
+DRC: 0 zkratu. Jeden zaznam zona-zona GND; zemni prokovy plochy spojuji.
+Osazeni zatim ne. LCSC je prazdne. Pozdeji Both sides.

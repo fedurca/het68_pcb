@@ -1,8 +1,8 @@
-# JLCPCB — nastavení formuláře (v4.5.1)
+# JLCPCB — nastavení formuláře (v4.6.0)
 
 Každá deska je samostatná zakázka. Jeden gerber zip = jedno Different Design. Rozměr ber z obrysu, ne ze společné kalkulace 100 × 100 mm.
 
-Osazení nech vypnuté. V `*-bom.csv` je sloupec LCSC prázdný a bez něj JLC osazení nepřijme. RP2350B, ADXL355, T5848 a LVDS budou extended nebo consignment. Část signálů je pořád otevřená, osazená deska by se nezapnula. Satelit je oboustranný, takže pozdější osazení musí být Both sides.
+Osazení nech vypnuté. V `*-bom.csv` je sloupec LCSC prázdný a bez něj JLC osazení nepřijme. RP2350B, ADXL355, T5848 a LVDS budou extended nebo consignment. Satelit má signály spojené, Core má 42 otevřených párů a silové desky 30 / 36 / 26, takže osazená sada by se nezapnula. Satelit je oboustranný, takže pozdější osazení musí být Both sides.
 
 Šablona (stencil) zůstane vypnutá, dokud se nepájí ručně.
 

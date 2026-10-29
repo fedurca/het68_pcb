@@ -1,5 +1,6 @@
-het68 Core v4.1.0
+het68 Core v4.6.0
 160 x 100 x 1.6 mm, 6 vrstev, ENIG, vnejsi Cu 1 oz, vnitrni 0.5 oz.
-Prokov 0.60/0.20 mm (mezikruzi 0.20 mm, JLCPCB 6L).
-J_MESH 1x8 Heltec V3 868. Stamp DNP. USB Heltec odpojit po flash.
-QFN-80 ma unik 0.15 mm po ose pinu. 67 paru jeste neni uzavrenych (stred rady). Nove spoje nemaji zkrat.
+Prokov 0.60/0.20 mm. QFN thermal via 0.50/0.20 mm.
+H1 je na (5, 71), mimo RJ45.
+0 zkratu, 0 mezer. Otevrenych medenych paru: 42.
+Osazeni zatim ne. LCSC je prazdne.

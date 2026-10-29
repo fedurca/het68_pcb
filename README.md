@@ -2,7 +2,7 @@
 
 Zadání a KiCad návrh PCB pro **het68** (akustická detekce dronů).
 
-Aktuální verze: **[v4.5.1](https://github.com/fedurca/het68_pcb/releases/tag/v4.5.1)** — viz [CHANGELOG.md](CHANGELOG.md). Kusovník sady: [kicad/BOM_KIT.csv](kicad/BOM_KIT.csv). Po deskách: [kicad/BOM_v4.csv](kicad/BOM_v4.csv).
+Aktuální verze: **[v4.6.0](https://github.com/fedurca/het68_pcb/releases/tag/v4.6.0)** — viz [CHANGELOG.md](CHANGELOG.md). Kusovník sady: [kicad/BOM_KIT.csv](kicad/BOM_KIT.csv). Po deskách: [kicad/BOM_v4.csv](kicad/BOM_v4.csv).
 
 Firmware a geometrie pole: [fedurca/het68](https://github.com/fedurca/het68). Zadání: [docs/ZADANI_PCB.md](docs/ZADANI_PCB.md). Projekty v KiCadu: [kicad/README.md](kicad/README.md).
 
@@ -16,21 +16,21 @@ v4 je sada **Core 6L + vyměnitelná silová deska + šest satelitů**. Na měď
 
 **Satelit** je šest destiček 6L. Ven z desky kouká jen akustický otvor T5848 a kruh **8× SK6812**. Tělo mikrofonu, RJ45 a ostatní elektronika jsou na druhé straně. SD z mikrofonu jede párem (`SN65LVDS1` na satelitu, `SN65LVDS32` na Core, 100 Ω u přijímače). Mapa [`docs/PINOUT_SAT_v4.csv`](docs/PINOUT_SAT_v4.csv).
 
-## Prototyp (v4.5.0)
+## Prototyp (v4.6.0)
 
-Náhledy níže jsou z desek v tomto commitu. Starší soubory v `docs/img/` GitHub dál kešuje, proto jsou aktuální obrázky v `docs/img/v450/`.
+Náhledy níže jsou z desek v tomto commitu. Starší soubory v `docs/img/` GitHub dál kešuje, proto jsou aktuální obrázky v `docs/img/v460/`.
 
-![Core 6L](docs/img/v450/core-3d.png)
+![Core 6L](docs/img/v460/core-3d.png)
 
-![Satelit, venkovní strana: jen 8× SK6812 a otvor mikrofonu](docs/img/v450/sat-front-3d.png)
+![Satelit, venkovní strana: jen 8× SK6812 a otvor mikrofonu](docs/img/v460/sat-front-3d.png)
 
-![Satelit, zadní strana: RJ45 a elektronika](docs/img/v450/sat-back-3d.png)
+![Satelit, zadní strana: RJ45 a elektronika](docs/img/v460/sat-back-3d.png)
 
-![Silová NN](docs/img/v450/pwr-nn-3d.png)
+![Silová NN](docs/img/v460/pwr-nn-3d.png)
 
-Měď: [Core](docs/img/v450/core-top.svg) · [satelit ven](docs/img/v450/sat-front.svg) · [satelit zadek](docs/img/v450/sat-back.svg) · [silová](docs/img/v450/pwr-nn-top.svg). Maska venkovní strany satelitu: [SVG](docs/img/v450/sat-front-mask.svg). Schémata: [Core](docs/img/core-sch.pdf) · [satelit](docs/img/sat-sch.pdf) · [silová](docs/img/pwr-nn-sch.pdf). Gerbery a nastavení formuláře: [`kicad/jlc/`](kicad/jlc/) · [NASTAVENI.md](kicad/jlc/NASTAVENI.md).
+Měď: [Core](docs/img/v460/core-top.svg) · [satelit ven](docs/img/v460/sat-front.svg) · [satelit zadek](docs/img/v460/sat-back.svg) · [silová](docs/img/v460/pwr-nn-top.svg). Maska venkovní strany satelitu: [SVG](docs/img/v460/sat-front-mask.svg). Schémata: [Core](docs/img/v460/core-sch.pdf) · [satelit](docs/img/v460/sat-sch.pdf) · [silová](docs/img/v460/pwr-nn-sch.pdf). Gerbery a nastavení formuláře: [`kicad/jlc/`](kicad/jlc/) · [NASTAVENI.md](kicad/jlc/NASTAVENI.md).
 
-![Sestava v4.5.0](docs/img/v450/sestava.svg)
+![Sestava v4.6.0](docs/img/v460/sestava.svg)
 
 ## Vyrobitelnost
 
@@ -38,11 +38,11 @@ Na měď nejde 230 V / 22 kV / 110 kV. Gerbery z `kicad-cli` v `kicad/*/fab/`. T
 
 | Deska | Rozměr | ERC error | DRC | Objednat? |
 |---|---|---|---|---|
-| Core | 160 × 100 mm, 6L Faraday, ENIG | 0 | 0 zkratů, desítky otevřených párů | ne |
-| Satelit | 50 × 80 mm, 6L, ven jen LED a port | 0 | 0 zkratů, otevřené části LVDS a dvě LED | ne |
-| Silová NN/VN/VVN | 140 × 80 mm, 2L 70 µm | 0 | 0 zkratů pad–pad, část sítí otevřená | ne jako hotový zdroj |
+| Core | 160 × 100 mm, 6L Faraday, ENIG | 0 | 0 zkratů, 42 otevřených párů | ne |
+| Satelit | 50 × 80 mm, 6L, ven jen LED a port | 0 | 0 zkratů, signály spojené | ne, dokud není LCSC |
+| Silová NN/VN/VVN | 140 × 80 mm, 2L 70 µm | 0 | 0 zkratů, otevřené páry 30 / 36 / 26 | ne jako hotový zdroj |
 
-Schémata jsou elektricky uzavřená (ERC 0 chyb). QFN-80 má únik 0,15 mm po ose pinu. Krystal je odsunutý od severní hrany, aby ta řada měla koridor. Z rovnoběžného svazku o rozteči 0,40 mm odbočí jen krajní vodiče, proto několik pinů uprostřed řady zůstává otevřených.
+Schémata jsou elektricky uzavřená (ERC 0 chyb). QFN-80 má únik 0,15 mm po ose pinu. Krystal je odsunutý od severní hrany, aby ta řada měla koridor. Prokov 0,60 mm se do rozteče 0,40 mm nevejde, proto část pinů uprostřed řady na Core zůstává otevřená. Satelit má signály dotažené; DRC u něj zbývá jeden záznam dvou zemních zón na stejném rohu, prokovy ty plochy spojují.
 
 ## VF / EMC (silné rušení)
 

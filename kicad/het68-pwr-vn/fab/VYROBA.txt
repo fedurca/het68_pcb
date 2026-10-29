@@ -1,6 +1,6 @@
-het68 silova VN v4.1.0
-140 x 80 mm, 2 vrstvy, 1.6 mm, med 2 oz (70 um).
-Jen sekundar CT/Rogowski. NE 230 V / 22 kV / 110 kV na med.
-ENIG nebo HASL bezolovnaty. Stopa >= 0.20 mm (2 oz chce >= 0.16 mm).
-Prokov 1.00/0.50 mm (mezikruzi 0.25 mm). Tloustka 1.6 mm.
-Signaly jsou vedeny. Prekryte pady z rozmisteni zustavaji. Zkraty z routeru jsou smazane.
+het68 silova VN v4.6.0
+140 x 80 x 1.6 mm, 2 vrstvy, Cu 2 oz, ENIG nebo HASL bezolovnaty.
+Prokov 1.00/0.50 mm.
+J_SOL je na (127, 48), mimo drzak 21700.
+0 zkratu, 0 prekrytych padu. Otevrenych medenych paru: 36.
+Osazeni zatim ne.

@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 300" width="760" height="300">
+  <style>
+    .box { fill:#e8f0e8; stroke:#2d4a2d; stroke-width:1.4; }
+    .sat { fill:#efe8f4; stroke:#4a2d5a; stroke-width:1.2; }
+    .t { font: 13px ui-sans-serif, system-ui, sans-serif; fill:#1a1a1a; }
+    .s { font: 11px ui-sans-serif, system-ui, sans-serif; fill:#333; }
+    .l { stroke:#444; stroke-width:1.2; fill:none; }
+  </style>
+  <rect class="box" x="16" y="100" width="210" height="100" rx="6"/>
+  <text class="t" x="121" y="132" text-anchor="middle">Silová NN/VN/VVN</text>
+  <text class="s" x="121" y="152" text-anchor="middle">140 × 80 mm · 2L 70 µm</text>
+  <text class="s" x="121" y="168" text-anchor="middle">sekundár CT · lánek 21700</text>
+  <text class="s" x="121" y="184" text-anchor="middle">0 zkrato padpad</text>
+
+  <line class="l" x1="226" y1="150" x2="286" y2="150"/>
+  <text class="s" x="256" y="142" text-anchor="middle">2×10</text>
+
+  <rect class="box" x="286" y="78" width="220" height="144" rx="6"/>
+  <text class="t" x="396" y="112" text-anchor="middle">Core 6L Faraday</text>
+  <text class="s" x="396" y="132" text-anchor="middle">160 × 100 mm · RP2350B</text>
+  <text class="s" x="396" y="148" text-anchor="middle">J_MESH Heltec V3 868</text>
+  <text class="s" x="396" y="164" text-anchor="middle">6× RJ45 LVDS</text>
+  <text class="s" x="396" y="180" text-anchor="middle">stavová LED · RST/BOOT/USER</text>
+  <text class="s" x="396" y="196" text-anchor="middle">100 © RX · CMC · ferit 3V3</text>
+
+  <line class="l" x1="506" y1="150" x2="546" y2="150"/>
+  <text class="s" x="526" y="140" text-anchor="middle">STP</text>
+
+  <g transform="translate(546,28)">
+    <rect class="sat" x="0" y="0" width="92" height="52" rx="4"/>
+    <text class="s" x="46" y="18" text-anchor="middle">sat 12</text>
+    <text class="s" x="46" y="34" text-anchor="middle">ven: 8× LED</text>
+    <text class="s" x="46" y="46" text-anchor="middle">+ port mikrofonu</text>
+    <rect class="sat" x="100" y="0" width="92" height="52" rx="4"/>
+    <text class="s" x="146" y="18" text-anchor="middle">sat 34</text>
+    <text class="s" x="146" y="34" text-anchor="middle">zadní: RJ45</text>
+    <text class="s" x="146" y="46" text-anchor="middle">a elektronika</text>
+    <rect class="sat" x="0" y="62" width="92" height="52" rx="4"/>
+    <text class="s" x="46" y="92" text-anchor="middle">sat 56</text>
+    <rect class="sat" x="100" y="62" width="92" height="52" rx="4"/>
+    <text class="s" x="146" y="86" text-anchor="middle">50 × 80 mm</text>
+    <text class="s" x="146" y="100" text-anchor="middle">6L Faraday</text>
+  </g>
+  <text class="s" x="380" y="276" text-anchor="middle">het68 v4.6.0 · na m nejde 230 V / 22 kV / 110 kV</text>
+</svg>

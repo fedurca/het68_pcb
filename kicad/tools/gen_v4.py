@@ -53,7 +53,7 @@ DVDD_PADS = ("10", "32", "51")
 
 
 class SchV4(Sch):
-    def __init__(self, name, title, rails, rev="4.5.0"):
+    def __init__(self, name, title, rails, rev="4.6.0"):
         super().__init__(name, title)
         self.rails = rails
         self.rev = rev
@@ -1127,7 +1127,8 @@ def place_core(board: Board, sch: Sch):
     board.text("USER", 144, 52, size=1.0)
     for ref, x in (("J11", 108), ("J12", 116), ("J13", 124), ("J14", 132)):
         P(ref, x, 64, 0)
-    holes(board, ((6, 6), (6, 94), (154, 6), (154, 94)))
+    # (6, 6) sits under the RJ45 at J1. The left hole moves down the free edge.
+    holes(board, ((5, 71), (6, 94), (154, 6), (154, 94)))
     place_remaining(board, sch, placed, 8, 40, 4.5, 5)
     board.text("het68 CORE rev A  6L Faraday", 80, 6, size=1.0)
     board.text("J_MESH Heltec V3 868  pin1 GND", 80, 9, size=1.0)
@@ -1161,7 +1162,8 @@ def place_sat(board: Board, sch: Sch):
     P("D1", 8, 32, 0)
     P("D2", 18, 32, 0)
     P("D3", 28, 32, 0)
-    P("U2", 8, 38, 0)
+    # Clear of the M3 hole at (8, 40) and the parts along that edge.
+    P("U2", 13, 33, 0)
     P("U3", 18, 38, 0)
     P("U4", 8, 44, 0)
     P("U5", 36, 30, 0)
@@ -1284,7 +1286,8 @@ def place_pwr(board: Board, sch: Sch, sku: str):
     P("U_RF", 40, 42, 0)
     P("U_INA", 36, 16, 0)
     P("J_CORE", 18, 48, 0)
-    P("J_SOL", 124, 48, 0)
+    # The 21700 holder covers y=48 at x=124. The jack sits just to its right.
+    P("J_SOL", 127, 48, 0)
     P("J_RTD", 132, 48, 0)
     P("J3", 132, 36, 0)
     P("J_ROGO", 124, 36, 0)
@@ -1697,17 +1700,17 @@ def pack_jlc():
     (out / "ZAKAZKA.md").write_text(ZAKAZKA)
 
 
-ZAKAZKA = """# JLCPCB — podklady het68 v4.4.0
+ZAKAZKA = """# JLCPCB — podklady het68 v4.6.0
 
-## Signály jsou z větší části spojené
+Hodnoty do formuláře jsou v [NASTAVENI.md](NASTAVENI.md).
 
-QFN-80 má únik 0,15 mm po ose každého signálového pinu. Prokov 0,60 mm se do rozteče 0,40 mm nevejde. Core má 67 nepřipojených párů, satelit 13, silové desky kolem 50. Nové spoje nemají zkrat. Silové desky mají dál překryté pady z rozmístění (shorting_items mezi pady).
+## Stav mědi
 
-Objednávka vyrobí desku, na které je většina signálů spojená. Několik pinů uprostřed řady QFN a pár LVDS sítí ještě nekončí u cíle.
+Satelit má uzavřené signálové sítě a žádný zkrat. DRC u něj zbývá jeden záznam zóna–zóna GND; zemní prokovy mají prstenec v mědi na všech zemních vrstvách. Core má 42 otevřených párů, silové desky 30 / 36 / 26. Zkraty, mezery a překryté pady jsou pryč. Osazení nech vypnuté: LCSC je prázdné a část sítí na Core a silových deskách ještě nekončí u cíle.
 
 ## Košík
 
-Společné: FR-4, tloušťka **1,6 mm**, zelená maska, bílý potisk, obrys frézováním (ne V-cut). Impedance se neobjednává (páry ještě nejsou na mědi).
+Společné: FR-4, tloušťka **1,6 mm**, zelená maska, bílý potisk, obrys frézováním (ne V-cut). Impedance se neobjednává.
 
 | Deska | Soubor | Vrstvy | Povrch | Měď | Poznámka v objednávce |
 |---|---|---|---|---|---|

@@ -426,7 +426,8 @@ class Finish:
                     s.add(item)
             else:
                 a, c = t.GetStart(), t.GetEnd()
-                layer = 0 if t.GetLayer() == pcbnew.F_Cu else 1
+                lid = t.GetLayer()
+                layer = 0 if lid == pcbnew.F_Cu else 1 if lid == pcbnew.B_Cu else lid
                 item = ("seg", _mm(a.x), _mm(a.y), _mm(c.x), _mm(c.y), _mm(t.GetWidth()) / 2, layer)
                 if s is None:
                     self.blocks.append(item)

@@ -4,6 +4,20 @@ Formát podle [Keep a Changelog](https://keepachangelog.com/cs/1.1.0/), verze po
 
 Tento soubor drží řadu **4.x**. Starší tagy `v1.1.1` … `v3.0.0` zůstávají v gitu.
 
+## [4.6.0] — 2026-10-29
+
+### Changed
+
+- Doplněné trasy na všech pěti deskách. Žádná deska nemá zkrat ani podkročenou mezeru.
+- Satelit má signálové sítě uzavřené. U2 (LVDS) je mimo montážní díru, SD mikrofonu je spojené s R1 a U5. DRC zbývá jeden záznam zóna–zóna GND; 153 zemních prokovů má prstenec v mědi na všech zemních vrstvách.
+- Core klesl z 65 otevřených párů na 42. Montážní díra H1 je na (5, 71), mimo RJ45. Měď v keepoutu u konektoru je pryč.
+- Silové desky: otevřené páry 30 (NN), 36 (VN) a 26 (VVN). Solární jack je na (127, 48), mimo držák 21700. Courtyard ani PTH už do sebe nezasahují.
+- Náhledy: [`docs/img/v460/`](docs/img/v460/). Gerbery v `kicad/jlc/` sedí na tuhle měď. Osazení zůstává vypnuté, LCSC se nedoplňuje odhadem.
+
+### Known
+
+- Core a silové desky ještě nejsou elektricky úplné. Konce zbylých párů leží v mědi, kam se nevejde prokov 0,60/0,20 mm (na 2 vrstvách 1,00/0,50 mm). Objednávat jako funkční osazenou desku zatím ne.
+
 ## [4.5.1] — 2026-10-29
 
 ### Added
@@ -85,6 +99,7 @@ Nativní RP2350B na 6L Faraday Core, MeshCore na Heltec V3 (`J_MESH`) se spánke
 - Compute už není Pico Plus 2 + HAT. GP0/GP1 jsou UART MeshCore.
 - T568B jednovodičové I²S na UTP končí; na kabelu je LVDS.
 
+[4.6.0]: https://github.com/fedurca/het68_pcb/releases/tag/v4.6.0
 [4.5.1]: https://github.com/fedurca/het68_pcb/releases/tag/v4.5.1
 [4.5.0]: https://github.com/fedurca/het68_pcb/releases/tag/v4.5.0
 [4.4.0]: https://github.com/fedurca/het68_pcb/releases/tag/v4.4.0
