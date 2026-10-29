@@ -4,6 +4,12 @@ Formát podle [Keep a Changelog](https://keepachangelog.com/cs/1.1.0/), verze po
 
 Tento soubor drží řadu **4.x**. Starší tagy `v1.1.1` … `v3.0.0` zůstávají v gitu.
 
+## [4.5.1] — 2026-10-29
+
+### Added
+
+- Nastavení JLCPCB pro každou desku: [kicad/jlc/NASTAVENI.md](kicad/jlc/NASTAVENI.md). Core a satelit jsou 6L ENIG s prokovem 0,20 mm a via covering Tented. Silové desky jsou samostatná 2L zakázka s mědí 2 oz.
+
 ## [4.5.0] — 2026-10-29
 
 ### Changed
@@ -79,6 +85,7 @@ Nativní RP2350B na 6L Faraday Core, MeshCore na Heltec V3 (`J_MESH`) se spánke
 - Compute už není Pico Plus 2 + HAT. GP0/GP1 jsou UART MeshCore.
 - T568B jednovodičové I²S na UTP končí; na kabelu je LVDS.
 
+[4.5.1]: https://github.com/fedurca/het68_pcb/releases/tag/v4.5.1
 [4.5.0]: https://github.com/fedurca/het68_pcb/releases/tag/v4.5.0
 [4.4.0]: https://github.com/fedurca/het68_pcb/releases/tag/v4.4.0
 [4.3.0]: https://github.com/fedurca/het68_pcb/releases/tag/v4.3.0

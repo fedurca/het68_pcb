@@ -1,4 +1,6 @@
-# JLCPCB — podklady het68 v4.4.0
+# JLCPCB — podklady het68 v4.5.1
+
+Hodnoty do formuláře jsou v [NASTAVENI.md](NASTAVENI.md). Core a satelit nepatří do jedné kalkulace se silovou deskou.
 
 ## Signály jsou z větší části spojené
 

@@ -2,7 +2,7 @@
 
 Zadání a KiCad návrh PCB pro **het68** (akustická detekce dronů).
 
-Aktuální verze: **[v4.5.0](https://github.com/fedurca/het68_pcb/releases/tag/v4.5.0)** — viz [CHANGELOG.md](CHANGELOG.md). Kusovník sady: [kicad/BOM_KIT.csv](kicad/BOM_KIT.csv). Po deskách: [kicad/BOM_v4.csv](kicad/BOM_v4.csv).
+Aktuální verze: **[v4.5.1](https://github.com/fedurca/het68_pcb/releases/tag/v4.5.1)** — viz [CHANGELOG.md](CHANGELOG.md). Kusovník sady: [kicad/BOM_KIT.csv](kicad/BOM_KIT.csv). Po deskách: [kicad/BOM_v4.csv](kicad/BOM_v4.csv).
 
 Firmware a geometrie pole: [fedurca/het68](https://github.com/fedurca/het68). Zadání: [docs/ZADANI_PCB.md](docs/ZADANI_PCB.md). Projekty v KiCadu: [kicad/README.md](kicad/README.md).
 
@@ -28,7 +28,7 @@ Náhledy níže jsou z desek v tomto commitu. Starší soubory v `docs/img/` Git
 
 ![Silová NN](docs/img/v450/pwr-nn-3d.png)
 
-Měď: [Core](docs/img/v450/core-top.svg) · [satelit ven](docs/img/v450/sat-front.svg) · [satelit zadek](docs/img/v450/sat-back.svg) · [silová](docs/img/v450/pwr-nn-top.svg). Maska venkovní strany satelitu: [SVG](docs/img/v450/sat-front-mask.svg). Schémata: [Core](docs/img/core-sch.pdf) · [satelit](docs/img/sat-sch.pdf) · [silová](docs/img/pwr-nn-sch.pdf). Gerbery: [`kicad/jlc/`](kicad/jlc/).
+Měď: [Core](docs/img/v450/core-top.svg) · [satelit ven](docs/img/v450/sat-front.svg) · [satelit zadek](docs/img/v450/sat-back.svg) · [silová](docs/img/v450/pwr-nn-top.svg). Maska venkovní strany satelitu: [SVG](docs/img/v450/sat-front-mask.svg). Schémata: [Core](docs/img/core-sch.pdf) · [satelit](docs/img/sat-sch.pdf) · [silová](docs/img/pwr-nn-sch.pdf). Gerbery a nastavení formuláře: [`kicad/jlc/`](kicad/jlc/) · [NASTAVENI.md](kicad/jlc/NASTAVENI.md).
 
 ![Sestava v4.5.0](docs/img/v450/sestava.svg)
 
