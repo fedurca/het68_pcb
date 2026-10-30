@@ -3,10 +3,19 @@ pair,t568b,rj45_pins,net_p,net_n,level,notes
 3,green,"3,6",WS_P,WS_N,LVDS,word select; same CMC/TVS treatment
 1,blue,"4,5",SD_P,SD_N,LVDS,mic data sat -> Core; 100k pulldown on 1.8V CMOS after TXS
 4,brown,"7,8",+3V3,LED_DIN,single-ended,3.3V + SK6812 DIN; 8-pixel daisy-chain (D4=north clockwise); last DOUT NC; PPTC 0.5A
-shield,drain,SH,NC,,no connect on sat; shield bonded to GND only on Core
+shield,drain,SH,GND,,shield bonded to GND on the satellite and on the Core
 extra,,,,,T5848 VDD is 1.8V from AP2112K-1.8 on sat; never feed 3.3V to MEMS
 extra,,,,,LR/SEL = GND; WAKE and THSEL = NC
 extra,,,,,SD sat->Core is LVDS: SN65LVDS1 on sat (DIN=SD_3V3 after TXS, Y/Z=SD_P/SD_N); SN65LVDS32 on Core; 100R at Core RX; CMC both ends
 extra,,,,,SCK/WS Core->sat is LVDS: SN65LVDS047 on Core; SN65LVDS2 on sat; 100R at sat RX; CMC both ends
-extra,,,,,T568B single-ended I2S map from v3 is retired
+extra,,,,,DIFF uses the LVDS pairs listed above. 3.3 V and 1.8 V are shunt modes, not the retired v3 fixed wiring
+extra,,,,,Shield is GND on the satellite as well as the Core so single-ended 3.3 V has a return
+extra,,,,,Mode header is 2x3 on the back. Pin 1 is the north-east pad. One horizontal shunt
+extra,,,,,North row pins 1-2 DIFF, middle pins 3-4 is 3.3 V, south pins 5-6 is 1.8 V
+extra,,,,,SCK/WS pins 1-2 join LVDS out to the translator, 3-4 join the cable to the translator, 5-6 join the cable to the mic
+extra,,,,,SD pins 1-2 join the LVDS driver to the cable, 3-4 join 3.3 V to the cable, 5-6 join the mic to the cable
+extra,,,,,DIFF also fits JP_TSCK JP_TWS and JP_SDN 1-2. JP_OE stays open
+extra,,,,,3V3 uses the middle row and JP_SDN 2-3. Terminations open. JP_OE open
+extra,,,,,1V8 uses the south row, JP_SDN 2-3 and JP_OE (OE to GND). The far end must be 1.8 V
+extra,,,,,T5848 VDD stays 1.62-1.98 V in every mode. Never put 3.3 V on the mic
 extra,,,,,Satellite PCB is 6-layer Faraday 50x80 mm; MEMS at centre of 8-LED ring

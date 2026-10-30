@@ -30,7 +30,7 @@ Jen sekundár CT/Rogowski. GDT, TVS, LC, THT burden 100 Ω, crowbar ~25 V, USB-C
 
 ## Satelit
 
-6L Faraday. LVDS RX SCK/WS (SN65LVDS2 + 100 Ω), LVDS TX SD (SN65LVDS1 → Core SN65LVDS32), CMC, TVS, PPTC 0,5 A, ferit 600 Ω, TXS0104E 3,3↔1,8 V, T5848 ve středu, 8× SK6812 v kruhu. ENIG, ≥ 0603.
+6L Faraday. Režim linky volí jedna vodorovná propojka na satelitu. `JP_SCK`, `JP_WS` a `JP_SD` jsou hřebínky 2×3 na spodní straně, pin 1 (čtvercový) je severovýchodní. Severní řádek je diferenciální LVDS, prostřední je jednostranných 3,3 V přes `TXS0104E`, jižní je 1,8 V přímo na T5848. `JP_T*` jen u diferenciálního režimu (100 Ω). `JP_SDN` 1–2 je záporný vývod budiče, 2–3 dává zápornou žílu na zem. `JP_OE` se nasazuje jen v režimu 1,8 V a vypne překladač. T5848 zůstává na 1,62–1,98 V. Stínění RJ45 je na satelitu na GND. DRC desky je bez zkratů. Vzdušné zůstávají `OE`, krátká mezera `SD_3V3` u `U5`, `WS_LVDS`, `WS_P`, `WS_T` a `WS_N`. ENIG, ≥ 0603.
 
 ## Výroba
 

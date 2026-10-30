@@ -126,11 +126,18 @@ def v4_libs(sch: Sch, extra_rails):
     add_power_syms(sch, extra_rails)
     for n, lib_id, fp in [
         (8, "het68:Conn_1x08", "Connector_PinHeader_2.54mm:PinHeader_1x08_P2.54mm_Vertical"),
+        (4, "het68:Conn_1x04", "Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Vertical"),
         (3, "het68:Conn_1x03", "Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical"),
+        (2, "het68:Conn_1x02", "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical"),
         (20, "het68:Conn_2x10", "Connector_PinHeader_2.54mm:PinHeader_2x10_P2.54mm_Vertical"),
     ]:
         raw, pins = conn_symbol(n, lib_id, fp)
         sch.add_lib(lib_id, raw, pins)
+    raw, pins = conn_symbol(
+        6, "het68:Conn_2x03",
+        "Connector_PinHeader_2.54mm:PinHeader_2x03_P2.54mm_Vertical",
+    )
+    sch.add_lib("het68:Conn_2x03", raw, pins)
     for maker in (
         rp2350_symbol,
         rj_lvds_symbol,
@@ -771,7 +778,7 @@ def build_sat(sch: Sch):
             "het68:RJ45_RJHSE5380_het68",
             {
                 "1": "SCK_PJ", "2": "SCK_NJ", "3": "WS_PJ", "6": "WS_NJ",
-                "4": "SD_PJ", "5": "SD_NJ", "7": "3V3_F", "8": "LED", "SH": None,
+                "4": "SD_PJ", "5": "SD_NJ", "7": "3V3_F", "8": "LED", "SH": "GND",
             }, "RJHSE-5380")
     sch.add("het68:CMC", "FL1", "CMC",
             "Inductor_SMD:L_CommonModeChoke_Coilank_ACM2012",
@@ -785,18 +792,54 @@ def build_sat(sch: Sch):
     sch.add("Device:Polyfuse", "F1", "0.5A", "Fuse:Fuse_0603_1608Metric",
             {"1": "3V3_F", "2": "+3V3_FB"}, "PPTC 0603")
     FB(sch, "FB1", ("+3V3_FB", "+3V3"))
-    R(sch, "R_SCK", ("SCK_P", "SCK_N"), "100", mpn="RC0603FR-07100RL")
-    R(sch, "R_WS", ("WS_P", "WS_N"), "100", mpn="RC0603FR-07100RL")
+    # 100 Ω only in DIFF. The shunt completes the termination so a
+    # single-ended 1.8 V or 3.3 V driver is not loaded by 100 Ω.
+    R(sch, "R_SCK", ("SCK_P", "SCK_T"), "100", mpn="RC0603FR-07100RL")
+    R(sch, "R_WS", ("WS_P", "WS_T"), "100", mpn="RC0603FR-07100RL")
+    hdr = "Connector_PinHeader_2.54mm:PinHeader_1x0{n}_P2.54mm_Vertical"
+    sch.add("het68:Conn_1x02", "JP_TSCK", "T", hdr.format(n=2),
+            {"1": "SCK_T", "2": "SCK_N"}, "jumper DIFF term SCK")
+    sch.add("het68:Conn_1x02", "JP_TWS", "T", hdr.format(n=2),
+            {"1": "WS_T", "2": "WS_N"}, "jumper DIFF term WS")
+    # Receivers stay on the pair. Their CMOS outputs reach the translator
+    # only while the DIFF row of the mode header is fitted.
     sch.add("het68:SN65LVDS2", "U2", "SN65LVDS2", "Package_TO_SOT_SMD:SOT-23-5",
-            {"1": "+3V3", "2": "SCK_P", "3": "SCK_N", "4": "GND", "5": "SCK_3V3"}, "SN65LVDS2DBVR")
+            {"1": "+3V3", "2": "SCK_P", "3": "SCK_N", "4": "GND", "5": "SCK_LVDS"}, "SN65LVDS2DBVR")
     sch.add("het68:SN65LVDS2", "U3", "SN65LVDS2", "Package_TO_SOT_SMD:SOT-23-5",
-            {"1": "+3V3", "2": "WS_P", "3": "WS_N", "4": "GND", "5": "WS_3V3"}, "SN65LVDS2DBVR")
+            {"1": "+3V3", "2": "WS_P", "3": "WS_N", "4": "GND", "5": "WS_LVDS"}, "SN65LVDS2DBVR")
     sch.add("het68:SN65LVDS1", "U4", "SN65LVDS1", "Package_TO_SOT_SMD:SOT-23-5",
-            {"1": "SD_3V3", "2": "GND", "5": "+3V3", "3": "SD_P", "4": "SD_N"}, "SN65LVDS1DBVR")
+            {"1": "SD_3V3", "2": "GND", "5": "+3V3", "3": "SD_Y", "4": "SD_Z"}, "SN65LVDS1DBVR")
+    # 2×3 on the back. Flip mirrors X, so pin 1 is the north-east pad.
+    # One horizontal shunt:
+    # north row DIFF, middle row 3.3 V, south row 1.8 V straight onto T5848.
+    # Clocks arrive at the mic. SD leaves the mic, so its right column is the cable.
+    # T5848 VDD stays 1.62–1.98 V, so 3.3 V never reaches the microphone.
+    mode = "Connector_PinHeader_2.54mm:PinHeader_2x03_P2.54mm_Vertical"
+    sch.add("het68:Conn_2x03", "JP_SCK", "MODE", mode,
+            {"1": "SCK_LVDS", "2": "SCK_3V3", "3": "SCK_P", "4": "SCK_3V3",
+             "5": "SCK_P", "6": "SCK"},
+            "SCK radky DIFF / 3V3 / 1V8")
+    sch.add("het68:Conn_2x03", "JP_WS", "MODE", mode,
+            {"1": "WS_LVDS", "2": "WS_3V3", "3": "WS_P", "4": "WS_3V3",
+             "5": "WS_P", "6": "WS"},
+            "WS radky DIFF / 3V3 / 1V8")
+    sch.add("het68:Conn_2x03", "JP_SD", "MODE", mode,
+            {"1": "SD_Y", "2": "SD_P", "3": "SD_3V3", "4": "SD_P",
+             "5": "SD", "6": "SD_P"},
+            "SD radky DIFF / 3V3 / 1V8")
+    sch.add("het68:Conn_1x03", "JP_SDN", "SDN", hdr.format(n=3),
+            {"1": "SD_Z", "2": "SD_N", "3": "GND"},
+            "jumper SDN 1-2 DIFF 2-3 single-ended")
+    # OE high enables the 3.3↔1.8 translator. The 10 kΩ holds it on.
+    # The shunt to GND is only for the 1.8 V cable mode.
+    R(sch, "R_OE", ("+3V3", "OE"), "10k", mpn="RC0603FR-0710KL")
+    sch.add("het68:Conn_1x02", "JP_OE", "OE", hdr.format(n=2),
+            {"1": "GND", "2": "OE"}, "jumper OE to GND = 1V8 mode")
+    R(sch, "R_SD3", ("SD_3V3", "GND"), "100k", mpn="RC0603FR-07100KL")
     sch.add("het68:TXS0104E", "U5", "TXS0104E", "Package_SO:SOIC-14_3.9x8.7mm_P1.27mm",
             {
                 "1": "+1V8", "2": "SCK", "3": "WS", "4": "SD", "5": None, "6": None,
-                "7": "GND", "8": "+3V3", "9": None, "10": "SD_3V3", "11": "WS_3V3",
+                "7": "GND", "8": "OE", "9": None, "10": "SD_3V3", "11": "WS_3V3",
                 "12": "SCK_3V3", "13": None, "14": "+3V3",
             }, "TXS0104EDR")
     sch.add("het68:AP2112K", "U1", "AP2112K-1.8", "Package_TO_SOT_SMD:SOT-23-5",
@@ -1188,11 +1231,25 @@ def place_sat(board: Board, sch: Sch):
         P(f"D{4 + i}", x, y, i * 45)
         cap_r = led_r + 5.2
         P(f"C_L{i + 1}", cx + cap_r * math.sin(phi), cy - cap_r * math.cos(phi), i * 45)
+    # Mode block on the back, in the open bay north of the chokes.
+    # The back-side flip mirrors X, so pin 1 is the north-east pad and the
+    # body grows west. One horizontal shunt: north DIFF, middle 3.3 V,
+    # south 1.8 V.
+    P("JP_SCK", 25.4, 4.8, 0)
+    P("JP_WS", 32.2, 4.8, 0)
+    P("JP_SD", 46.0, 17.8, 0)
+    P("JP_TSCK", 2.50, 28.0, 0)
+    P("JP_TWS", 2.50, 36.8, 0)
+    P("JP_SDN", 46.8, 46.0, 0)
+    P("JP_OE", 46.8, 56.4, 0)
+    P("R_OE", 36.2, 16.8, 90)
+    P("R_SD3", 36.2, 21.6, 90)
     holes(board, ((42, 12), (8, 40), (42, 66), (8, 74)))
     place_remaining(board, sch, placed, 8, 22, 4, 5, back=True)
-    board.text("het68 SAT  ven: LED + port  zadni: elektronika", 25, 4, size=0.7, layer=pcbnew.B_SilkS)
-    board.text("1/2 SCK  3/6 WS  4/5 SD  8x SK6812", 25, 8, size=0.45, layer=pcbnew.B_SilkS)
-    board.text("D4=N  daisy CW  DOUT NC", 25, 78, size=0.45, layer=pcbnew.B_SilkS)
+    board.text("het68 SAT  rezim propojkou", 12, 3.0, size=0.55, layer=pcbnew.B_SilkS)
+    board.text("1/2 SCK  3/6 WS  4/5 SD", 12, 4.3, size=0.4, layer=pcbnew.B_SilkS)
+    board.text("pin1 SV  radek shora: DIFF  3V3  1V8", 32, 23.6, size=0.36, layer=pcbnew.B_SilkS)
+    board.text("JP_T jen DIFF   JP_OE jen 1V8", 30, 25.0, size=0.35, layer=pcbnew.B_SilkS)
 
 
 def sat_prewire(api):
@@ -1509,7 +1566,7 @@ def main():
     )
     print("CORE unrouted", len(cmiss), cmiss[:20], flush=True)
 
-    sat = SchV4("het68-sat", "het68 satelit 6L LVDS + T5848 + 8x SK6812", ["GND", "+3V3", "+1V8"])
+    sat = SchV4("het68-sat", "het68 satelit 6L — režim linky propojkou", ["GND", "+3V3", "+1V8"])
     v4_libs(sat, ["GND", "+3V3", "+1V8"])
     build_sat(sat)
     _drop_self_shorts(sat)
