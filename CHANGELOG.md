@@ -4,12 +4,12 @@ Formát podle [Keep a Changelog](https://keepachangelog.com/cs/1.1.0/), verze po
 
 Tento soubor drží řadu **4.x**. Starší tagy `v1.1.1` … `v3.0.0` zůstávají v gitu.
 
-## [Unreleased]
+## [4.9.0] — 2026-10-31
 
 ### Changed
 
 - RJ45 na Core i na satelitu je svislý 8P8C bez magnetik. Zástrčka míří kolmo z desky: na Core z přední strany, na satelitu ze zadní. Pravý úhel RJHSE-5380 a jeho LCSC C464586 na desce nejsou. MPN v kusovníku je `RJ45-8P8C-VERT`, sloupec LCSC je prázdný.
-- Náhledy v [`docs/img/v480/`](docs/img/v480/) ukazují propojky režimu a svislé konektory. 3D tělo je model RJHSE postavený nastojato, protože knihovna KiCad svislý jack neobsahuje. Měď je svislá rozteč pinů.
+- Náhledy v [`docs/img/v490/`](docs/img/v490/) ukazují propojky režimu a svislé konektory. 3D tělo je model RJHSE postavený nastojato, protože knihovna KiCad svislý jack neobsahuje. Měď je svislá rozteč pinů.
 - Zadání, checklist a pinout popisují volbu režimu propojkou a stínění na GND na obou koncích.
 
 ### Known
@@ -133,6 +133,7 @@ Nativní RP2350B na 6L Faraday Core, MeshCore na Heltec V3 (`J_MESH`) se spánke
 - Compute už není Pico Plus 2 + HAT. GP0/GP1 jsou UART MeshCore.
 - T568B jednovodičové I²S na UTP končí; na kabelu je LVDS.
 
+[4.9.0]: https://github.com/fedurca/het68_pcb/releases/tag/v4.9.0
 [4.8.0]: https://github.com/fedurca/het68_pcb/releases/tag/v4.8.0
 [4.7.0]: https://github.com/fedurca/het68_pcb/releases/tag/v4.7.0
 [4.6.0]: https://github.com/fedurca/het68_pcb/releases/tag/v4.6.0

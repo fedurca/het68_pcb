@@ -30,7 +30,7 @@ Jen sekundár CT/Rogowski. GDT, TVS, LC, THT burden 100 Ω, crowbar ~25 V, USB-C
 
 ## Satelit
 
-6L Faraday. RJ45 stojí ze zadní strany, osa zástrčky je kolmá k desce. Režim linky volí jedna vodorovná propojka. `JP_SCK`, `JP_WS` a `JP_SD` jsou hřebínky 2×3 na spodní straně, pin 1 (čtvercový) je severovýchodní. Severní řádek je diferenciální LVDS, prostřední je jednostranných 3,3 V přes `TXS0104E`, jižní je 1,8 V přímo na T5848. `JP_T*` jen u diferenciálního režimu (100 Ω). `JP_SDN` 1–2 je záporný vývod budiče, 2–3 dává zápornou žílu na zem. `JP_OE` se nasazuje jen v režimu 1,8 V a vypne překladač. T5848 zůstává na 1,62–1,98 V. Stínění RJ45 je na satelitu na GND. DRC desky je bez zkratů. Vzdušné zůstávají vývod `LED` a část `SD` u jacku, `OE`, krátká mezera `SD_3V3` u `U5`, `WS_LVDS`, `WS_P`, `WS_T` a `WS_N`. Náhled je v [`docs/img/v480/`](../docs/img/v480/). ENIG, ≥ 0603.
+6L Faraday. RJ45 stojí ze zadní strany, osa zástrčky je kolmá k desce. Režim linky volí jedna vodorovná propojka. `JP_SCK`, `JP_WS` a `JP_SD` jsou hřebínky 2×3 na spodní straně, pin 1 (čtvercový) je severovýchodní. Severní řádek je diferenciální LVDS, prostřední je jednostranných 3,3 V přes `TXS0104E`, jižní je 1,8 V přímo na T5848. `JP_T*` jen u diferenciálního režimu (100 Ω). `JP_SDN` 1–2 je záporný vývod budiče, 2–3 dává zápornou žílu na zem. `JP_OE` se nasazuje jen v režimu 1,8 V a vypne překladač. T5848 zůstává na 1,62–1,98 V. Stínění RJ45 je na satelitu na GND. DRC desky je bez zkratů. Vzdušné zůstávají vývod `LED` a část `SD` u jacku, `OE`, krátká mezera `SD_3V3` u `U5`, `WS_LVDS`, `WS_P`, `WS_T` a `WS_N`. Náhled je v [`docs/img/v490/`](../docs/img/v490/). ENIG, ≥ 0603.
 
 ## Výroba
 

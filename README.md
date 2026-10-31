@@ -2,7 +2,7 @@
 
 Zadání a KiCad návrh PCB pro **het68** (akustická detekce dronů).
 
-Aktuální verze: **[v4.8.0](https://github.com/fedurca/het68_pcb/releases/tag/v4.8.0)** — viz [CHANGELOG.md](CHANGELOG.md). Kusovník sady: [kicad/BOM_KIT.csv](kicad/BOM_KIT.csv). Po deskách: [kicad/BOM_v4.csv](kicad/BOM_v4.csv).
+Aktuální verze: **[v4.9.0](https://github.com/fedurca/het68_pcb/releases/tag/v4.9.0)** — viz [CHANGELOG.md](CHANGELOG.md). Kusovník sady: [kicad/BOM_KIT.csv](kicad/BOM_KIT.csv). Po deskách: [kicad/BOM_v4.csv](kicad/BOM_v4.csv).
 
 Firmware a geometrie pole: [fedurca/het68](https://github.com/fedurca/het68). Zadání: [docs/ZADANI_PCB.md](docs/ZADANI_PCB.md). Projekty v KiCadu: [kicad/README.md](kicad/README.md).
 
@@ -18,21 +18,21 @@ v4 je sada **Core 6L + vyměnitelná silová deska + šest satelitů**. Na měď
 
 ## Prototyp
 
-Náhledy Core a satelitu jsou novější než tag v4.8.0. Ukazují svislý RJ45 a na zadní straně satelitu propojky režimu. Silová deska je náhled z v4.6.0.
+Náhledy Core a satelitu jsou z v4.9.0. Ukazují svislý RJ45 a na zadní straně satelitu propojky režimu. Silová deska je náhled z v4.6.0.
 
-![Core, šest svislých RJ45](docs/img/v480/core-3d.png)
+![Core, šest svislých RJ45](docs/img/v490/core-3d.png)
 
-![Core z boku: zástrčka míří kolmo z desky](docs/img/v480/core-side.png)
+![Core z boku: zástrčka míří kolmo z desky](docs/img/v490/core-side.png)
 
-![Satelit, venkovní strana: jen 8× SK6812 a otvor mikrofonu](docs/img/v480/sat-front-3d.png)
+![Satelit, venkovní strana: jen 8× SK6812 a otvor mikrofonu](docs/img/v490/sat-front-3d.png)
 
-![Satelit zezadu: svislý RJ45 a propojky režimu](docs/img/v480/sat-back-3d.png)
+![Satelit zezadu: svislý RJ45 a propojky režimu](docs/img/v490/sat-back-3d.png)
 
-![Satelit z boku: konektor a hřebínky propojek stojí kolmo ze zadní strany](docs/img/v480/sat-side.png)
+![Satelit z boku: konektor a hřebínky propojek stojí kolmo ze zadní strany](docs/img/v490/sat-side.png)
 
 ![Silová NN](docs/img/v460/pwr-nn-3d.png)
 
-Měď: [Core](docs/img/v480/core-top.svg) · [satelit ven](docs/img/v480/sat-front.svg) · [satelit zadek](docs/img/v480/sat-back.svg) · [silová](docs/img/v460/pwr-nn-top.svg). Maska venkovní strany satelitu: [SVG](docs/img/v480/sat-front-mask.svg). Schémata: [Core](docs/img/v480/core-sch.pdf) · [satelit](docs/img/v480/sat-sch.pdf) · [silová](docs/img/v460/pwr-nn-sch.pdf). Gerbery a nastavení formuláře: [`kicad/jlc/`](kicad/jlc/) · [NASTAVENI.md](kicad/jlc/NASTAVENI.md).
+Měď: [Core](docs/img/v490/core-top.svg) · [satelit ven](docs/img/v490/sat-front.svg) · [satelit zadek](docs/img/v490/sat-back.svg) · [silová](docs/img/v460/pwr-nn-top.svg). Maska venkovní strany satelitu: [SVG](docs/img/v490/sat-front-mask.svg). Schémata: [Core](docs/img/v490/core-sch.pdf) · [satelit](docs/img/v490/sat-sch.pdf) · [silová](docs/img/v460/pwr-nn-sch.pdf). Gerbery a nastavení formuláře: [`kicad/jlc/`](kicad/jlc/) · [NASTAVENI.md](kicad/jlc/NASTAVENI.md).
 
 ![Sestava v4.6.0](docs/img/v460/sestava.svg)
 
