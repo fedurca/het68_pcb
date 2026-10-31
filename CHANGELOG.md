@@ -4,6 +4,18 @@ Formát podle [Keep a Changelog](https://keepachangelog.com/cs/1.1.0/), verze po
 
 Tento soubor drží řadu **4.x**. Starší tagy `v1.1.1` … `v3.0.0` zůstávají v gitu.
 
+## [Unreleased]
+
+### Changed
+
+- RJ45 na Core i na satelitu je svislý 8P8C bez magnetik. Zástrčka míří kolmo z desky: na Core z přední strany, na satelitu ze zadní. Pravý úhel RJHSE-5380 a jeho LCSC C464586 na desce nejsou. MPN v kusovníku je `RJ45-8P8C-VERT`, sloupec LCSC je prázdný.
+- Náhledy v [`docs/img/v480/`](docs/img/v480/) ukazují propojky režimu a svislé konektory. 3D tělo je model RJHSE postavený nastojato, protože knihovna KiCad svislý jack neobsahuje. Měď je svislá rozteč pinů.
+- Zadání, checklist a pinout popisují volbu režimu propojkou a stínění na GND na obou koncích.
+
+### Known
+
+- DRC nemá zkrat ani mezeru. Core má 43 otevřených párů, satelit 19, z toho dva jsou rohy zemních zón. Část vývodů nového jacku a několik stop u něj zůstává vzdušná. `OE`, `SD_3V3` a část `WS` na satelitu jsou otevřené stejně jako ve 4.8.0. Režim 1,8 V chce na druhém konci kabelu 1,8 V.
+
 ## [4.8.0] — 2026-10-31
 
 ### Added

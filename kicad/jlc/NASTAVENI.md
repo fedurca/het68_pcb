@@ -1,8 +1,8 @@
-# JLCPCB — nastavení formuláře (v4.7.0)
+# JLCPCB — nastavení formuláře
 
 Každá deska je samostatná zakázka. Jeden gerber zip = jedno Different Design. Rozměr ber z obrysu, ne ze společné kalkulace 100 × 100 mm.
 
-Osazení nech vypnuté. V `*-bom.csv` je sloupec LCSC prázdný a bez něj JLC osazení nepřijme. RP2350B, ADXL355, T5848 a LVDS budou extended nebo consignment. Satelit má signály spojené. Core má 17 otevřených párů (zkrat ani mezera ne) a silové desky 30 / 36 / 26, takže osazená sada by se nezapnula. Satelit je oboustranný, takže pozdější osazení musí být Both sides.
+Osazení nech vypnuté. V `*-bom.csv` je sloupec LCSC prázdný a bez něj JLC osazení nepřijme. RP2350B, ADXL355, T5848 a LVDS budou extended nebo consignment. RJ45 je svislý 8P8C bez magnetik (`RJ45-8P8C-VERT`), ne pravý úhel RJHSE-5380. Core má 43 otevřených párů, satelit 19 (zkrat ani mezera ne) a silové desky 30 / 36 / 26, takže osazená sada by se nezapnula. Satelit je oboustranný a nese propojky režimu, takže pozdější osazení musí být Both sides.
 
 Šablona (stencil) zůstane vypnutá, dokud se nepájí ručně.
 
@@ -73,7 +73,7 @@ L4 je jedna plocha `+3V3_DIG` pod procesorem. `+5V_ALWAYS` a `+1V8_AUDIO` jsou s
 | PCB Assembly | Off |
 | Stencil | Off |
 
-Venkovní strana (Top) má jen otvor mikrofonu a 8× SK6812. RJ45, T5848 a ostatní součástky jsou Bottom. Až se bude osazovat, volba strany je Both sides.
+Venkovní strana (Top) má jen otvor mikrofonu a 8× SK6812. Svislý RJ45, hřebínky propojek (`JP_SCK`, `JP_WS`, `JP_SD` a menší `JP_T*` / `JP_SDN` / `JP_OE`), T5848 a ostatní součástky jsou Bottom. Zástrčka RJ45 míří kolmo ze zadní strany. Až se bude osazovat, volba strany je Both sides. Propojka se do osazení nedává: režim se volí až na stole.
 
 ## Silová NN, VN, VVN
 

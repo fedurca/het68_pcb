@@ -37,7 +37,7 @@ Nasazení: NN (izolovaný vodič 230 V lab), VN (22 kV třída, Al obal) a VVN (
                     mic5               dolní prstenec −35.26°
 ```
 
-Poloměr pole (střed → mikrofon) = `hrana / 2`. Firmware default hrana **128 mm**. I²S na kabelu je teď **LVDS po STP**; PIO na MCU zůstává I²S.
+Poloměr pole (střed → mikrofon) = `hrana / 2`. Firmware default hrana **128 mm**. PIO na MCU zůstává I²S. Na kabelu je v diferenciálním režimu **LVDS po STP**. Satelit umí propojkou i jednostranných 3,3 V a 1,8 V.
 
 ---
 
@@ -125,11 +125,15 @@ PT1000 na svorce vodiče u všech SKU (2vodič na interconnect). Článek mrazuv
 
 Pinout: [`docs/INTERCONNECT_v4.md`](INTERCONNECT_v4.md). `+3V3_RF` drží LDO na silové desce, i když je DSP pryč.
 
-### 1.5 Satelit — 6L Faraday, LVDS, T5848, 8× RGB
+### 1.5 Satelit — 6L Faraday, propojka režimu, T5848, 8× RGB
 
-Evoluce `kicad/het68-sat`. Stejný Faraday stackup jako Core (L2/L3/L5 GND, L4 `+3V3` s ostrovem `+1V8` pod MEMS). T5848 1,8 V uprostřed, **8× SK6812** v kruhu (daisy-chain, pixel 0 = sever, poslední `DOUT` NC). LDO, **LVDS + CMC + TVS &lt; 1 pF + PPTC 0,5 A**. T568B jednovodičové I²S končí. Mapa: [`docs/PINOUT_SAT_v4.csv`](PINOUT_SAT_v4.csv).
+Evoluce `kicad/het68-sat`. Stejný Faraday stackup jako Core (L2/L3/L5 GND, L4 `+3V3` s ostrovem `+1V8` pod MEMS). T5848 1,8 V uprostřed, **8× SK6812** v kruhu (daisy-chain, pixel 0 = sever, poslední `DOUT` NC). LDO, CMC, TVS &lt; 1 pF, PPTC 0,5 A. Mapa: [`docs/PINOUT_SAT_v4.csv`](PINOUT_SAT_v4.csv).
 
-Data mikrofonu na Core jdou **diferenciálně**: T5848 SD 1,8 V → TXS0104E → **SN65LVDS1** (Y/Z = `SD_P`/`SD_N`) → CMC → RJ45 4/5. Na Core pár přijímá **SN65LVDS32**. SCK/WS opačně: Core SN65LVDS047 → satelit SN65LVDS2.
+Režim linky volí jedna vodorovná propojka na satelitu. `JP_SCK`, `JP_WS` a `JP_SD` jsou hřebínky 2×3 na zadní straně. Pin 1 (čtvercový) je severovýchodní. Severní řádek je diferenciální LVDS, prostřední je jednostranných 3,3 V přes `TXS0104E`, jižní je 1,8 V přímo na T5848. `JP_TSCK` a `JP_TWS` doplní 100 Ω jen v diferenciálním režimu. `JP_SDN` 1–2 je záporný vývod budiče, 2–3 dává zápornou žílu na zem. `JP_OE` se nasazuje jen v režimu 1,8 V a vypne překladač. Napájení T5848 zůstává 1,62–1,98 V ve všech režimech. Režim 1,8 V chce na druhém konci kabelu 1,8 V; GPIO RP2350B je 3,3 V, takže ten režim není režim současného Core.
+
+V diferenciálním režimu jdou data mikrofonu takto: T5848 SD 1,8 V → TXS0104E → **SN65LVDS1** (Y/Z = `SD_P`/`SD_N`) → CMC → RJ45 4/5. Na Core pár přijímá **SN65LVDS32**. SCK/WS opačně: Core SN65LVDS047 → satelit SN65LVDS2.
+
+RJ45 je svislý 8P8C bez magnetik. Zástrčka míří kolmo z desky, ne do boku. Na Core z přední strany, na satelitu ze zadní. Ven ze satelitu kouká jen otvor mikrofonu a LED.
 
 110 kV satelity jako samostatné krabičky **nejsou**: MEMS uvnitř sféry, krátký vnitřní STP do stejných RJ45 na Core. Jacky zůstanou, kabely **neopustí** sféru.
 
@@ -148,7 +152,7 @@ Stopy na L3 **nekřižují** mezeru ostrovů na L4. Via stitching GND L1–L2–
 
 ### 1.7 LVDS / EMC v silném rušení
 
-Na přijímači **100 Ω** (SN65LVDS32 a SN65LVDS2 nemají vnitřní zakončení). CMC na SCK, WS i SD **na obou koncích**. TVS &lt; 1 pF napříč párem. Ferit 600 Ω na 3V3 za PPTC. Krystal C0G 15 pF. Sériové 33 Ω na I²S u MCU, 22 Ω + ESD na UART. Stínění STP na GND jen na Core.
+Na přijímači **100 Ω** (SN65LVDS32 a SN65LVDS2 nemají vnitřní zakončení). Zakončení se na satelitu připojí propojkou jen v diferenciálním režimu, ať jednostranný budič nevidí 100 Ω. CMC na SCK, WS i SD **na obou koncích**. TVS &lt; 1 pF napříč párem. Ferit 600 Ω na 3V3 za PPTC. Krystal C0G 15 pF. Sériové 33 Ω na I²S u MCU, 22 Ω + ESD na UART. Stínění STP je na GND na Core i na satelitu, aby mělo jednostranných 3,3 V zpětnou cestu.
 
 ---
 
@@ -228,12 +232,13 @@ Na desce musí být:
 |---|---|
 | MEMS | T5848 bottom port, VDD 1,8 V, 100 nF + 1 µF, střed desky |
 | LR / SEL | GND |
-| SD | 100 kΩ pulldown; **SN65LVDS1** = budič páru sat → Core |
+| SD | 100 kΩ pulldown; v diferenciálním režimu **SN65LVDS1** = budič páru sat → Core |
 | LED | 8× WS2812B / SK6812 @ 3,3 V, kruh, daisy-chain z pinu 8; `DOUT` poslední NC |
 | PCB | 50 × 80 mm, **6L Faraday**, ENIG |
-| Kabel | STP, mapa [`PINOUT_SAT_v4.csv`](PINOUT_SAT_v4.csv) |
-| PHY | LVDS RX SCK/WS (SN65LVDS2 + 100 Ω), LVDS TX SD (SN65LVDS1), CMC oba konce, TVS, PPTC 0,5 A, ferit 3V3 |
-| Úroveň | TXS 3,3 V LVDS-CMOS ↔ 1,8 V MEMS |
+| Kabel | STP, svislý RJ45, mapa [`PINOUT_SAT_v4.csv`](PINOUT_SAT_v4.csv) |
+| Režim | propojka 2×3: sever DIFF, střed 3,3 V, jih 1,8 V. `JP_T*` a `JP_SDN` 1–2 jen DIFF. `JP_OE` jen 1,8 V |
+| PHY | diferenciálně LVDS RX SCK/WS (SN65LVDS2 + 100 Ω) a LVDS TX SD (SN65LVDS1); CMC oba konce, TVS, PPTC 0,5 A, ferit 3V3 |
+| Úroveň | TXS 3,3 V ↔ 1,8 V MEMS. V režimu 1,8 V je překladač vypnutý a na kabel jde přímo vývod mikrofonu |
 
 Žádný rozbočovač 3+3. Žádný `DOUT` zpět na Core.
 
@@ -241,7 +246,7 @@ Na desce musí být:
 
 ## 4. I²S a STP (LVDS)
 
-PIO na MCU je pořád I²S master (GP9 SCK, GP8 WS). Na kabelu jsou diferenciální páry.
+PIO na MCU je pořád I²S master (GP9 SCK, GP8 WS). V diferenciálním režimu jsou na kabelu páry níže. Jednostranné režimy používají kladnou žílu a stínění jako zpátečku.
 
 | Pár T568B | Piny | Signál |
 |---|---|---|
@@ -250,7 +255,7 @@ PIO na MCU je pořád I²S master (GP9 SCK, GP8 WS). Na kabelu jsou diferenciál
 | 1 modrý | 4, 5 | SD_P, SD_N |
 | 4 hnědý | 7, 8 | **3V3**, **LED_DIN** |
 
-Stínění STP na GND **jen na Core**. Na satelitu `SH` NC.
+Stínění STP je na GND na Core i na satelitu. RJ45 na obou deskách je svislý, zástrčka jde kolmo z desky.
 
 ---
 

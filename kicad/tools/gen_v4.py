@@ -246,7 +246,7 @@ def rj_lvds_symbol():
             ("5", "SD_N"), ("6", "WS_N"), ("7", "3V3"), ("8", "LED"), ("SH", "SHIELD"),
         )
     ]
-    return box_symbol("het68:RJ45_LVDS", "J", "RJ45_LVDS", "het68:RJ45_RJHSE5380_het68", pins, w=15.24)
+    return box_symbol("het68:RJ45_LVDS", "J", "RJ45_LVDS", "het68:RJ45_Vertical_het68", pins, w=15.24)
 
 
 def flash_symbol():
@@ -738,13 +738,13 @@ def build_core(sch: Sch):
     led = {1: "LED1_DIN", 2: "LED2_DIN", 3: "LED3_DIN", 4: "LED4_DIN", 5: "LED5_DIN", 6: "LED6_DIN"}
     for i in range(1, 7):
         sch.add("het68:RJ45_LVDS", f"J{i}", f"MIC{i}",
-                "het68:RJ45_RJHSE5380_het68",
+                "het68:RJ45_Vertical_het68",
                 {
                     "1": f"SCK{i}_PJ", "2": f"SCK{i}_NJ",
                     "3": f"WS{i}_PJ", "6": f"WS{i}_NJ",
                     "4": f"SD{i}_PJ", "5": f"SD{i}_NJ",
                     "7": f"MIC{i}_3V3", "8": led[i], "SH": "GND",
-                }, "RJHSE-5380")
+                }, "RJ45-8P8C-VERT")
         sch.add("het68:CMC", f"FL{i}A", "CMC",
                 "Inductor_SMD:L_CommonModeChoke_Coilank_ACM2012",
                 {"1": f"SCK{i}_P", "4": f"SCK{i}_PJ", "2": f"SCK{i}_N", "3": f"SCK{i}_NJ"}, "ACM2012")
@@ -775,11 +775,11 @@ def _drop_self_shorts(sch: Sch):
 
 def build_sat(sch: Sch):
     sch.add("het68:RJ45_LVDS", "J1", "RJ45",
-            "het68:RJ45_RJHSE5380_het68",
+            "het68:RJ45_Vertical_het68",
             {
                 "1": "SCK_PJ", "2": "SCK_NJ", "3": "WS_PJ", "6": "WS_NJ",
                 "4": "SD_PJ", "5": "SD_NJ", "7": "3V3_F", "8": "LED", "SH": "GND",
-            }, "RJHSE-5380")
+            }, "RJ45-8P8C-VERT")
     sch.add("het68:CMC", "FL1", "CMC",
             "Inductor_SMD:L_CommonModeChoke_Coilank_ACM2012",
             {"1": "SCK_PJ", "4": "SCK_P", "2": "SCK_NJ", "3": "SCK_N"}, "ACM2012")
@@ -1085,7 +1085,8 @@ def place_core(board: Board, sch: Sch):
 
     xs = (14, 38, 62, 86, 110, 134)
     for i, x in enumerate(xs, start=1):
-        P(f"J{i}", x, 10, 0)
+        # Vertical jack. The body grows south of pin 1 and must clear the CMC row at y=24.
+        P(f"J{i}", x, 7.2, 0)
         P(f"FL{i}A", x - 4, 24, 0)
         P(f"FL{i}B", x + 4, 24, 0)
         P(f"DT{i}A", x - 4, 30, 0)
@@ -1179,9 +1180,10 @@ def place_core(board: Board, sch: Sch):
     # (6, 6) sits under the RJ45 at J1. The left hole moves down the free edge.
     holes(board, ((5, 71), (6, 94), (154, 6), (154, 94)))
     place_remaining(board, sch, placed, 8, 40, 4.5, 5)
-    board.text("het68 CORE rev A  6L Faraday", 80, 6, size=1.0)
-    board.text("J_MESH Heltec V3 868  pin1 GND", 80, 9, size=1.0)
-    board.text("USB Heltec odpojit po flash", 50, 12, size=1.0)
+    # The vertical jacks occupy the north edge, so the titles sit on the south edge.
+    board.text("het68 CORE rev A  6L Faraday", 80, 96.0, size=1.0)
+    board.text("J_MESH Heltec V3 868  pin1 GND", 80, 97.3, size=1.0)
+    board.text("USB Heltec odpojit po flash", 80, 98.6, size=1.0)
     board.text("LVDS 1/2 SCK  3/6 WS  4/5 SD  7 3V3  8 LED", 80, 42, size=0.55)
 
 
@@ -1200,7 +1202,10 @@ def place_sat(board: Board, sch: Sch):
         placed.add(ref)
 
     cx, cy, led_r = 25.0, 58.0, 12.0
-    P("J1", 14, 16, 0)
+    # Vertical jack on the back. place() flips after setting rot 0, which
+    # leaves orientation 180, so the body sits south of pin 1 and the plug
+    # axis leaves the back face.
+    P("J1", 14, 11, 0)
     P("F1", 34, 18, 90)
     P("FB1", 40, 18, 90)
     P("R_SCK", 13, 38, 90)
@@ -1539,6 +1544,8 @@ def main():
     app = wx.App(False)
     PRETTY.mkdir(parents=True, exist_ok=True)
     write_t5848_fp(PRETTY / "T5848.kicad_mod")
+    # The placed jack is kicad/lib/het68.pretty/RJ45_Vertical_het68.kicad_mod.
+    # write_rj45_fp only refreshes the unused right-angle land.
     write_rj45_fp(PRETTY / "RJ45_RJHSE5380_het68.kicad_mod")
     write_21700_fp(PRETTY / "Keystone_1122_21700.kicad_mod")
 

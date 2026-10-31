@@ -16,19 +16,23 @@ v4 je sada **Core 6L + vyměnitelná silová deska + šest satelitů**. Na měď
 
 **Satelit** je šest destiček 6L. Ven z desky kouká jen akustický otvor T5848 a kruh **8× SK6812**. Tělo mikrofonu, RJ45 a ostatní elektronika jsou na druhé straně. Režim linky volí propojka na satelitu: diferenciální LVDS, jednostranných 3,3 V, nebo 1,8 V přímo na T5848. Mapa [`docs/PINOUT_SAT_v4.csv`](docs/PINOUT_SAT_v4.csv).
 
-## Prototyp (v4.8.0)
+## Prototyp
 
-Náhledy jsou starší než měď: satelit a silová deska z v4.6.0, Core z v4.7.0. Propojky režimu na satelitu v obrázcích ještě nejsou.
+Náhledy Core a satelitu jsou novější než tag v4.8.0. Ukazují svislý RJ45 a na zadní straně satelitu propojky režimu. Silová deska je náhled z v4.6.0.
 
-![Core 6L](docs/img/v470/core-3d.png)
+![Core, šest svislých RJ45](docs/img/v480/core-3d.png)
 
-![Satelit, venkovní strana: jen 8× SK6812 a otvor mikrofonu](docs/img/v460/sat-front-3d.png)
+![Core z boku: zástrčka míří kolmo z desky](docs/img/v480/core-side.png)
 
-![Satelit, zadní strana: RJ45 a elektronika](docs/img/v460/sat-back-3d.png)
+![Satelit, venkovní strana: jen 8× SK6812 a otvor mikrofonu](docs/img/v480/sat-front-3d.png)
+
+![Satelit zezadu: svislý RJ45 a propojky režimu](docs/img/v480/sat-back-3d.png)
+
+![Satelit z boku: konektor a hřebínky propojek stojí kolmo ze zadní strany](docs/img/v480/sat-side.png)
 
 ![Silová NN](docs/img/v460/pwr-nn-3d.png)
 
-Měď: [Core](docs/img/v470/core-top.svg) · [satelit ven](docs/img/v460/sat-front.svg) · [satelit zadek](docs/img/v460/sat-back.svg) · [silová](docs/img/v460/pwr-nn-top.svg). Maska venkovní strany satelitu: [SVG](docs/img/v460/sat-front-mask.svg). Schémata: [Core](docs/img/v460/core-sch.pdf) · [satelit](docs/img/v460/sat-sch.pdf) · [silová](docs/img/v460/pwr-nn-sch.pdf). Gerbery a nastavení formuláře: [`kicad/jlc/`](kicad/jlc/) · [NASTAVENI.md](kicad/jlc/NASTAVENI.md).
+Měď: [Core](docs/img/v480/core-top.svg) · [satelit ven](docs/img/v480/sat-front.svg) · [satelit zadek](docs/img/v480/sat-back.svg) · [silová](docs/img/v460/pwr-nn-top.svg). Maska venkovní strany satelitu: [SVG](docs/img/v480/sat-front-mask.svg). Schémata: [Core](docs/img/v480/core-sch.pdf) · [satelit](docs/img/v480/sat-sch.pdf) · [silová](docs/img/v460/pwr-nn-sch.pdf). Gerbery a nastavení formuláře: [`kicad/jlc/`](kicad/jlc/) · [NASTAVENI.md](kicad/jlc/NASTAVENI.md).
 
 ![Sestava v4.6.0](docs/img/v460/sestava.svg)
 
@@ -38,11 +42,11 @@ Na měď nejde 230 V / 22 kV / 110 kV. Gerbery z `kicad-cli` v `kicad/*/fab/`. T
 
 | Deska | Rozměr | ERC error | DRC | Objednat? |
 |---|---|---|---|---|
-| Core | 160 × 100 mm, 6L Faraday, ENIG | 0 | 0 zkratů, 0 mezer, 17 otevřených párů | ne |
-| Satelit | 50 × 80 mm, 6L, ven jen LED a port | 0 | 0 zkratů, otevřené OE, SD_3V3, WS_LVDS, WS_P, WS_T, WS_N | ne, dokud nejsou dotažené WS a OE |
+| Core | 160 × 100 mm, 6L Faraday, ENIG | 0 | 0 zkratů, 0 mezer, 43 otevřených párů | ne |
+| Satelit | 50 × 80 mm, 6L, ven jen LED a port | 0 | 0 zkratů, 19 otevřených párů (dva jsou rohy zemních zón) | ne, dokud nejsou dotažené jack, WS a OE |
 | Silová NN/VN/VVN | 140 × 80 mm, 2L 70 µm | 0 | 0 zkratů, otevřené páry 30 / 36 / 26 | ne jako hotový zdroj |
 
-Schémata jsou elektricky uzavřená (ERC 0 chyb). Core vrtá prokov 0,30/0,15 mm, což se do rozteče QFN 0,40 mm vejde, a L4 pod procesorem je plocha `+3V3_DIG`. DRC Core nemá zkrat ani mezeru. Otevřených zůstává 17 párů: jejich prokov je v prstenci, kudy stopa 0,15 mm už neprojde. Satelit v 4.8.0 nemá zkrat. Vzdušné jsou `OE`, krátká mezera `SD_3V3` u `U5` a čtyři sítě slovního taktu (`WS_LVDS`, `WS_P`, `WS_T`, `WS_N`). DRC u něj ještě hlásí dva rohy zemních zón.
+Schémata jsou elektricky uzavřená (ERC 0 chyb). Core vrtá prokov 0,30/0,15 mm, což se do rozteče QFN 0,40 mm vejde, a L4 pod procesorem je plocha `+3V3_DIG`. DRC Core nemá zkrat ani mezeru. Otevřených je 43 párů. Část z nich je původní únik z prstence QFN, zbytek jsou vývody svislého RJ45 a stopy, které nová rozteč pinů přerušila. Satelit nemá zkrat. Vzdušné zůstávají `LED` a část `SD` u jacku, `OE`, krátká mezera `SD_3V3` u `U5` a sítě slovního taktu (`WS_LVDS`, `WS_P`, `WS_T`, `WS_N`). Dva záznamy jsou rohy zemních zón.
 
 ## VF / EMC (silné rušení)
 

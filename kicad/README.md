@@ -19,7 +19,7 @@ Generátor: `kicad/tools/gen_v4.py` (Python z KiCadu). 6L stackup: `kicad/tools/
 - RP2350B QFN-80, W25Q128 SOIC-8, APS6404L SOIC-8, USB-C, krystal 12 MHz + C0G 15 pF.
 - `+3V3_DIG` a `+1V8_AUDIO` hradluje `WAKE_DSP` (Heltec GPIO7). `+5V_ALWAYS` / `+3V3_RF` vždyživé.
 - `J_MESH` 1×8: GND, 5V, UART TX/RX (22 Ω + ESD), WAKE_DSP, DSP_AWAKE, RST NC, rezerva. Stamp DNP paralelně na pinech 1–6.
-- Šest RJ45 LVDS, mapa [`docs/PINOUT_SAT_v4.csv`](../docs/PINOUT_SAT_v4.csv). CMC na SCK/WS/SD, 100 Ω u RX SD, ferit na 3V3.
+- Šest svislých RJ45, zástrčka kolmo z přední strany. Mapa [`docs/PINOUT_SAT_v4.csv`](../docs/PINOUT_SAT_v4.csv). CMC na SCK/WS/SD, 100 Ω u RX SD, ferit na 3V3.
 - GPIO: [`docs/PINOUT.csv`](../docs/PINOUT.csv).
 - Interconnect: [`docs/INTERCONNECT_v4.md`](../docs/INTERCONNECT_v4.md).
 - L1 SMT+GND, L2 GND, L3 stripline, L4 souvislá `+3V3_DIG`, L5 GND, L6 pomalé+GND. Prokov 0,30/0,15 mm. Stitch po obvodu.
@@ -30,7 +30,7 @@ Jen sekundár CT/Rogowski. GDT, TVS, LC, THT burden 100 Ω, crowbar ~25 V, USB-C
 
 ## Satelit
 
-6L Faraday. Režim linky volí jedna vodorovná propojka na satelitu. `JP_SCK`, `JP_WS` a `JP_SD` jsou hřebínky 2×3 na spodní straně, pin 1 (čtvercový) je severovýchodní. Severní řádek je diferenciální LVDS, prostřední je jednostranných 3,3 V přes `TXS0104E`, jižní je 1,8 V přímo na T5848. `JP_T*` jen u diferenciálního režimu (100 Ω). `JP_SDN` 1–2 je záporný vývod budiče, 2–3 dává zápornou žílu na zem. `JP_OE` se nasazuje jen v režimu 1,8 V a vypne překladač. T5848 zůstává na 1,62–1,98 V. Stínění RJ45 je na satelitu na GND. DRC desky je bez zkratů. Vzdušné zůstávají `OE`, krátká mezera `SD_3V3` u `U5`, `WS_LVDS`, `WS_P`, `WS_T` a `WS_N`. ENIG, ≥ 0603.
+6L Faraday. RJ45 stojí ze zadní strany, osa zástrčky je kolmá k desce. Režim linky volí jedna vodorovná propojka. `JP_SCK`, `JP_WS` a `JP_SD` jsou hřebínky 2×3 na spodní straně, pin 1 (čtvercový) je severovýchodní. Severní řádek je diferenciální LVDS, prostřední je jednostranných 3,3 V přes `TXS0104E`, jižní je 1,8 V přímo na T5848. `JP_T*` jen u diferenciálního režimu (100 Ω). `JP_SDN` 1–2 je záporný vývod budiče, 2–3 dává zápornou žílu na zem. `JP_OE` se nasazuje jen v režimu 1,8 V a vypne překladač. T5848 zůstává na 1,62–1,98 V. Stínění RJ45 je na satelitu na GND. DRC desky je bez zkratů. Vzdušné zůstávají vývod `LED` a část `SD` u jacku, `OE`, krátká mezera `SD_3V3` u `U5`, `WS_LVDS`, `WS_P`, `WS_T` a `WS_N`. Náhled je v [`docs/img/v480/`](../docs/img/v480/). ENIG, ≥ 0603.
 
 ## Výroba
 

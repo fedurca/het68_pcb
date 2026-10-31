@@ -4,7 +4,7 @@
 
 - [x] Compute je **nativní RP2350B** (flash + PSRAM na Core)
 - [x] MeshCore teď = **Heltec WiFi LoRa 32 V3 868** na `J_MESH` 1×8; později DNP stamp na stejných sítích 1–6
-- [x] **6× RJ45**, mapa LVDS v `docs/PINOUT_SAT_v4.csv`
+- [x] **6× svislý RJ45** (zástrčka kolmo z desky), mapa v `docs/PINOUT_SAT_v4.csv`
 - [x] Tři silové SKU, jeden interconnect `docs/INTERCONNECT_v4.md`
 - [x] Na měď **nejde** 230 V / 22 kV / 110 kV
 - [x] MEMS T5848 1,8 V; RGB 3,3 V; piezo 4× PS1240 na Core
@@ -38,9 +38,14 @@
 
 ## Satelit
 
-- [x] LVDS RX SCK/WS + 100 Ω, LVDS TX SD
+- [x] Propojka 2×3 (`JP_SCK`, `JP_WS`, `JP_SD`): sever DIFF, střed 3,3 V, jih 1,8 V. Pin 1 je severovýchodní
+- [x] `JP_TSCK` / `JP_TWS` jen v DIFF (100 Ω). `JP_SDN` 1–2 DIFF, 2–3 záporná žíla na zem. `JP_OE` jen v 1,8 V
+- [x] T5848 zůstává na 1,62–1,98 V. Na mikrofon nejde 3,3 V
+- [x] V DIFF: LVDS RX SCK/WS + 100 Ω, LVDS TX SD
 - [x] CMC + TVS + PPTC + ferit 3V3
 - [x] TXS 3,3 V ↔ 1,8 V k T5848
+- [x] RJ45 svisle ze zadní strany, osa kolmo k desce, bez magnetik
+- [x] Stínění na GND
 - [x] 8× SK6812/WS2812B @ 3,3 V v kruhu (D4 = sever, daisy CW); poslední `DOUT` NC
 - [x] 6L Faraday, ENIG, ≥ 0603, ne BGA
 

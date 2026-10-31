@@ -19,3 +19,5 @@ extra,,,,,3V3 uses the middle row and JP_SDN 2-3. Terminations open. JP_OE open
 extra,,,,,1V8 uses the south row, JP_SDN 2-3 and JP_OE (OE to GND). The far end must be 1.8 V
 extra,,,,,T5848 VDD stays 1.62-1.98 V in every mode. Never put 3.3 V on the mic
 extra,,,,,Satellite PCB is 6-layer Faraday 50x80 mm; MEMS at centre of 8-LED ring
+extra,,,,,RJ45 is a vertical 8P8C with no magnetics. The plug axis is normal to the board, not parallel to it
+extra,,,,,Core jacks stand on the front. The satellite jack stands on the back, beside the mode headers

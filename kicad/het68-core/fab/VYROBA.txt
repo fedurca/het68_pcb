@@ -3,5 +3,6 @@ het68 Core v4.7.0
 Prokov 0.30/0.15 mm (JLCPCB 6L, vrtani 0.15 mm je priplatek).
 Tepelne prokovy jsou v plose QFN: Via Covering Epoxy Filled & Capped.
 L4 je souvisla +3V3_DIG. 5 V a 1.8 V jsou stopy.
-0 zkratu, 0 mezer. Otevrenych medenych paru: 17.
+RJ45 je svisly 8P8C, zastrcka kolmo z predni strany. Ne RJHSE-5380.
+0 zkratu, 0 mezer. Otevrenych medenych paru: 43.
 Osazeni zatim ne. LCSC je prazdne.
