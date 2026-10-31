@@ -4,6 +4,18 @@ Formát podle [Keep a Changelog](https://keepachangelog.com/cs/1.1.0/), verze po
 
 Tento soubor drží řadu **4.x**. Starší tagy `v1.1.1` … `v3.0.0` zůstávají v gitu.
 
+## [4.8.0] — 2026-10-31
+
+### Added
+
+- Satelit volí režim linky propojkou na desce. `JP_SCK`, `JP_WS` a `JP_SD` jsou hřebínky 2×3. Pin 1 je severovýchodní. Severní řádek je diferenciální LVDS, prostřední je jednostranných 3,3 V přes `TXS0104E`, jižní je 1,8 V přímo na T5848.
+- `JP_TSCK` a `JP_TWS` doplní 100 Ω jen v diferenciálním režimu. `JP_SDN` 1–2 je záporný vývod budiče, 2–3 dává zápornou žílu na zem. `JP_OE` se nasazuje jen v režimu 1,8 V.
+- Stínění RJ45 je na satelitu na GND. Napájení T5848 zůstává 1,62–1,98 V.
+
+### Known
+
+- DRC satelitu nemá zkrat ani mezeru. Vzdušné jsou `OE`, krátká mezera `SD_3V3` u `U5`, `WS_LVDS`, `WS_P`, `WS_T` a `WS_N`. Dva záznamy jsou roh zemních zón. Režim 1,8 V chce na druhém konci kabelu 1,8 V.
+
 ## [4.7.0] — 2026-10-29
 
 ### Changed
@@ -109,6 +121,8 @@ Nativní RP2350B na 6L Faraday Core, MeshCore na Heltec V3 (`J_MESH`) se spánke
 - Compute už není Pico Plus 2 + HAT. GP0/GP1 jsou UART MeshCore.
 - T568B jednovodičové I²S na UTP končí; na kabelu je LVDS.
 
+[4.8.0]: https://github.com/fedurca/het68_pcb/releases/tag/v4.8.0
+[4.7.0]: https://github.com/fedurca/het68_pcb/releases/tag/v4.7.0
 [4.6.0]: https://github.com/fedurca/het68_pcb/releases/tag/v4.6.0
 [4.5.1]: https://github.com/fedurca/het68_pcb/releases/tag/v4.5.1
 [4.5.0]: https://github.com/fedurca/het68_pcb/releases/tag/v4.5.0
