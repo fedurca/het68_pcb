@@ -35,10 +35,9 @@ from gen_boards import (  # noqa: E402
     uid,
     write_t5848_fp,
     write_rj45_fp,
+    kicad_cli_bin,
 )
 from route6 import faraday_planes, set_stackup  # noqa: E402
-
-KICAD_CLI = "/Applications/KiCad/KiCad.app/Contents/MacOS/kicad-cli"
 
 GPIO_PAD = {
     0: "77", 1: "78", 2: "79", 3: "80", 4: "1", 5: "2", 6: "3", 7: "4",
@@ -1419,7 +1418,7 @@ def write_21700_fp(path: Path):
 
 
 def kicad_cli(*args):
-    cmd = [KICAD_CLI, *args]
+    cmd = [kicad_cli_bin(), *args]
     return subprocess.run(cmd, capture_output=True, text=True)
 
 
