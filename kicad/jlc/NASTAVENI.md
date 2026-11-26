@@ -2,13 +2,13 @@
 
 Každá deska je samostatná zakázka. Jeden gerber zip = jedno Different Design. Rozměr ber z obrysu, ne ze společné kalkulace 100 × 100 mm.
 
-Core se osazuje z přední strany, 110 součástek. `het68-core-bom.csv` a `het68-core-cpl.csv` mají kódy LCSC z katalogu. Mimo stroj jsou svislé RJ45, lišty, piezo, `J_STAMP` a dva SN65LVDS32. Akcelerometr na desce není. Rozpis je v [OSAZENI.md](OSAZENI.md). Satelit a silové desky osazení nemají: mají otevřené páry a prázdné LCSC. RJ45 je svislý 8P8C bez magnetik (`RJ45-8P8C-VERT`), ne pravý úhel RJHSE-5380. Satelit je oboustranný, takže až se bude osazovat, volba strany je Both sides.
+Core se osazuje z přední strany, 111 součástek včetně USB-C. Satelit se osazuje z obou stran, 40 součástek: nahoře je 8× SK6812, dole zbytek včetně T5848. Silové desky se osazují z přední strany (NN 48, VN 49, VVN 47). Každý kód LCSC je ze stránky katalogu. Co stroj neosadí, je v [OSAZENI.md](OSAZENI.md). RJ45 je svislý 8P8C bez magnetik (`RJ45-8P8C-VERT`), ne pravý úhel RJHSE-5380.
 
 Na měď nepatří 230 V, 22 kV ani 110 kV.
 
 ## Core — `het68-core-gerber.zip`
 
-160 × 100 mm, 8 vrstev. Počet kusů: 1. Deska má 0 zkratů, 0 mezer a 0 otevřených párů. Osazení zůstává vypnuté.
+160 × 100 mm, 8 vrstev. Počet kusů: 1. Deska má 0 zkratů, 0 mezer a 0 otevřených párů. Osazení je zapnuté, jen horní strana.
 
 | Pole | Hodnota |
 |---|---|
@@ -70,10 +70,10 @@ Skladba je F.Cu / GND_L2 / SIG_L3 / PWR_L4 / GND_L5 / SIG_L6 / GND_L7 / B.Cu. SI
 | Electrical Test | Flying Probe Fully Test |
 | 4-Wire Kelvin Test | ano, u 8 vrstev povinný |
 | Gold Fingers a ostatní speciální otvory | No |
-| PCB Assembly | Off |
-| Stencil | Off |
+| PCB Assembly | On, Both sides |
+| Stencil | On, spolu s osazením |
 
-Venkovní strana (Top) má jen otvor mikrofonu a 8× SK6812. Svislý RJ45, hřebínky propojek (`JP_SCK`, `JP_WS`, `JP_SD` a menší `JP_T*` / `JP_SDN` / `JP_OE`), T5848 a ostatní součástky jsou Bottom. Zástrčka RJ45 míří kolmo ze zadní strany. Až se bude osazovat, volba strany je Both sides. Propojka se do osazení nedává: režim se volí až na stole.
+Venkovní strana (Top) má 8× SK6812. Svislý RJ45, hřebínky propojek a T5848 jsou Bottom. Zástrčka RJ45 a propojky se do stroje nedávají: propojka se připájí až podle zvoleného režimu.
 
 ## Silová NN, VN, VVN
 
@@ -104,7 +104,7 @@ Skladba je F.Cu / GND_L2 / SIG_L3 / SIG_L4 / GND_L5 / B.Cu. Silové stopy zůst�
 | Electrical Test | Flying Probe Fully Test |
 | 4-Wire Kelvin Test | ano |
 | Gold Fingers a ostatní speciální otvory | No |
-| PCB Assembly | Off |
-| Stencil | Off |
+| PCB Assembly | On, jen Top |
+| Stencil | On, spolu s osazením |
 
 2 oz chce stopu aspoň 0,16 mm. Pravidla desky jsou 0,20 mm. Stitch prokov 1,00/0,50 mm má mezikruží 0,25 mm. Nový únik z jemného rastru je 0,80/0,40 mm, mezikruží 0,20 mm. 6 vrstev u JLC nemá HASL, proto ENIG.

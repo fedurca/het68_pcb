@@ -148,7 +148,7 @@
 				)
 			)
 		)
-		(property "MPN" "SK6812 (5050, 3.3 V)"
+		(property "MPN" "SK6812"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -457,7 +457,7 @@
 				)
 			)
 		)
-		(property "MPN" "SK6812 (5050, 3.3 V)"
+		(property "MPN" "SK6812"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -766,7 +766,7 @@
 				)
 			)
 		)
-		(property "MPN" "SK6812 (5050, 3.3 V)"
+		(property "MPN" "SK6812"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -1075,7 +1075,7 @@
 				)
 			)
 		)
-		(property "MPN" "SK6812 (5050, 3.3 V)"
+		(property "MPN" "SK6812"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -1383,7 +1383,7 @@
 				)
 			)
 		)
-		(property "MPN" "SK6812 (5050, 3.3 V)"
+		(property "MPN" "SK6812"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -1906,7 +1906,7 @@
 				)
 			)
 		)
-		(property "MPN" "SK6812 (5050, 3.3 V)"
+		(property "MPN" "SK6812"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -2429,7 +2429,7 @@
 				)
 			)
 		)
-		(property "MPN" "SK6812 (5050, 3.3 V)"
+		(property "MPN" "SK6812"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -2738,7 +2738,7 @@
 				)
 			)
 		)
-		(property "MPN" "SK6812 (5050, 3.3 V)"
+		(property "MPN" "SK6812"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -4175,7 +4175,7 @@
 				(justify mirror)
 			)
 		)
-		(property "MPN" "ACM2012"
+		(property "MPN" "ACM2012-900-2P-T001"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -4948,7 +4948,7 @@
 				(justify mirror)
 			)
 		)
-		(property "MPN" "ACM2012"
+		(property "MPN" "ACM2012-900-2P-T001"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -5261,7 +5261,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Value" "PESD5V0X1BT"
+		(property "Value" "ESD05V32D-LC"
 			(at 0.1 -1.9 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -5302,7 +5302,7 @@
 				(justify mirror)
 			)
 		)
-		(property "MPN" "PESD5V0X1BT"
+		(property "MPN" "ESD05V32D-LC"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -6533,6 +6533,18 @@
 				(justify mirror)
 			)
 		)
+		(property "MPN" "MMICT5848-00-012"
+			(at 0 0 0)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "f47e1186-3ad3-496e-8bad-07634344ae35")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify mirror)
+			)
+		)
 		(property "Datasheet" ""
 			(at 0 0 0)
 			(layer "B.Fab")
@@ -7417,7 +7429,7 @@
 				(justify mirror)
 			)
 		)
-		(property "MPN" "PPTC 0603"
+		(property "MPN" "0603L050/6V"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -8392,7 +8404,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Value" "PESD5V0X1BT"
+		(property "Value" "ESD05V32D-LC"
 			(at 0.1 -1.9 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -8433,7 +8445,7 @@
 				(justify mirror)
 			)
 		)
-		(property "MPN" "PESD5V0X1BT"
+		(property "MPN" "ESD05V32D-LC"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -9060,7 +9072,7 @@
 				(justify mirror)
 			)
 		)
-		(property "MPN" "BLM18PG601SN1D"
+		(property "MPN" "BLM18AG601SN1D"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -9177,7 +9189,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Value" "PESD5V0X1BT"
+		(property "Value" "ESD05V32D-LC"
 			(at 0.1 -1.9 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -9218,7 +9230,7 @@
 				(justify mirror)
 			)
 		)
-		(property "MPN" "PESD5V0X1BT"
+		(property "MPN" "ESD05V32D-LC"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -10596,7 +10608,7 @@
 				(justify mirror)
 			)
 		)
-		(property "MPN" "ACM2012"
+		(property "MPN" "ACM2012-900-2P-T001"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)

@@ -2,7 +2,7 @@
 
 Zadání a KiCad návrh PCB pro **het68** (akustická detekce dronů).
 
-Aktuální verze: **[v7.0.0](https://github.com/fedurca/het68_pcb/releases/tag/v7.0.0)** — viz [CHANGELOG.md](CHANGELOG.md). Kusovník sady: [kicad/BOM_KIT.csv](kicad/BOM_KIT.csv). Po deskách: [kicad/BOM_v4.csv](kicad/BOM_v4.csv).
+Aktuální verze: **[v7.1.0](https://github.com/fedurca/het68_pcb/releases/tag/v7.1.0)** — viz [CHANGELOG.md](CHANGELOG.md). Kusovník sady: [kicad/BOM_KIT.csv](kicad/BOM_KIT.csv). Po deskách: [kicad/BOM_v4.csv](kicad/BOM_v4.csv).
 
 Firmware a geometrie pole: [fedurca/het68](https://github.com/fedurca/het68). Zadání: [docs/ZADANI_PCB.md](docs/ZADANI_PCB.md). Projekty v KiCadu: [kicad/README.md](kicad/README.md).
 
@@ -42,9 +42,9 @@ Na měď nejde 230 V / 22 kV / 110 kV. Gerbery z `kicad-cli` v `kicad/*/fab/`. T
 
 | Deska | Rozměr | ERC error | DRC | Objednat? |
 |---|---|---|---|---|
-| Core | 160 × 100 mm, 8L Faraday, ENIG | 0 | 0 zkratů, 0 mezer, 0 otevřených párů | měď ano; stroj osadí 110 součástek, dva LVDS přijímače ručně |
-| Satelit | 50 × 80 mm, 8L, ven jen LED a port | 0 | 0 zkratů, 0 mezer, 2 záznamy roh zemní zóny | měď ano, osazení ne |
-| Silová NN/VN/VVN | 140 × 80 mm, 6L, vnější měď 2 oz pokud kalkulace umí | 0 | 0 zkratů, 0 mezer, 0 otevřených párů | měď ano, osazení ne |
+| Core | 160 × 100 mm, 8L Faraday, ENIG | 0 | 0 zkratů, 0 mezer, 0 otevřených párů | měď ano; stroj osadí 111 součástek, dva LVDS přijímače ručně |
+| Satelit | 50 × 80 mm, 8L, ven jen LED | 0 | 0 zkratů, 0 mezer, 2 záznamy roh zemní zóny | měď ano; stroj osadí 40 součástek z obou stran |
+| Silová NN/VN/VVN | 140 × 80 mm, 6L, vnější měď 2 oz pokud kalkulace umí | 0 | 0 zkratů, 0 mezer, 0 otevřených párů | měď ano; stroj osadí 48 / 49 / 47 součástek z horní strany |
 
 Schémata jsou elektricky uzavřená (ERC 0 chyb). Core je 8vrstvá: mezi GND_L5 a GND_L7 je SIG_L6 pro páry LVDS. Prokov je 0,30/0,15 mm. Satelit je 8vrstvý, signály jsou spojené, prokov 0,60/0,20 mm. Dva záznamy DRC jsou roh zemních zón; prokov GND sedí ve výplni na všech šesti zemích. Silové desky jsou 6vrstvé: F.Cu / GND_L2 / SIG_L3 / SIG_L4 / GND_L5 / B.Cu. Silové stopy jsou na vnější mědi, I2C a sense na vnitřní vrstvě. Stitch prokov je 1,00/0,50 mm, únik z jemného rastru 0,80/0,40 mm.
 

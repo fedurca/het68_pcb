@@ -1943,7 +1943,7 @@
 				)
 			)
 		)
-		(property "Value" "BZX84-C24"
+		(property "Value" "BZX384-C24"
 			(at 0.1 1.9 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -1981,7 +1981,7 @@
 				)
 			)
 		)
-		(property "MPN" "BZX84-C24"
+		(property "MPN" "BZX384-C24"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -2429,7 +2429,7 @@
 				)
 			)
 		)
-		(property "MPN" "GDT secondary"
+		(property "MPN" "SMD4532-090NF"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -3849,7 +3849,7 @@
 				)
 			)
 		)
-		(property "MPN" "10uH boost"
+		(property "MPN" "MTQH201210S100MBT"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -5280,7 +5280,7 @@
 				)
 			)
 		)
-		(property "MPN" "polyfuse 1812 0.5 A"
+		(property "MPN" "1812L050PR"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -8834,7 +8834,7 @@
 				)
 			)
 		)
-		(property "MPN" "RC0805FR-070R1L"
+		(property "MPN" "RTT05R100FTP"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -10034,7 +10034,7 @@
 				)
 			)
 		)
-		(property "MPN" "X0202MN"
+		(property "MPN" "X0202MN 5BA4"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -13088,7 +13088,7 @@
 				)
 			)
 		)
-		(property "MPN" "LED 0603"
+		(property "MPN" "KT-0603R"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -15560,7 +15560,7 @@
 				)
 			)
 		)
-		(property "MPN" "10R 0.1pct burden"
+		(property "MPN" "RT1206BRD0710RL"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -15720,7 +15720,7 @@
 				)
 			)
 		)
-		(property "MPN" "1uF 100V X7R LC"
+		(property "MPN" "CL31B105KCHNNNE"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)

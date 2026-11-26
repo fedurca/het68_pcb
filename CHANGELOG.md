@@ -2,7 +2,16 @@
 
 Formát podle [Keep a Changelog](https://keepachangelog.com/cs/1.1.0/), verze podle [SemVer](https://semver.org/lang/cs/).
 
-Tento soubor drží řadu **4.x** až **7.0.0**. Starší tagy `v1.1.1` … `v3.0.0` zůstávají v gitu.
+Tento soubor drží řadu **4.x** až **7.1.0**. Starší tagy `v1.1.1` … `v3.0.0` zůstávají v gitu.
+
+## [7.1.0] — 2026-11-26
+
+### Changed
+
+- Osazení je u všech desek. Core má 111 součástek (přibyl USB-C), satelit 40 z obou stran, silové NN/VN/VVN 48/49/47 z horní strany. Kódy LCSC jsou z katalogu. Rozpis je v [kicad/jlc/OSAZENI.md](kicad/jlc/OSAZENI.md).
+- Na satelitu jsou ochrany `ESD05V32D-LC`, ferit `BLM18AG601SN1D`, společná tlumivka `ACM2012-900-2P-T001` a pojistka `0603L050/6V`.
+- Na silových deskách je Zener `BZX384-C24` v SOD-323, GDT `SMD4532-090NF` (90 V, 1812), pojistka `1812L050PR` a tlumivka `MTQH201210S100MBT` (10 µH, 1 A).
+- `U_MPPT` stroj neosadí: CN3791 je SSOP-10 a deska má SOIC-8. `U_BST` FP6291 má v katalogu 0 kusů. Vývodové díly a držák 21700 se pájejí ručně.
 
 ## [7.0.0] — 2026-11-26
 
