@@ -2,7 +2,7 @@
 
 Každá deska je samostatná zakázka. Jeden gerber zip = jedno Different Design. Rozměr ber z obrysu, ne ze společné kalkulace 100 × 100 mm.
 
-Core se osazuje z přední strany. `het68-core-bom.csv` a `het68-core-cpl.csv` obsahují jen součástky s kódem LCSC ověřeným v katalogu. Zbytek (svislé RJ45, lišty, piezo, ADXL355, SN65LVDS32, PPTC a TVS v jiném pouzdru, než je na desce) se do stroje nedává. Rozpis je v [OSAZENI.md](OSAZENI.md). Satelit a silové desky osazení nemají: mají otevřené páry a prázdné LCSC. RJ45 je svislý 8P8C bez magnetik (`RJ45-8P8C-VERT`), ne pravý úhel RJHSE-5380. Satelit je oboustranný, takže až se bude osazovat, volba strany je Both sides.
+Core se osazuje z přední strany, 110 součástek. `het68-core-bom.csv` a `het68-core-cpl.csv` mají kódy LCSC z katalogu. Mimo stroj jsou svislé RJ45, lišty, piezo, `J_STAMP` a dva SN65LVDS32. Akcelerometr na desce není. Rozpis je v [OSAZENI.md](OSAZENI.md). Satelit a silové desky osazení nemají: mají otevřené páry a prázdné LCSC. RJ45 je svislý 8P8C bez magnetik (`RJ45-8P8C-VERT`), ne pravý úhel RJHSE-5380. Satelit je oboustranný, takže až se bude osazovat, volba strany je Both sides.
 
 Na měď nepatří 230 V, 22 kV ani 110 kV.
 

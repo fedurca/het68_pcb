@@ -2,7 +2,17 @@
 
 Formát podle [Keep a Changelog](https://keepachangelog.com/cs/1.1.0/), verze podle [SemVer](https://semver.org/lang/cs/).
 
-Tento soubor drží řadu **4.x**, **5.0.0** a **5.1.0**. Starší tagy `v1.1.1` … `v3.0.0` zůstávají v gitu.
+Tento soubor drží řadu **4.x** až **6.0.0**. Starší tagy `v1.1.1` … `v3.0.0` zůstávají v gitu.
+
+## [6.0.0] — 2026-11-26
+
+### Changed
+
+- Core je bez akcelerometru. `U9` a `C_ADX` jsou pryč, SPI0 k nim nevede. ADXL355 nemá pouzdro, které je na desce.
+- Všechny SOD-323 ochrany jsou `ESD05V32D-LC` (C5180093), obousměrné, typicky 0,6 pF. Pojistky jacků jsou `0603L025/6V` (C49317890). Tlumivka měniče je `DFE201210U-2R2M=P2`, sytící proud 2 A. Ferit je `BLM18AG601SN1D`, 600 Ω.
+- Stavová SK6812 je na `+5V_ALWAYS`, stejně jako její blokovací kondenzátor. Na 3,3 V se podle katalogu nerozsvítí.
+- Strojové osazení má 110 součástek. Mimo stroj jsou svislé RJ45, lišty, piezo, `J_STAMP` a dva SN65LVDS32, které se dodají a pájejí ručně. Rozpis je v [kicad/jlc/OSAZENI.md](kicad/jlc/OSAZENI.md).
+- DRC: 0 zkratů, 0 mezer, 0 otevřených párů. ERC schématu: 0 chyb.
 
 ## [5.1.0] — 2026-11-26
 

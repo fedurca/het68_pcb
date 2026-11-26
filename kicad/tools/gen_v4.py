@@ -501,12 +501,12 @@ def gdt_symbol():
     return box_symbol("het68:GDT", "GDT", "GDT", "Fuse:Fuse_1812_4532Metric", pins)
 
 
-def tvs(sch, ref, nets, value="PESD5V0X1BT"):
+def tvs(sch, ref, nets, value="ESD05V32D-LC"):
     lib = "Device:D_TVS" if "Device:D_TVS" in sch.symbols else "Device:D"
     sch.add(lib, ref, value, "Diode_SMD:D_SOD-323", {"1": nets[0], "2": nets[1]}, value)
 
 
-def FB(sch, ref, nets, value="600R", mpn="BLM18PG601SN1D"):
+def FB(sch, ref, nets, value="600R", mpn="BLM18AG601SN1D"):
     lib = "Device:FerriteBead" if "Device:FerriteBead" in sch.symbols else "Device:L"
     sch.add(lib, ref, value, "Inductor_SMD:L_0603_1608Metric",
             {"1": nets[0], "2": nets[1]}, mpn)
@@ -595,12 +595,12 @@ def build_core(sch: Sch):
              "5": "PSRAM_SI", "6": "PSRAM_SCLK", "7": "+3V3_DIG", "8": "+3V3_DIG"},
             "APS6404L-3SQR-SN")
     sch.add("het68:XTAL_3225", "Y1", "12MHz", "Crystal:Crystal_SMD_3225-4Pin_3.2x2.5mm",
-            {"1": "XIN", "2": "GND", "3": "XOUT", "4": "GND"}, "12MHz 3225")
+            {"1": "XIN", "2": "GND", "3": "XOUT", "4": "GND"}, "CX3225SB12000H0FLJCC")
     C(sch, "C_X1", ("XIN", "GND"), "15p", mpn="CL10C150JB8NNNC")
     C(sch, "C_X2", ("XOUT", "GND"), "15p", mpn="CL10C150JB8NNNC")
     sch.add("Device:L", "L_VREG", "2.2uH", "Inductor_SMD:L_0805_2012Metric",
-            {"1": "VREG_LX", "2": "DVDD"}, "2.2uH VREG")
-    C(sch, "C_DVDD", ("DVDD", "GND"), "2.2u", "Capacitor_SMD:C_0805_2012Metric", "CL21A225KOQNNNE")
+            {"1": "VREG_LX", "2": "DVDD"}, "DFE201210U-2R2M=P2")
+    C(sch, "C_DVDD", ("DVDD", "GND"), "2.2u", "Capacitor_SMD:C_0805_2012Metric", "CL21A225KOFNNNE")
 
     # Gated 3V3 and 1V8. EN = WAKE_DSP from Heltec.
     sch.add("het68:AP2112K", "U4", "AP2112K-3.3", "Package_TO_SOT_SMD:SOT-23-5",
@@ -620,17 +620,17 @@ def build_core(sch: Sch):
     # Momentary, active low. BOOT shorts flash CS (RP2350 USB bootloader).
     sch.add("Switch:SW_Push", "SW_RST", "RESET",
             "Button_Switch_SMD:SW_SPST_PTS645Sx43SMTR92",
-            {"1": "RUN", "2": "GND"}, "PTS645SM43SMTR92")
+            {"1": "RUN", "2": "GND"}, "PTS645SM43SMTR92LFS")
     sch.add("Switch:SW_Push", "SW_BOOT", "BOOT",
             "Button_Switch_SMD:SW_SPST_PTS645Sx43SMTR92",
-            {"1": "QSPI_SS", "2": "GND"}, "PTS645SM43SMTR92")
+            {"1": "QSPI_SS", "2": "GND"}, "PTS645SM43SMTR92LFS")
     sch.add("Switch:SW_Push", "SW_USR", "USER",
             "Button_Switch_SMD:SW_SPST_PTS645Sx43SMTR92",
-            {"1": "BTN_USER", "2": "GND"}, "PTS645SM43SMTR92")
+            {"1": "BTN_USER", "2": "GND"}, "PTS645SM43SMTR92LFS")
     sch.add("LED:WS2812B", "D_STAT", "SK6812",
             "LED_SMD:LED_WS2812B_PLCC4_5.0x5.0mm_P3.2mm",
-            {"1": "+3V3_DIG", "2": None, "3": "GND", "4": "STATUS_DIN"},
-            "SK6812 (5050, 3.3 V)")
+            {"1": "+5V_ALWAYS", "2": None, "3": "GND", "4": "STATUS_DIN"},
+            "SK6812")
     C(sch, "C_STAT", ("+3V3_DIG", "GND"), "100n")
 
     usb_c(sch, "J_USB", "VBUS")
@@ -678,14 +678,6 @@ def build_core(sch: Sch):
     sch.add("Sensor_Humidity:SHT4x", "U8", "SHT40",
             "Sensor_Humidity:Sensirion_DFN-4_1.5x1.5mm_P0.8mm_SHT4x_NoCentralPad",
             {"1": "I2C1_SDA", "2": "I2C1_SCL", "3": "+3V3_DIG", "4": "GND"}, "SHT40-AD1B-R2")
-    sch.add("het68:ADXL355", "U9", "ADXL355",
-            "Package_DFN_QFN:QFN-16-1EP_3x3mm_P0.5mm_EP1.7x1.7mm",
-            {"1": None, "2": "+1V8_AUDIO", "3": None, "4": "GND", "5": "GND",
-             "6": "+1V8_AUDIO", "7": "GND", "8": None, "9": None, "10": None,
-             "11": "SPI0_CS", "12": "SPI0_MOSI", "13": "SPI0_MISO", "14": "SPI0_SCK",
-             "15": None, "16": None, "17": "GND"}, "ADXL355BCCZ")
-    C(sch, "C_ADX", ("+1V8_AUDIO", "GND"), "100n")
-
     sch.add("Driver_Motor:DRV8837C", "U6", "DRV8837C",
             "Package_SON:Texas_DSG0008A_WSON-8-1EP_2x2mm_P0.5mm_EP0.9x1.6mm",
             {"1": "+3V3_DIG", "2": "PIEZO_P", "3": "PIEZO_N", "4": "GND",
@@ -747,19 +739,19 @@ def build_core(sch: Sch):
                 }, "RJ45-8P8C-VERT")
         sch.add("het68:CMC", f"FL{i}A", "CMC",
                 "Inductor_SMD:L_CommonModeChoke_Coilank_ACM2012",
-                {"1": f"SCK{i}_P", "4": f"SCK{i}_PJ", "2": f"SCK{i}_N", "3": f"SCK{i}_NJ"}, "ACM2012")
+                {"1": f"SCK{i}_P", "4": f"SCK{i}_PJ", "2": f"SCK{i}_N", "3": f"SCK{i}_NJ"}, "ACM2012-900-2P-T001")
         sch.add("het68:CMC", f"FL{i}B", "CMC",
                 "Inductor_SMD:L_CommonModeChoke_Coilank_ACM2012",
-                {"1": f"WS{i}_P", "4": f"WS{i}_PJ", "2": f"WS{i}_N", "3": f"WS{i}_NJ"}, "ACM2012")
+                {"1": f"WS{i}_P", "4": f"WS{i}_PJ", "2": f"WS{i}_N", "3": f"WS{i}_NJ"}, "ACM2012-900-2P-T001")
         sch.add("het68:CMC", f"FL{i}C", "CMC",
                 "Inductor_SMD:L_CommonModeChoke_Coilank_ACM2012",
-                {"1": f"SD{i}_P", "4": f"SD{i}_PJ", "2": f"SD{i}_N", "3": f"SD{i}_NJ"}, "ACM2012")
+                {"1": f"SD{i}_P", "4": f"SD{i}_PJ", "2": f"SD{i}_N", "3": f"SD{i}_NJ"}, "ACM2012-900-2P-T001")
         tvs(sch, f"DT{i}A", (f"SCK{i}_PJ", f"SCK{i}_NJ"))
         tvs(sch, f"DT{i}B", (f"WS{i}_PJ", f"WS{i}_NJ"))
         tvs(sch, f"DT{i}C", (f"SD{i}_PJ", f"SD{i}_NJ"))
         R(sch, f"R_SD{i}", (f"SD{i}_P", f"SD{i}_N"), "100", mpn="RC0603FR-07100RL")
         sch.add("Device:Polyfuse", f"F{i}", "0.25A", "Fuse:Fuse_0603_1608Metric",
-                {"1": "+3V3_DIG", "2": f"MIC{i}_FB"}, "PPTC 0603")
+                {"1": "+3V3_DIG", "2": f"MIC{i}_FB"}, "0603L025/6V")
         FB(sch, f"FB{i}", (f"MIC{i}_FB", f"MIC{i}_3V3"))
 
     C(sch, "C_IO1", ("+3V3_DIG", "GND"), "100n")

@@ -9,7 +9,7 @@
 - [x] Na měď **nejde** 230 V / 22 kV / 110 kV
 - [x] MEMS T5848 1,8 V; RGB 3,3 V; piezo 4× PS1240 na Core
 - [x] Env DPS310+SHT40 na I²C1; PM na I²C0 přes interconnect
-- [x] ADXL355 1,8 V SPI
+- [x] ADXL355 ve v6.0.0 není: katalogové pouzdro je 6×6 mm, na desce bylo 3×3 mm
 - [x] Článek LiFePO4/LTO
 
 ## Elektrika Core

@@ -52,7 +52,7 @@ SoM je součást `kicad/het68-core`:
 - `+3V3_RF` a `+5V_ALWAYS` jsou vždyživé (MeshCore + později stamp).
 - 0402 **jen** RF matching na Core. Jinak ≥ 0603. Žádné BGA.
 - Piezo chirp (`DRV8837`, 4× PS1240) a env senzor (DPS310 + SHT40) zůstávají na Core.
-- ADXL355 na SPI, 1,8 V, u středu / upevnění (eolické kmitání 10–100 Hz → ANC).
+- ADXL355 na SPI, 1,8 V, u středu / upevnění (eolické kmitání 10–100 Hz → ANC). Ve v6.0.0 na desce není: existující pouzdro je LCC 6×6 mm a na desce bylo QFN 3×3 mm.
 
 GPIO I²S / LED / piezo / I²C1 drží čísla z firmware (`PIN_I2S_SD` v `fedurca/het68`). Debug UART z GP0/GP1 jde pryč — na těch pinech je UART MeshCore. Konzole je USB CDC.
 
