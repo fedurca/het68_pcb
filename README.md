@@ -42,7 +42,7 @@ Na měď nejde 230 V / 22 kV / 110 kV. Gerbery z `kicad-cli` v `kicad/*/fab/`. T
 
 | Deska | Rozměr | ERC error | DRC | Objednat? |
 |---|---|---|---|---|
-| Core | 160 × 100 mm, 8L Faraday, ENIG | 0 | 0 zkratů, 0 mezer, 0 otevřených párů | ano, měď |
+| Core | 160 × 100 mm, 8L Faraday, ENIG | 0 | 0 zkratů, 0 mezer, 0 otevřených párů | měď ano; stroj osadí 85 součástek, zbytek ručně |
 | Satelit | 50 × 80 mm, 6L, ven jen LED a port | 0 | 0 zkratů, 19 otevřených párů (dva jsou rohy zemních zón) | ne, dokud nejsou dotažené jack, WS a OE |
 | Silová NN/VN/VVN | 140 × 80 mm, 2L 70 µm | 0 | 0 zkratů, otevřené páry 30 / 36 / 26 | ne jako hotový zdroj |
 

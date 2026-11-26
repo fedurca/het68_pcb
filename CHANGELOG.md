@@ -2,7 +2,16 @@
 
 Formát podle [Keep a Changelog](https://keepachangelog.com/cs/1.1.0/), verze podle [SemVer](https://semver.org/lang/cs/).
 
-Tento soubor drží řadu **4.x** a **5.0.0**. Starší tagy `v1.1.1` … `v3.0.0` zůstávají v gitu.
+Tento soubor drží řadu **4.x**, **5.0.0** a **5.1.0**. Starší tagy `v1.1.1` … `v3.0.0` zůstávají v gitu.
+
+## [5.1.0] — 2026-11-26
+
+### Changed
+
+- Core má strojové osazení přední strany. `kicad/jlc/het68-core-bom.csv` a `het68-core-cpl.csv` obsahují 85 součástek, u kterých je kód LCSC z katalogu. Centroid je z aktuální desky.
+- Krystal, tlumivka 2,2 µH, společná tlumivka, kondenzátor 2,2 µF, ferit 600 Ω, tlačítka a stavová LED mají konkrétní MPN, které katalog nabízí ve stejném pouzdru. Rozpis je v [kicad/jlc/OSAZENI.md](kicad/jlc/OSAZENI.md).
+- Mimo stroj zůstávají svislé RJ45, lišty, konektory piezo, `J_STAMP` (DNP), SN65LVDS32, ADXL355, PPTC 0603 a TVS PESD5V0X1BT. U TVS je na desce SOD-323 a katalogové pouzdro toho MPN je SOT-23. U ADXL355 je na desce QFN 3×3 mm a katalogové pouzdro je LCC 6×6 mm.
+- Satelit a silové desky se neosazují.
 
 ## [5.0.0] — 2026-11-26
 

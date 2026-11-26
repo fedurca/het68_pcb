@@ -2,9 +2,7 @@
 
 Každá deska je samostatná zakázka. Jeden gerber zip = jedno Different Design. Rozměr ber z obrysu, ne ze společné kalkulace 100 × 100 mm.
 
-Osazení nech vypnuté. V `*-bom.csv` je sloupec LCSC prázdný a bez něj JLC osazení nepřijme. RP2350B, ADXL355, T5848 a LVDS budou extended nebo consignment. RJ45 je svislý 8P8C bez magnetik (`RJ45-8P8C-VERT`), ne pravý úhel RJHSE-5380. Core má 0 otevřených párů, satelit 19 (zkrat ani mezera ne) a silové desky 30 / 36 / 26, takže osazená sada by se nezapnula. Satelit je oboustranný a nese propojky režimu, takže pozdější osazení musí být Both sides.
-
-Šablona (stencil) zůstane vypnutá, dokud se nepájí ručně.
+Core se osazuje z přední strany. `het68-core-bom.csv` a `het68-core-cpl.csv` obsahují jen součástky s kódem LCSC ověřeným v katalogu. Zbytek (svislé RJ45, lišty, piezo, ADXL355, SN65LVDS32, PPTC a TVS v jiném pouzdru, než je na desce) se do stroje nedává. Rozpis je v [OSAZENI.md](OSAZENI.md). Satelit a silové desky osazení nemají: mají otevřené páry a prázdné LCSC. RJ45 je svislý 8P8C bez magnetik (`RJ45-8P8C-VERT`), ne pravý úhel RJHSE-5380. Satelit je oboustranný, takže až se bude osazovat, volba strany je Both sides.
 
 Na měď nepatří 230 V, 22 kV ani 110 kV.
 
@@ -38,8 +36,8 @@ Na měď nepatří 230 V, 22 kV ani 110 kV.
 | Electrical Test | Flying Probe Fully Test |
 | 4-Wire Kelvin Test | ano (od 8 vrstev ho JLC chce) |
 | Gold Fingers, Castellated Holes, Press-Fit, Edge Plating, Blind Slots, Backdrill, UL Marking, Humidity Indicator Card | No |
-| PCB Assembly | Off |
-| Stencil | Off |
+| PCB Assembly | On, jen Top |
+| Stencil | On, spolu s osazením |
 
 Prokov je 0,30/0,15 mm. Průměr plošky je o 0,15 mm větší než vrtání, což je doporučené mezikruží JLC (0,075 mm na stranu). Vrtání 0,15 mm je na vícevrstvé desce vyrobitelné a v kalkulaci je to příplatek (platí pro jakoukoli velikost plošky). Tepelné prokovy sedí v ploše QFN, proto Via Covering = Epoxy Filled & Capped. Díra 0,15 mm se zalít dá; dřívější 0,60 mm ne.
 

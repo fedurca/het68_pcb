@@ -36,7 +36,7 @@ Vrtání je rozdělené: `*-PTH.drl` pokovené, `*-NPTH.drl` nepokovené (M3 a a
 
 ## Osazení
 
-`*-cpl.csv` je centroid z KiCadu (osa Y nahoru, mm). `*-bom.csv` má MPN a prázdný sloupec LCSC. Kódy LCSC se nedoplňují odhadem. Bez nich JLC osazení nepřijme. RP2350B, ADXL355, T5848 a LVDS budou nejspíš extended nebo consignment. Satelit se později osazuje z obou stran.
+Core: `het68-core-bom.csv` a `het68-core-cpl.csv`, 85 součástek, jen přední strana. Každý kód LCSC je z katalogové stránky. Co stroj neosazuje, je v [OSAZENI.md](OSAZENI.md). Satelit a silové desky mají v `*-bom.csv` pořád prázdné LCSC a neosazují se.
 
 ## DFM, které tahle řada drží
 
