@@ -1,9 +1,8 @@
-het68 Core, 8 vrstev, jeste bez tagu
+het68 Core v5.0.0
 160 x 100 x 1.6 mm, 8 vrstev, ENIG, vnejsi Cu 1 oz, vnitrni 0.5 oz.
 Prokov 0.30/0.15 mm. Od 8 vrstev JLC vyzaduje 4-Wire Kelvin Test.
 Tepelne prokovy jsou v plose QFN: Via Covering Epoxy Filled & Capped.
 Vrstvy: F.Cu, GND_L2, SIG_L3, PWR_L4 (+3V3_DIG), GND_L5, SIG_L6, GND_L7, B.Cu.
-SIG_L6 nese LVDS pary mezi dvema zememi. Na PWR_L4 jsou i kratke signaly,
-ktere mezi prokovy QFN na jinych vrstvach neprosly.
-0 zkratu, 0 mezer. Otevrenych paru: 6 (LED1_DIN, LED2_DIN, LED5_DIN, PIEZO_IN2, ADC_I, ADC_ROGO).
-Neobjednavat jako hotovou desku. Osazeni zatim ne. LCSC je prazdne.
+SIG_L6 nese LVDS pary mezi dvema zememi.
+0 zkratu, 0 mezer, 0 otevrenych paru.
+Osazeni zatim ne. LCSC je prazdne.

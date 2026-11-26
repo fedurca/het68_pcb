@@ -42,11 +42,11 @@ Na měď nejde 230 V / 22 kV / 110 kV. Gerbery z `kicad-cli` v `kicad/*/fab/`. T
 
 | Deska | Rozměr | ERC error | DRC | Objednat? |
 |---|---|---|---|---|
-| Core | 160 × 100 mm, 8L Faraday, ENIG | 0 | 0 zkratů, 0 mezer, 6 otevřených párů | ne, zbývá 6 párů u QFN |
+| Core | 160 × 100 mm, 8L Faraday, ENIG | 0 | 0 zkratů, 0 mezer, 0 otevřených párů | ano, měď |
 | Satelit | 50 × 80 mm, 6L, ven jen LED a port | 0 | 0 zkratů, 19 otevřených párů (dva jsou rohy zemních zón) | ne, dokud nejsou dotažené jack, WS a OE |
 | Silová NN/VN/VVN | 140 × 80 mm, 2L 70 µm | 0 | 0 zkratů, otevřené páry 30 / 36 / 26 | ne jako hotový zdroj |
 
-Schémata jsou elektricky uzavřená (ERC 0 chyb). Core je 8vrstvá: mezi GND_L5 a novou GND_L7 je SIG_L6 pro páry LVDS. Prokov je 0,30/0,15 mm. DRC Core nemá zkrat ani mezeru. Otevřených je 6 párů, všechny u vývodů QFN: `LED1_DIN`, `LED2_DIN`, `LED5_DIN`, `PIEZO_IN2`, `ADC_I`, `ADC_ROGO`. Smyčka páru mezi budičem a tlumivkou je do 50 mm² kromě `SD6` (59 mm²). Strana jacku `SD1` a `SD5` má smyčku 297 a 448 mm². Satelit nemá zkrat. Vzdušné zůstávají `LED` a část `SD` u jacku, `OE`, krátká mezera `SD_3V3` u `U5` a sítě slovního taktu (`WS_LVDS`, `WS_P`, `WS_T`, `WS_N`). Dva záznamy jsou rohy zemních zón.
+Schémata jsou elektricky uzavřená (ERC 0 chyb). Core je 8vrstvá: mezi GND_L5 a novou GND_L7 je SIG_L6 pro páry LVDS. Prokov je 0,30/0,15 mm. DRC Core nemá zkrat, mezeru ani otevřený pár. Smyčka páru mezi budičem a tlumivkou je do 50 mm² kromě `SD6` (59 mm²). Strana jacku `SD1` a `SD5` má smyčku 297 a 448 mm². Satelit nemá zkrat. Vzdušné zůstávají `LED` a část `SD` u jacku, `OE`, krátká mezera `SD_3V3` u `U5` a sítě slovního taktu (`WS_LVDS`, `WS_P`, `WS_T`, `WS_N`). Dva záznamy jsou rohy zemních zón.
 
 ## VF / EMC (silné rušení)
 

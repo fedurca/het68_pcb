@@ -418,6 +418,7 @@ def draw_track(board, model, x1, y1, x2, y2, layer, net):
     t.SetLayer(layer)
     t.SetNet(net)
     board.Add(t)
+    t.thisown = 0
     model.add_track(t)
     return t
 
@@ -433,6 +434,7 @@ def draw_via(board, model, x, y, net):
     v.SetDrill(iu(VIA_DRILL))
     v.SetNet(net)
     board.Add(v)
+    v.thisown = 0
     model.add_track(v)
     return v
 
@@ -1202,6 +1204,7 @@ def cmd_stackup(path):
     z = z.Cast() if hasattr(z, "Cast") else z
     z.SetLayer(pcbnew.In6_Cu)
     board.Add(z)
+    z.thisown = 0
     for zone in board.Zones():
         if zone.GetIsRuleArea():
             continue

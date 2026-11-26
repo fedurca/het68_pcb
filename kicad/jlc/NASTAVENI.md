@@ -2,7 +2,7 @@
 
 Každá deska je samostatná zakázka. Jeden gerber zip = jedno Different Design. Rozměr ber z obrysu, ne ze společné kalkulace 100 × 100 mm.
 
-Osazení nech vypnuté. V `*-bom.csv` je sloupec LCSC prázdný a bez něj JLC osazení nepřijme. RP2350B, ADXL355, T5848 a LVDS budou extended nebo consignment. RJ45 je svislý 8P8C bez magnetik (`RJ45-8P8C-VERT`), ne pravý úhel RJHSE-5380. Core má 6 otevřených párů, satelit 19 (zkrat ani mezera ne) a silové desky 30 / 36 / 26, takže osazená sada by se nezapnula. Satelit je oboustranný a nese propojky režimu, takže pozdější osazení musí být Both sides.
+Osazení nech vypnuté. V `*-bom.csv` je sloupec LCSC prázdný a bez něj JLC osazení nepřijme. RP2350B, ADXL355, T5848 a LVDS budou extended nebo consignment. RJ45 je svislý 8P8C bez magnetik (`RJ45-8P8C-VERT`), ne pravý úhel RJHSE-5380. Core má 0 otevřených párů, satelit 19 (zkrat ani mezera ne) a silové desky 30 / 36 / 26, takže osazená sada by se nezapnula. Satelit je oboustranný a nese propojky režimu, takže pozdější osazení musí být Both sides.
 
 Šablona (stencil) zůstane vypnutá, dokud se nepájí ručně.
 
@@ -10,7 +10,7 @@ Na měď nepatří 230 V, 22 kV ani 110 kV.
 
 ## Core — `het68-core-gerber.zip`
 
-160 × 100 mm, 8 vrstev. Počet kusů: 1. Deska má 0 zkratů a 6 otevřených párů, takže se zatím neobjednává jako hotová.
+160 × 100 mm, 8 vrstev. Počet kusů: 1. Deska má 0 zkratů, 0 mezer a 0 otevřených párů. Osazení zůstává vypnuté.
 
 | Pole | Hodnota |
 |---|---|

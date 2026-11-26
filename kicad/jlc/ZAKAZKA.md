@@ -16,7 +16,7 @@ Nové spoje nemají zkrat ani podkročenou mezeru. Překryté pady na silových 
 
 Satelit má dva záznamy zóna–zóna GND na rohu obrysu zóny. Zemní prokovy mají prstenec v mědi na F.Cu, B.Cu, GND_L2, SIG_L3 i GND_L5. Režim linky volí propojka 2×3 na zadní straně. RJ45 je svislý. Otevřené zůstávají `LED` a část `SD` u jacku, `OE`, `SD_3V3` a slovního takt.
 
-Core má 8 vrstev a 6 otevřených párů (`LED1_DIN`, `LED2_DIN`, `LED5_DIN`, `PIEZO_IN2`, `ADC_I`, `ADC_ROGO`). Prokov je 0,30/0,15 mm a L4 je plocha `+3V3_DIG`. Zbylé páry končí v prstenci prokovů kolem QFN. Silové desky mají dál otevřené páry: na 2 vrstvách je prokov 1,00/0,50 mm.
+Core má 8 vrstev, 0 zkratů a 0 otevřených párů. Prokov je 0,30/0,15 mm a L4 je plocha `+3V3_DIG`. Silové desky mají dál otevřené páry: na 2 vrstvách je prokov 1,00/0,50 mm.
 
 ## Košík
 
@@ -24,7 +24,7 @@ Společné: FR-4, tloušťka **1,6 mm**, zelená maska, bílý potisk, obrys fr�
 
 | Deska | Soubor | Vrstvy | Povrch | Měď | Poznámka v objednávce |
 |---|---|---|---|---|---|
-| Core | `het68-core-gerber.zip` | 8 | ENIG | vnější 1 oz, vnitřní 0,5 oz | Faraday. Prokov 0,30/0,15 mm. Via Covering Epoxy Filled & Capped. Zatím neobjednávat |
+| Core | `het68-core-gerber.zip` | 8 | ENIG | vnější 1 oz, vnitřní 0,5 oz | Faraday. Prokov 0,30/0,15 mm. Via Covering Epoxy Filled & Capped |
 | Satelit ×6 | `het68-sat-gerber.zip` | 6 | ENIG | vnější 1 oz, vnitřní 0,5 oz | prokov 0,60/0,20 mm. Ven jen LED a port. Svislý RJ45 a propojky zezadu |
 | Silová NN | `het68-pwr-nn-gerber.zip` | 2 | ENIG nebo HASL bezolovnatý | **2 oz** | jen sekundár CT, žádné síťové napětí |
 | Silová VN | `het68-pwr-vn-gerber.zip` | 2 | ENIG nebo HASL bezolovnatý | **2 oz** | |
