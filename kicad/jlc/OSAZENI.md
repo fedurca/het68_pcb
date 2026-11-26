@@ -32,7 +32,7 @@ Mimo stroj jsou svislý RJ45 `J1` a propojky `JP_SCK`, `JP_WS`, `JP_SD`, `JP_SDN
 
 ## Silové desky
 
-Jen horní strana. NN 48, VN 49 (druhá GDT), VVN 47. USB-C `J2` je ve stroji (`TYPE-C-31-M-12`, C165948), stínicí vývody se pájejí s ním.
+Jen horní strana. NN 49, VN 50 (druhá GDT), VVN 48. USB-C `J2` je ve stroji (`TYPE-C-31-M-12`, C165948), stínicí vývody se pájejí s ním. `U_BST` je `FP6291LR-G12` (C18701). Vývod 6 (`OC`) je volný.
 
 Společné náhrady, vybrané podle pouzdra na desce:
 
@@ -46,6 +46,7 @@ Společné náhrady, vybrané podle pouzdra na desce:
 | 0,1 Ω | RTT05R100FTP | C125639 | 0805, 100 mΩ, 1 %. Přesné Yageo MPN v katalogu není. |
 | 10 µH | MTQH201210S100MBT | C17701180 | 0805, 10 µH, 1 A, sytí při 1,2 A. Běžná 0805 10 µH v katalogu má 15 mA. |
 | LED | KT-0603R | C2286 | Červená 0603. Barva ve schématu není. |
+| FP6291 | FP6291LR-G12 | C18701 | SOT-23-6. Přesné FP6291 má 0 kusů. Vývod 6 je `OC` a je volný. |
 
 Mimo stroj na všech třech:
 
@@ -55,6 +56,5 @@ Mimo stroj na všech třech:
 | Katalogové 5KP36A a 15KP36A jsou pouzdro P600, deska má DO-201 | `DTVS`, dodat v DO-201 a pájet ručně |
 | Keystone 1122 v katalogu LCSC pro tohle pouzdro není | `BT1` |
 | Skutečné pouzdro je SSOP-10, deska má SOIC-8 | `U_MPPT` CN3791, C154992 se na tuto desku nedá položit |
-| Katalog má 0 kusů | `U_BST` FP6291, C18673. Náhrada se neobjednává. |
 
 `X0202MN` je ve stroji jako `X0202MN 5BA4`, C221522, SOT-223.

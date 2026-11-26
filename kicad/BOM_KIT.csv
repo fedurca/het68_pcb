@@ -44,7 +44,7 @@ Qty,Value,MPN,On
 1,CT_SEC,"sekundar CT, NE sit",pwr-nn
 1,DPS310,DPS310,core
 1,DRV8837C,DRV8837CDSGR,core
-1,FP6291,FP6291,pwr-nn
+1,FP6291LR-G12,FP6291LR-G12,pwr-nn
 1,GDT,GDT secondary,pwr-nn
 1,INA3221,INA3221AIRGVR,pwr-nn
 1,J_CORE,interconnect 2x10,pwr-nn

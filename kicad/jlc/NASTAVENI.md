@@ -2,7 +2,7 @@
 
 Každá deska je samostatná zakázka. Jeden gerber zip = jedno Different Design. Rozměr ber z obrysu, ne ze společné kalkulace 100 × 100 mm.
 
-Core se osazuje z přední strany, 111 součástek včetně USB-C. Satelit se osazuje z obou stran, 40 součástek: nahoře je 8× SK6812, dole zbytek včetně T5848. Silové desky se osazují z přední strany (NN 48, VN 49, VVN 47). Každý kód LCSC je ze stránky katalogu. Co stroj neosadí, je v [OSAZENI.md](OSAZENI.md). RJ45 je svislý 8P8C bez magnetik (`RJ45-8P8C-VERT`), ne pravý úhel RJHSE-5380.
+Core se osazuje z přední strany, 111 součástek včetně USB-C. Satelit se osazuje z obou stran, 40 součástek: nahoře je 8× SK6812, dole zbytek včetně T5848. Silové desky se osazují z přední strany (NN 49, VN 50, VVN 48). Každý kód LCSC je ze stránky katalogu. Co stroj neosadí, je v [OSAZENI.md](OSAZENI.md). RJ45 je svislý 8P8C bez magnetik (`RJ45-8P8C-VERT`), ne pravý úhel RJHSE-5380.
 
 Na měď nepatří 230 V, 22 kV ani 110 kV.
 

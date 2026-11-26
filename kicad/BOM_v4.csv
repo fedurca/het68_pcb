@@ -90,7 +90,7 @@ het68-pwr-nn,1,SOLAR,panel Voc 6-18 V,J_SOL
 het68-pwr-nn,1,CN3791,CN3791,U_MPPT
 het68-pwr-nn,2,100n,CL10B104KB8NNNC,C_MC C_INA
 het68-pwr-nn,1,21700,Keystone 1122,BT1
-het68-pwr-nn,1,FP6291,FP6291,U_BST
+het68-pwr-nn,1,FP6291LR-G12,FP6291LR-G12,U_BST
 het68-pwr-nn,1,10uH,10uH boost,L_BST
 het68-pwr-nn,1,20k,RC0603FR-0720KL,R_FB2
 het68-pwr-nn,1,AP2112K-3.3,AP2112K-3.3TRG1,U_RF
@@ -130,7 +130,7 @@ het68-pwr-vn,1,SOLAR,panel Voc 6-18 V,J_SOL
 het68-pwr-vn,1,CN3791,CN3791,U_MPPT
 het68-pwr-vn,2,100n,CL10B104KB8NNNC,C_MC C_INA
 het68-pwr-vn,1,21700,Keystone 1122,BT1
-het68-pwr-vn,1,FP6291,FP6291,U_BST
+het68-pwr-vn,1,FP6291LR-G12,FP6291LR-G12,U_BST
 het68-pwr-vn,1,10uH,10uH boost,L_BST
 het68-pwr-vn,1,20k,RC0603FR-0720KL,R_FB2
 het68-pwr-vn,1,AP2112K-3.3,AP2112K-3.3TRG1,U_RF
@@ -169,7 +169,7 @@ het68-pwr-vvn,3,10u,CL21A106KOQNNNE,C3 C_MP C_5V
 het68-pwr-vvn,1,SOLAR,panel Voc 6-18 V,J_SOL
 het68-pwr-vvn,1,CN3791,CN3791,U_MPPT
 het68-pwr-vvn,1,21700,Keystone 1122,BT1
-het68-pwr-vvn,1,FP6291,FP6291,U_BST
+het68-pwr-vvn,1,FP6291LR-G12,FP6291LR-G12,U_BST
 het68-pwr-vvn,1,10uH,10uH boost,L_BST
 het68-pwr-vvn,1,20k,RC0603FR-0720KL,R_FB2
 het68-pwr-vvn,1,AP2112K-3.3,AP2112K-3.3TRG1,U_RF

@@ -2,7 +2,15 @@
 
 Formát podle [Keep a Changelog](https://keepachangelog.com/cs/1.1.0/), verze podle [SemVer](https://semver.org/lang/cs/).
 
-Tento soubor drží řadu **4.x** až **7.1.0**. Starší tagy `v1.1.1` … `v3.0.0` zůstávají v gitu.
+Tento soubor drží řadu **4.x** až **7.2.0**. Starší tagy `v1.1.1` … `v3.0.0` zůstávají v gitu.
+
+## [7.2.0] — 2026-11-26
+
+### Fixed
+
+- Měnič `U_BST` je `FP6291LR-G12` (C18701, SOT-23-6, skladem). Přesné `FP6291` (C18673) má v katalogu 0 kusů. Vývod 6 je omezení proudu `OC`, ne druhý vstup. Ve schématu byl pojmenovaný `VIN2` a spojený s `BAT`. Teď je nezapojený. `EN` a `VIN` zůstávají na `BAT`, měnič je trvale zapnutý.
+- Měď `BAT`, která ležela na otevřeném vývodu, je pryč. Přívod k vývodům 4 a 5 je znovu spojený po vnitřní signálové vrstvě. DRC všech tří silových desek je 0 zkratů, 0 mezer a 0 otevřených párů. ERC schématu je 0 chyb.
+- Stroj osadí i `U_BST`. Silové desky mají NN 49, VN 50 a VVN 48 součástek. `U_MPPT` zůstává mimo stroj.
 
 ## [7.1.0] — 2026-11-26
 

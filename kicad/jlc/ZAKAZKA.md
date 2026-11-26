@@ -10,9 +10,9 @@ Nové spoje nemají zkrat ani podkročenou mezeru. Překryté pady na silových 
 |---|---|---|---|
 | Satelit | 2, oba roh zemní zóny | 0 | ano, obě strany, 40 součástek |
 | Core | 0 | 0 | ano, horní strana, 111 součástek |
-| Silová NN | 0 | 0 | ano, horní strana, 48 součástek |
-| Silová VN | 0 | 0 | ano, horní strana, 49 součástek |
-| Silová VVN | 0 | 0 | ano, horní strana, 47 součástek |
+| Silová NN | 0 | 0 | ano, horní strana, 49 součástek |
+| Silová VN | 0 | 0 | ano, horní strana, 50 součástek |
+| Silová VVN | 0 | 0 | ano, horní strana, 48 součástek |
 
 Satelit je 8 vrstev. Signálové sítě jsou spojené. Dva záznamy DRC jsou roh zemních zón na (1,2, 1,2). Prokov GND má prstenec ve výplni na všech šesti zemních vrstvách. Režim linky volí propojka 2×3 na zadní straně. RJ45 je svislý.
 
@@ -42,9 +42,9 @@ Vrtání je rozdělené: `*-PTH.drl` pokovené, `*-NPTH.drl` nepokovené (M3 a a
 |---|---|---|---|
 | Core | `het68-core-bom.csv`, `het68-core-cpl.csv` | 111 | Top |
 | Satelit | `het68-sat-bom.csv`, `het68-sat-cpl.csv` | 40 | Both |
-| Silová NN | `het68-pwr-nn-bom.csv`, `het68-pwr-nn-cpl.csv` | 48 | Top |
-| Silová VN | `het68-pwr-vn-bom.csv`, `het68-pwr-vn-cpl.csv` | 49 | Top |
-| Silová VVN | `het68-pwr-vvn-bom.csv`, `het68-pwr-vvn-cpl.csv` | 47 | Top |
+| Silová NN | `het68-pwr-nn-bom.csv`, `het68-pwr-nn-cpl.csv` | 49 | Top |
+| Silová VN | `het68-pwr-vn-bom.csv`, `het68-pwr-vn-cpl.csv` | 50 | Top |
+| Silová VVN | `het68-pwr-vvn-bom.csv`, `het68-pwr-vvn-cpl.csv` | 48 | Top |
 
 ## DFM, které tahle řada drží
 

@@ -6777,7 +6777,7 @@
   (in_bom yes)
   (on_board yes)
   (property "Reference" "U" (at 0 6.35 0) (effects (font (size 1.27 1.27))))
-  (property "Value" "FP6291" (at 0 -6.35 0) (effects (font (size 1.27 1.27))))
+  (property "Value" "FP6291LR-G12" (at 0 -6.35 0) (effects (font (size 1.27 1.27))))
   (property "Footprint" "Package_TO_SOT_SMD:SOT-23-6" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
   (property "Datasheet" "" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
   (symbol "FP6291_0_1"
@@ -6812,7 +6812,7 @@
     (pin passive line
       (at 8.89 -2.54 180)
       (length 2.54)
-      (name "VIN2" (effects (font (size 1.27 1.27))))
+      (name "OC" (effects (font (size 1.27 1.27))))
       (number "6" (effects (font (size 1.27 1.27)))))
   ))
 (symbol "het68:XTAL_3225"
@@ -9104,10 +9104,10 @@
     (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
     (uuid "1bf0226c-d9d0-4052-a833-077323122f46")
     (property "Reference" "U_BST" (at 130.0 110.07999999999993 0) (effects (font (size 1.27 1.27))))
-    (property "Value" "FP6291" (at 130.0 106.07999999999993 0) (effects (font (size 1.27 1.27))))
+    (property "Value" "FP6291LR-G12" (at 130.0 106.07999999999993 0) (effects (font (size 1.27 1.27))))
     (property "Footprint" "Package_TO_SOT_SMD:SOT-23-6" (at 130.0 108.07999999999993 0) (effects (font (size 1.27 1.27)) (hide yes)))
     (property "Datasheet" "" (at 130.0 108.07999999999993 0) (effects (font (size 1.27 1.27)) (hide yes)))
-    (property "MPN" "FP6291" (at 130.0 108.07999999999993 0) (effects (font (size 1.27 1.27)) (hide yes)))
+    (property "MPN" "FP6291LR-G12" (at 130.0 108.07999999999993 0) (effects (font (size 1.27 1.27)) (hide yes)))
     (pin "1" (uuid "e445bd5f-1348-4d88-a455-64c33effb0cf"))
     (pin "2" (uuid "b985287a-081b-4be7-b25a-d84c939a28fa"))
     (pin "3" (uuid "7d477f6a-d98a-4b0f-9f28-c518f6cfbd01"))
@@ -9140,14 +9140,7 @@
     (effects (font (size 1.27 1.27)) (justify left))
     (uuid "bc75943c-5f1a-4462-b6ee-1f702df25552")
   )
-  (wire (pts (xy 138.89 105.54) (xy 137.62 105.54))
-    (stroke (width 0) (type solid)) (uuid "d2da790e-7230-48e7-bab0-b545e3d14518"))
-  (global_label "BAT"
-    (shape bidirectional)
-    (at 137.62 105.54 180)
-    (effects (font (size 1.27 1.27)) (justify right))
-    (uuid "2dc52ef2-0f45-4fe7-83ee-41bcba4fa77e")
-  )
+    (no_connect (at 138.89 105.54) (uuid "3428f088-57bd-41ec-ac93-d360cb8875a6"))
   (wire (pts (xy 138.89 108.08) (xy 137.62 108.08))
     (stroke (width 0) (type solid)) (uuid "c2912702-8ca8-41d7-a623-512758133d4c"))
   (global_label "BAT"
