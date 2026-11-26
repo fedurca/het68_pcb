@@ -2,7 +2,18 @@
 
 Formát podle [Keep a Changelog](https://keepachangelog.com/cs/1.1.0/), verze podle [SemVer](https://semver.org/lang/cs/).
 
-Tento soubor drží řadu **4.x** až **7.3.1**. Starší tagy `v1.1.1` … `v3.0.0` zůstávají v gitu.
+Tento soubor drží řadu **4.x** až **7.4.0**. Starší tagy `v1.1.1` … `v3.0.0` zůstávají v gitu.
+
+## [7.4.0] — 2026-11-26
+
+### Changed
+
+- Satelit je čtverec **52 × 52 mm** místo 50 × 80 mm. Mikrofon je ve středu desky, kruh 8× SK6812 kolem něj. Svislý RJ45 je hned nad mikrofonem a režimové propojky `JP_SCK`, `JP_WS` a `JP_SD` jsou po jeho stranách. Ostatní konfigurační hřebínky jsou ve stejné středové ploše. Montážní díry jsou v rozích.
+- Náhledy: [`docs/img/v740/`](docs/img/v740/).
+
+### Known
+
+- Po přesunu je DRC satelitu 0 zkratů, 36 mezer a 66 otevřených párů. Před objednávkou je potřeba ty sítě doroutovat. Core a silové desky se nemění.
 
 ## [7.3.1] — 2026-11-26
 

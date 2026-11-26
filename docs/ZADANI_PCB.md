@@ -236,7 +236,7 @@ Na desce musí být:
 | LR / SEL | GND |
 | SD | 100 kΩ pulldown; v diferenciálním režimu **SN65LVDS1** = budič páru sat → Core |
 | LED | 8× WS2812B / SK6812 @ 3,3 V, kruh, daisy-chain z pinu 8; `DOUT` poslední NC |
-| PCB | 50 × 80 mm, **6L Faraday**, ENIG |
+| PCB | 52 × 52 mm, **8L Faraday**, ENIG, mikrofon uprostřed |
 | Kabel | STP, svislý RJ45, mapa [`PINOUT_SAT_v4.csv`](PINOUT_SAT_v4.csv) |
 | Režim | propojka 2×3: sever DIFF, střed 3,3 V, jih 1,8 V. `JP_T*` a `JP_SDN` 1–2 jen DIFF. `JP_OE` jen 1,8 V |
 | PHY | diferenciálně LVDS RX SCK/WS (SN65LVDS2 + 100 Ω) a LVDS TX SD (SN65LVDS1); CMC oba konce, TVS, PPTC 0,5 A, ferit 3V3 |

@@ -7,7 +7,7 @@ v4 kreslí **Core 8L**, tři silové SKU a satelit LVDS.
 | Projekt | Deska | Vrstvy | Obrys |
 |---|---|---|---|
 | [het68-core](het68-core/het68-core.kicad_pro) | RP2350B + J_MESH Heltec V3 + 6× RJ45 LVDS | 8 Faraday | 160 × 100 mm |
-| [het68-sat](het68-sat/het68-sat.kicad_pro) | satelit 8L LVDS + T5848 + 8× SK6812 | 8, ENIG | 50 × 80 mm |
+| [het68-sat](het68-sat/het68-sat.kicad_pro) | satelit 8L LVDS + T5848 + 8× SK6812 | 8, ENIG | 52 × 52 mm |
 | [het68-pwr-nn](het68-pwr-nn/het68-pwr-nn.kicad_pro) | silová NN, multiplex CT | 6, vnější 2 oz pokud kalkulace umí | 140 × 80 mm |
 | [het68-pwr-vn](het68-pwr-vn/het68-pwr-vn.kicad_pro) | silová VN, 15KP | 6, stejně jako NN | 140 × 80 mm |
 | [het68-pwr-vvn](het68-pwr-vvn/het68-pwr-vvn.kicad_pro) | silová VVN, Rogowski | 6, stejně jako NN | 140 × 80 mm |

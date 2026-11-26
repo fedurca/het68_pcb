@@ -47,13 +47,13 @@ L4 je jedna plocha `+3V3_DIG` pod procesorem. `+5V_ALWAYS` a `+1V8_AUDIO` jsou s
 
 ## Satelit — `het68-sat-gerber.zip`
 
-50 × 80 mm, 8 vrstev. Počet kusů: 6. Měď, povrch a tloušťka jako Core. Prokov satelitu zůstává 0,60/0,20 mm a via covering se bere z tabulky satelitu, ne z prokovu Core.
+52 × 52 mm, 8 vrstev. Počet kusů: 6. Měď, povrch a tloušťka jako Core. Prokov satelitu zůstává 0,60/0,20 mm a via covering se bere z tabulky satelitu, ne z prokovu Core.
 
 Skladba je F.Cu / GND_L2 / SIG_L3 / PWR_L4 / GND_L5 / SIG_L6 / GND_L7 / B.Cu. SIG_L6 je signál mezi dvěma zemními plochami.
 
 | Pole | Hodnota |
 |---|---|
-| Dimensions | 50 × 80 mm |
+| Dimensions | 52 × 52 mm |
 | PCB Qty | 6 |
 | Layers | 8 |
 | Material Type | FR4 TG155 |
