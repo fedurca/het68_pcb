@@ -2,7 +2,13 @@
 
 Formát podle [Keep a Changelog](https://keepachangelog.com/cs/1.1.0/), verze podle [SemVer](https://semver.org/lang/cs/).
 
-Tento soubor drží řadu **4.x** až **7.3.0**. Starší tagy `v1.1.1` … `v3.0.0` zůstávají v gitu.
+Tento soubor drží řadu **4.x** až **7.3.1**. Starší tagy `v1.1.1` … `v3.0.0` zůstávají v gitu.
+
+## [7.3.1] — 2026-11-26
+
+### Changed
+
+- Náhledy v [`docs/img/v730/`](docs/img/v730/) jsou z mědi v7.3.0. Core je 8L se svislými RJ45, satelit 8L s propojkami režimu na zadní straně, silová NN je 6L. Schémata, měď a maska sedí na stejné soubory. Měď desek se nemění.
 
 ## [7.3.0] — 2026-11-26
 
