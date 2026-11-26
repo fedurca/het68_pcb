@@ -7,10 +7,10 @@ v4 kreslí **Core 8L**, tři silové SKU a satelit LVDS.
 | Projekt | Deska | Vrstvy | Obrys |
 |---|---|---|---|
 | [het68-core](het68-core/het68-core.kicad_pro) | RP2350B + J_MESH Heltec V3 + 6× RJ45 LVDS | 8 Faraday | 160 × 100 mm |
-| [het68-sat](het68-sat/het68-sat.kicad_pro) | satelit 6L LVDS + T5848 + 8× SK6812 | 6 Faraday, ENIG | 50 × 80 mm |
-| [het68-pwr-nn](het68-pwr-nn/het68-pwr-nn.kicad_pro) | silová NN, multiplex CT | 2, 70 µm | 140 × 80 mm |
-| [het68-pwr-vn](het68-pwr-vn/het68-pwr-vn.kicad_pro) | silová VN, 15KP | 2, 70 µm | 140 × 80 mm |
-| [het68-pwr-vvn](het68-pwr-vvn/het68-pwr-vvn.kicad_pro) | silová VVN, Rogowski | 2, 70 µm | 140 × 80 mm |
+| [het68-sat](het68-sat/het68-sat.kicad_pro) | satelit 8L LVDS + T5848 + 8× SK6812 | 8, ENIG | 50 × 80 mm |
+| [het68-pwr-nn](het68-pwr-nn/het68-pwr-nn.kicad_pro) | silová NN, multiplex CT | 6, vnější 2 oz pokud kalkulace umí | 140 × 80 mm |
+| [het68-pwr-vn](het68-pwr-vn/het68-pwr-vn.kicad_pro) | silová VN, 15KP | 6, stejně jako NN | 140 × 80 mm |
+| [het68-pwr-vvn](het68-pwr-vvn/het68-pwr-vvn.kicad_pro) | silová VVN, Rogowski | 6, stejně jako NN | 140 × 80 mm |
 
 Generátor: `kicad/tools/gen_v4.py` (Python z KiCadu). 6L stackup: `kicad/tools/route6.py`. Kusovník sady: [`BOM_KIT.csv`](BOM_KIT.csv).
 
@@ -30,10 +30,10 @@ Jen sekundár CT/Rogowski. GDT, TVS, LC, THT burden 100 Ω, crowbar ~25 V, USB-C
 
 ## Satelit
 
-6L Faraday. RJ45 stojí ze zadní strany, osa zástrčky je kolmá k desce. Režim linky volí jedna vodorovná propojka. `JP_SCK`, `JP_WS` a `JP_SD` jsou hřebínky 2×3 na spodní straně, pin 1 (čtvercový) je severovýchodní. Severní řádek je diferenciální LVDS, prostřední je jednostranných 3,3 V přes `TXS0104E`, jižní je 1,8 V přímo na T5848. `JP_T*` jen u diferenciálního režimu (100 Ω). `JP_SDN` 1–2 je záporný vývod budiče, 2–3 dává zápornou žílu na zem. `JP_OE` se nasazuje jen v režimu 1,8 V a vypne překladač. T5848 zůstává na 1,62–1,98 V. Stínění RJ45 je na satelitu na GND. DRC desky je bez zkratů. Vzdušné zůstávají vývod `LED` a část `SD` u jacku, `OE`, krátká mezera `SD_3V3` u `U5`, `WS_LVDS`, `WS_P`, `WS_T` a `WS_N`. Náhled je v [`docs/img/v490/`](../docs/img/v490/). ENIG, ≥ 0603.
+Deska je 8 vrstev. RJ45 stojí ze zadní strany, osa zástrčky je kolmá k desce. Režim linky volí jedna vodorovná propojka. `JP_SCK`, `JP_WS` a `JP_SD` jsou hřebínky 2×3 na spodní straně, pin 1 (čtvercový) je severovýchodní. Severní řádek je diferenciální LVDS, prostřední je jednostranných 3,3 V přes `TXS0104E`, jižní je 1,8 V přímo na T5848. `JP_T*` jen u diferenciálního režimu (100 Ω). `JP_SDN` 1–2 je záporný vývod budiče, 2–3 dává zápornou žílu na zem. `JP_OE` se nasazuje jen v režimu 1,8 V a vypne překladač. T5848 zůstává na 1,62–1,98 V. Stínění RJ45 je na satelitu na GND. Deska je 8 vrstev, signály jsou spojené. DRC nemá zkrat ani mezeru. Dva záznamy jsou roh zemních zón. Náhled je v [`docs/img/v490/`](../docs/img/v490/). ENIG, ≥ 0603.
 
 ## Výroba
 
-Gerbery z `kicad-cli pcb export gerbers` (ne `WriteDRCReport`). Core je 8L ENIG, satelit 6L ENIG. Silová 2L 70 µm.
+Gerbery z `kicad-cli pcb export gerbers` (ne `WriteDRCReport`). Core je 8L ENIG, satelit 8L ENIG, silová deska 6L.
 
 v4.1.0: schémata elektricky uzavřená, BoM sady, 3D náhledy. Spoje 6L jsou v4.2.0.

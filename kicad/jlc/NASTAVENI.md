@@ -47,13 +47,15 @@ L4 je jedna plocha `+3V3_DIG` pod procesorem. `+5V_ALWAYS` a `+1V8_AUDIO` jsou s
 
 ## Satelit — `het68-sat-gerber.zip`
 
-50 × 80 mm, 6 vrstev. Počet kusů: 6. Měď, povrch a tloušťka jako Core. Prokov satelitu zůstává 0,60/0,20 mm a via covering se bere z tabulky satelitu, ne z 8vrstvého Core.
+50 × 80 mm, 8 vrstev. Počet kusů: 6. Měď, povrch a tloušťka jako Core. Prokov satelitu zůstává 0,60/0,20 mm a via covering se bere z tabulky satelitu, ne z prokovu Core.
+
+Skladba je F.Cu / GND_L2 / SIG_L3 / PWR_L4 / GND_L5 / SIG_L6 / GND_L7 / B.Cu. SIG_L6 je signál mezi dvěma zemními plochami.
 
 | Pole | Hodnota |
 |---|---|
 | Dimensions | 50 × 80 mm |
 | PCB Qty | 6 |
-| Layers | 6 |
+| Layers | 8 |
 | Material Type | FR4 TG155 |
 | PCB Thickness | 1.6 mm |
 | PCB Color / Silkscreen | Green / White |
@@ -61,12 +63,12 @@ L4 je jedna plocha `+3V3_DIG` pod procesorem. `+5V_ALWAYS` a `+1V8_AUDIO` jsou s
 | Outer / Inner copper | 1 oz / 0.5 oz |
 | Specify Stackup | No |
 | Via Covering | Tented |
-| Min via hole size/diameter | 0.2 mm / (0.3/0.35 mm) |
+| Min via hole size/diameter | 0.2 mm / 0.6 mm |
 | Board Outline Tolerance | ±0.2 mm (Regular) |
 | Confirm Production file | Yes |
 | Mark on PCB | Remove Mark |
 | Electrical Test | Flying Probe Fully Test |
-| 4-Wire Kelvin Test | ne |
+| 4-Wire Kelvin Test | ano, u 8 vrstev povinný |
 | Gold Fingers a ostatní speciální otvory | No |
 | PCB Assembly | Off |
 | Stencil | Off |
@@ -77,32 +79,32 @@ Venkovní strana (Top) má jen otvor mikrofonu a 8× SK6812. Svislý RJ45, hřeb
 
 Tři samostatné zakázky: `het68-pwr-nn-gerber.zip`, `het68-pwr-vn-gerber.zip`, `het68-pwr-vvn-gerber.zip`.
 
-140 × 80 mm, 2 vrstvy, měď 2 oz. Do 6vrstvé kalkulace je nedávej.
+140 × 80 mm, 6 vrstev. Každé SKU je vlastní kalkulace, ne společně s Core.
+
+Skladba je F.Cu / GND_L2 / SIG_L3 / SIG_L4 / GND_L5 / B.Cu. Silové stopy zůstávají na vnější mědi. Vnitřní vrstvy vedou I2C, sense a řízení mezi zemními plochami.
 
 | Pole | Hodnota |
 |---|---|
 | Dimensions | 140 × 80 mm |
 | PCB Qty | 1 na každé SKU |
-| Layers | 2 |
-| Material Type | FR4 TG135 stačí; TG155 nevadí |
+| Layers | 6 |
+| Material Type | FR4 TG155 |
 | PCB Thickness | 1.6 mm |
 | PCB Color / Silkscreen | Green / White |
-| Surface Finish | ENIG, nebo LeadFree HASL |
-| Gold Thickness | 1 µ", jen když zůstane ENIG |
-| Outer Copper Weight | 2 oz |
-| Inner Copper Weight | pole u 2 vrstev není |
+| Surface Finish | ENIG |
+| Gold Thickness | 1 µ" |
+| Outer Copper Weight | 2 oz, pokud to 6vrstvá kalkulace nabízí, jinak 1 oz |
+| Inner Copper Weight | 0.5 oz |
 | Specify Stackup | No |
 | Via Covering | Tented |
-| Min via hole size/diameter | podle vrtáku 0,50 mm v gerberu (prokov 1,00/0,50 mm) |
+| Min via hole size/diameter | 0.40 mm / 0.80 mm (v gerberu je i stitch 1,00/0,50 mm) |
 | Board Outline Tolerance | ±0.2 mm (Regular) |
 | Confirm Production file | Yes |
 | Mark on PCB | Remove Mark |
 | Electrical Test | Flying Probe Fully Test |
-| 4-Wire Kelvin Test | ne |
+| 4-Wire Kelvin Test | ano |
 | Gold Fingers a ostatní speciální otvory | No |
 | PCB Assembly | Off |
 | Stencil | Off |
 
-2 oz chce stopu aspoň 0,16 mm. Pravidla desky jsou 0,20 mm. Prokov 1,00/0,50 mm má mezikruží 0,25 mm. Epoxy fill se na tak velký prokov nevztahuje.
-
-LeadFree HASL je na 2 vrstvách levnější a gerber ho snese. ENIG nech, když má být povrch stejný jako u Core a satelitu.
+2 oz chce stopu aspoň 0,16 mm. Pravidla desky jsou 0,20 mm. Stitch prokov 1,00/0,50 mm má mezikruží 0,25 mm. Nový únik z jemného rastru je 0,80/0,40 mm, mezikruží 0,20 mm. 6 vrstev u JLC nemá HASL, proto ENIG.

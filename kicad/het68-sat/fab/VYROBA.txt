@@ -1,8 +1,7 @@
-het68 satelit
-50 x 80 x 1.6 mm, 6 vrstev, ENIG, vnejsi Cu 1 oz, vnitrni 0.5 oz.
-Prokov 0.60/0.20 mm.
-Ven (F.Cu): otvor mikrofonu a 8x SK6812.
-Zadni strana: svisly RJ45, propojky rezimu a ostatni elektronika.
-Rezim: hrebinek 2x3, sever DIFF, stred 3.3 V, jih 1.8 V.
-DRC: 0 zkratu, 0 mezer. Otevrenych paru 19, dva jsou rohy zemnich zon.
-Osazeni zatim ne. LCSC je prazdne. Pozdeji Both sides. Propojku neosazovat.
+het68 satelit v7.0.0
+50 x 80 x 1.6 mm, 8 vrstev, ENIG, vnejsi Cu 1 oz, vnitrni 0.5 oz.
+Skladba: F.Cu / GND_L2 / SIG_L3 / PWR_L4 / GND_L5 / SIG_L6 / GND_L7 / B.Cu.
+Prokov 0.60/0.20 mm. Via covering Tented. 8 vrstev chce u JLC ctyrbodovy test.
+Signalove site jsou spojene. DRC: 0 zkratu, 0 mezer.
+Dva zaznamy jsou roh zemnich zon na (1.2, 1.2). Prokov GND ma prstenec ve vyplni na F.Cu, B.Cu, GND_L2, SIG_L3, GND_L5 i GND_L7.
+Osazeni zatim ne. LCSC se nedoplnuje odhadem.

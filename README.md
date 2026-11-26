@@ -2,7 +2,7 @@
 
 Zadání a KiCad návrh PCB pro **het68** (akustická detekce dronů).
 
-Aktuální verze: **[v4.9.0](https://github.com/fedurca/het68_pcb/releases/tag/v4.9.0)** — viz [CHANGELOG.md](CHANGELOG.md). Kusovník sady: [kicad/BOM_KIT.csv](kicad/BOM_KIT.csv). Po deskách: [kicad/BOM_v4.csv](kicad/BOM_v4.csv).
+Aktuální verze: **[v7.0.0](https://github.com/fedurca/het68_pcb/releases/tag/v7.0.0)** — viz [CHANGELOG.md](CHANGELOG.md). Kusovník sady: [kicad/BOM_KIT.csv](kicad/BOM_KIT.csv). Po deskách: [kicad/BOM_v4.csv](kicad/BOM_v4.csv).
 
 Firmware a geometrie pole: [fedurca/het68](https://github.com/fedurca/het68). Zadání: [docs/ZADANI_PCB.md](docs/ZADANI_PCB.md). Projekty v KiCadu: [kicad/README.md](kicad/README.md).
 
@@ -14,7 +14,7 @@ v4 je sada **Core 8L + vyměnitelná silová deska + šest satelitů**. Na měď
 
 **Silová deska** má tři SKU se stejným interconnectem 2×10: NN (multiplex CT), VN (silnější GDT/TVS), VVN (harvest CT + Rogowski). Společný front-end je jen sekundár: GDT, TVS, LC, burden, crowbar, MPPT, článek 21700 (LiFePO4/LTO), 5 V a vždyživý `+3V3_RF`.
 
-**Satelit** je šest destiček 6L. Ven z desky kouká jen akustický otvor T5848 a kruh **8× SK6812**. Tělo mikrofonu, RJ45 a ostatní elektronika jsou na druhé straně. Režim linky volí propojka na satelitu: diferenciální LVDS, jednostranných 3,3 V, nebo 1,8 V přímo na T5848. Mapa [`docs/PINOUT_SAT_v4.csv`](docs/PINOUT_SAT_v4.csv).
+**Satelit** je šest destiček 8L. Ven z desky kouká jen akustický otvor T5848 a kruh **8× SK6812**. Tělo mikrofonu, RJ45 a ostatní elektronika jsou na druhé straně. Režim linky volí propojka na satelitu: diferenciální LVDS, jednostranných 3,3 V, nebo 1,8 V přímo na T5848. Mapa [`docs/PINOUT_SAT_v4.csv`](docs/PINOUT_SAT_v4.csv).
 
 ## Prototyp
 
@@ -43,14 +43,14 @@ Na měď nejde 230 V / 22 kV / 110 kV. Gerbery z `kicad-cli` v `kicad/*/fab/`. T
 | Deska | Rozměr | ERC error | DRC | Objednat? |
 |---|---|---|---|---|
 | Core | 160 × 100 mm, 8L Faraday, ENIG | 0 | 0 zkratů, 0 mezer, 0 otevřených párů | měď ano; stroj osadí 110 součástek, dva LVDS přijímače ručně |
-| Satelit | 50 × 80 mm, 6L, ven jen LED a port | 0 | 0 zkratů, 19 otevřených párů (dva jsou rohy zemních zón) | ne, dokud nejsou dotažené jack, WS a OE |
-| Silová NN/VN/VVN | 140 × 80 mm, 2L 70 µm | 0 | 0 zkratů, otevřené páry 30 / 36 / 26 | ne jako hotový zdroj |
+| Satelit | 50 × 80 mm, 8L, ven jen LED a port | 0 | 0 zkratů, 0 mezer, 2 záznamy roh zemní zóny | měď ano, osazení ne |
+| Silová NN/VN/VVN | 140 × 80 mm, 6L, vnější měď 2 oz pokud kalkulace umí | 0 | 0 zkratů, 0 mezer, 0 otevřených párů | měď ano, osazení ne |
 
-Schémata jsou elektricky uzavřená (ERC 0 chyb). Core je 8vrstvá: mezi GND_L5 a novou GND_L7 je SIG_L6 pro páry LVDS. Prokov je 0,30/0,15 mm. DRC Core nemá zkrat, mezeru ani otevřený pár. Smyčka páru mezi budičem a tlumivkou je do 50 mm² kromě `SD6` (59 mm²). Strana jacku `SD1` a `SD5` má smyčku 297 a 448 mm². Satelit nemá zkrat. Vzdušné zůstávají `LED` a část `SD` u jacku, `OE`, krátká mezera `SD_3V3` u `U5` a sítě slovního taktu (`WS_LVDS`, `WS_P`, `WS_T`, `WS_N`). Dva záznamy jsou rohy zemních zón.
+Schémata jsou elektricky uzavřená (ERC 0 chyb). Core je 8vrstvá: mezi GND_L5 a GND_L7 je SIG_L6 pro páry LVDS. Prokov je 0,30/0,15 mm. Satelit je 8vrstvý, signály jsou spojené, prokov 0,60/0,20 mm. Dva záznamy DRC jsou roh zemních zón; prokov GND sedí ve výplni na všech šesti zemích. Silové desky jsou 6vrstvé: F.Cu / GND_L2 / SIG_L3 / SIG_L4 / GND_L5 / B.Cu. Silové stopy jsou na vnější mědi, I2C a sense na vnitřní vrstvě. Stitch prokov je 1,00/0,50 mm, únik z jemného rastru 0,80/0,40 mm.
 
 ## VF / EMC (silné rušení)
 
-- Core je 8L Faraday: L2, L5 a L7 jsou souvislá GND, L4 je plocha `+3V3_DIG` a nese i několik signálů, které mezi prokovy QFN jinde neprošly. L6 je signál mezi dvěma zeměmi. Zem je prošitá po obvodu s roztečí 1,5 mm. Satelit zůstává 6L.
+- Core je 8L Faraday: L2, L5 a L7 jsou souvislá GND, L4 je plocha `+3V3_DIG` a nese i několik signálů, které mezi prokovy QFN jinde neprošly. L6 je signál mezi dvěma zeměmi. Zem je prošitá po obvodu s roztečí 1,5 mm. Satelit je 8L se stejným principem: SIG_L6 leží mezi GND_L5 a GND_L7. Silová deska je 6L, sense a I2C jdou mezi GND_L2 a GND_L5.
 - Diferenciální režim vozí I²S po LVDS (T568B páry). Propojka na satelitu umí i jednostranných 3,3 V a 1,8 V. Stínění je na GND na Core i na satelitu.
 - CMC na SCK, WS i SD na obou koncích; nízko-kapacitní TVS napříč párem; 100 Ω u přijímače (SN65LVDS2 / SN65LVDS32 nemají vnitřní zakončení).
 - Ferit 600 Ω na 3V3 každého jacku a na satelitu za PPTC.
@@ -60,7 +60,7 @@ Schémata jsou elektricky uzavřená (ERC 0 chyb). Core je 8vrstvá: mezi GND_L5
 ## Co je ještě potřeba
 
 1. **Firmware.** DSP = RP2350B. MeshCore na Heltecu: `Heltec_lora32_v3`, UART GPIO5/6, WAKE GPIO7.
-2. **Dokončit střední piny QFN-80** (QSPI SD2/SD3, část LED, SWD, UART) a zbylé LVDS páry. Silová deska má překryté pady z rozmístění.
+2. **Core je uzavřené.** QFN, LVDS i silová deska mají měď dotaženou. Osazení silové desky a satelitu čeká na katalogové LCSC, kódy se nedoplňují odhadem.
 3. **Heltec je lab.** ~40–80 mA. Stamp nRF52 později. LTO povinná, minimální SOC repeateru 30 %.
 4. **110 kV.** Žádný externí kabel ze sféry. Anténa U.FL do slotu u stampu.
 5. **RGB na 3,3 V.** Firmware svítí nejvýš dvěma pixely naráz.

@@ -1,6 +1,10 @@
-het68 silova NN v4.6.0
-140 x 80 x 1.6 mm, 2 vrstvy, Cu 2 oz, ENIG nebo HASL bezolovnaty.
-Prokov 1.00/0.50 mm. Jen sekundar CT, zadne sitove napeti.
-J_SOL je na (127, 48), mimo drzak 21700.
-0 zkratu, 0 prekrytych padu. Otevrenych medenych paru: 30.
+het68 silova NN v7.0.0
+140 x 80 x 1.6 mm, 6 vrstev.
+Skladba: F.Cu / GND_L2 / SIG_L3 / SIG_L4 / GND_L5 / B.Cu.
+Vnejsi med 2 oz, pokud to 6vrstva kalkulace nabidne, jinak 1 oz. Vnitrni 0.5 oz.
+Silove stopy jsou na vnejsi medi. Vnitrni vrstvy vedi I2C, sense a rizeni.
+Puvodni stitch prokov 1.00/0.50 mm. Novy unik z jemneho rastru 0.80/0.40 mm, mezikruzi 0.20 mm.
+ENIG. 6 vrstev nema HASL.
+DRC: 0 zkratu, 0 mezer, 0 otevrenych paru.
+J_SOL je na (127, 48), mimo drzak 21700. Jen sekundar CT, zadne sitove napeti.
 Osazeni zatim ne.

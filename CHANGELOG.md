@@ -2,7 +2,16 @@
 
 Formát podle [Keep a Changelog](https://keepachangelog.com/cs/1.1.0/), verze podle [SemVer](https://semver.org/lang/cs/).
 
-Tento soubor drží řadu **4.x** až **6.0.0**. Starší tagy `v1.1.1` … `v3.0.0` zůstávají v gitu.
+Tento soubor drží řadu **4.x** až **7.0.0**. Starší tagy `v1.1.1` … `v3.0.0` zůstávají v gitu.
+
+## [7.0.0] — 2026-11-26
+
+### Changed
+
+- Satelit je 8 vrstev. Skladba je F.Cu / GND_L2 / SIG_L3 / PWR_L4 / GND_L5 / SIG_L6 / GND_L7 / B.Cu. Signálové sítě jsou spojené, prokov zůstává 0,60/0,20 mm. DRC má 0 zkratů a 0 mezer. Dva záznamy jsou roh zemních zón na (1,2, 1,2); prokov GND má prstenec ve výplni na všech šesti zemních vrstvách.
+- Silové desky NN, VN a VVN jsou 6 vrstev: F.Cu / GND_L2 / SIG_L3 / SIG_L4 / GND_L5 / B.Cu. Silové stopy zůstávají na vnější mědi. I2C, sense a řízení jdou po vnitřní signálové vrstvě mezi zemními plochami. DRC je 0 zkratů, 0 mezer a 0 otevřených párů.
+- Stitch prokov silové desky zůstává 1,00/0,50 mm. Únik z jemného rastru je 0,80/0,40 mm, mezikruží 0,20 mm. Vnější měď se objednává 2 oz, pokud to 6vrstvá kalkulace nabízí.
+- Gerbery satelitu a všech tří silových desek jsou v `kicad/jlc/`.
 
 ## [6.0.0] — 2026-11-26
 
