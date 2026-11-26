@@ -2,7 +2,14 @@
 
 Formát podle [Keep a Changelog](https://keepachangelog.com/cs/1.1.0/), verze podle [SemVer](https://semver.org/lang/cs/).
 
-Tento soubor drží řadu **4.x** až **7.2.0**. Starší tagy `v1.1.1` … `v3.0.0` zůstávají v gitu.
+Tento soubor drží řadu **4.x** až **7.3.0**. Starší tagy `v1.1.1` … `v3.0.0` zůstávají v gitu.
+
+## [7.3.0] — 2026-11-26
+
+### Fixed
+
+- `DTVS` má vrtání 1,6 mm a plošku 2,6 mm, mezikruží 0,5 mm. Vývod P600 má průměr asi 1,3 mm, původní díra 1,3 mm ho nepustila. Rozteč 15,24 mm zůstává. Tělo 9,1 × 9,1 mm leží mezi dírami a nepřekrývá cizí plošku. DRC všech tří silových desek je 0 zkratů, 0 mezer a 0 otevřených párů.
+- Objednává se `5KP36A` pro NN (C152046, skladem) a `15KP36A` pro VN a VVN (C52993809, skladem). Obojí je P600 a pájí se ručně. Závěrné napětí je 36 V, svorka drží ráz 5 kW, respektive 15 kW.
 
 ## [7.2.0] — 2026-11-26
 

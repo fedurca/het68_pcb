@@ -7,4 +7,4 @@ Puvodni stitch prokov 1.00/0.50 mm. Novy unik z jemneho rastru 0.80/0.40 mm, mez
 ENIG. 6 vrstev nema HASL.
 DRC: 0 zkratu, 0 mezer, 0 otevrenych paru.
 J_SOL je na (127, 48), mimo drzak 21700.
-Osazeni: stroj, horni strana, 50 soucastek vcetne U_BST (FP6291LR-G12, C18701). Vyvod 6 (OC) je volny. Mimo stroj jsou listy, C1, L1, R4, DTVS, BT1 a U_MPPT.
+Osazeni: stroj, horni strana, 50 soucastek vcetne U_BST (FP6291LR-G12, C18701). Vyvod 6 (OC) je volny. Mimo stroj jsou listy, C1, L1, R4, DTVS (15KP36A, dira 1,6 mm), BT1 a U_MPPT.

@@ -53,7 +53,7 @@ Mimo stroj na všech třech:
 | Proč | Součástky |
 |---|---|
 | Vývodové | `J1`, `J3`, `J_CORE`, `J_SOL`, `J_RTD`, `C1`, `L1`, `R4`. Na VVN ještě `J_ROGO`. |
-| Katalogové 5KP36A a 15KP36A jsou pouzdro P600, deska má DO-201 | `DTVS`, dodat v DO-201 a pájet ručně |
+| Vývodové P600, díra 1,6 mm, rozteč 15,24 mm | `DTVS`. NN: 5KP36A, C152046. VN a VVN: 15KP36A, C52993809. Pájet ručně. |
 | Keystone 1122 v katalogu LCSC pro tohle pouzdro není | `BT1` |
 | Skutečné pouzdro je SSOP-10, deska má SOIC-8 | `U_MPPT` CN3791, C154992 se na tuto desku nedá položit |
 
