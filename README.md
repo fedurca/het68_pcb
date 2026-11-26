@@ -2,7 +2,7 @@
 
 Zadání a KiCad návrh PCB pro **het68** (akustická detekce dronů).
 
-Aktuální verze: **[v7.4.1](https://github.com/fedurca/het68_pcb/releases/tag/v7.4.1)** — viz [CHANGELOG.md](CHANGELOG.md). Kusovník sady: [kicad/BOM_KIT.csv](kicad/BOM_KIT.csv). Po deskách: [kicad/BOM_v4.csv](kicad/BOM_v4.csv).
+Aktuální verze: **[v7.4.2](https://github.com/fedurca/het68_pcb/releases/tag/v7.4.2)** — viz [CHANGELOG.md](CHANGELOG.md). Kusovník sady: [kicad/BOM_KIT.csv](kicad/BOM_KIT.csv). Po deskách: [kicad/BOM_v4.csv](kicad/BOM_v4.csv).
 
 Firmware a geometrie pole: [fedurca/het68](https://github.com/fedurca/het68). Zadání: [docs/ZADANI_PCB.md](docs/ZADANI_PCB.md). Projekty v KiCadu: [kicad/README.md](kicad/README.md).
 
@@ -18,21 +18,21 @@ v4 je sada **Core 8L + vyměnitelná silová deska + šest satelitů**. Na měď
 
 ## Prototyp
 
-Náhledy jsou z v7.4.0. Satelit je čtverec 52 mm s mikrofonem uprostřed. Core a silová deska mají stejnou měď jako ve v7.3.0.
+Náhled satelitu je z v7.4.2. Core a silová deska mají stejnou měď jako ve v7.3.0.
 
 ![Core, šest svislých RJ45](docs/img/v740/core-3d.png)
 
 ![Core z boku: zástrčka míří kolmo z desky](docs/img/v740/core-side.png)
 
-![Satelit, čtverec 52 mm: kruh LED kolem středu](docs/img/v740/sat-front-3d.png)
+![Satelit, čtverec 52 mm: kruh LED kolem středu](docs/img/v742/sat-front-3d.png)
 
-![Satelit zezadu: RJ45 a propojky co nejblíž středu](docs/img/v740/sat-back-3d.png)
+![Satelit zezadu: RJ45 a propojky co nejblíž středu](docs/img/v742/sat-back-3d.png)
 
-![Satelit z boku: konektor sedí u desky, propojky jsou v ploše](docs/img/v740/sat-side.png)
+![Satelit z boku: konektor sedí u desky, propojky jsou v ploše](docs/img/v742/sat-side.png)
 
 ![Silová NN](docs/img/v740/pwr-nn-3d.png)
 
-Měď: [Core](docs/img/v740/core-top.svg) · [satelit ven](docs/img/v740/sat-front.svg) · [satelit zadek](docs/img/v740/sat-back.svg) · [silová](docs/img/v740/pwr-nn-top.svg). Maska venkovní strany satelitu: [SVG](docs/img/v740/sat-front-mask.svg). Schémata: [Core](docs/img/v740/core-sch.pdf) · [satelit](docs/img/v740/sat-sch.pdf) · [silová](docs/img/v740/pwr-nn-sch.pdf). Gerbery a nastavení formuláře: [`kicad/jlc/`](kicad/jlc/) · [NASTAVENI.md](kicad/jlc/NASTAVENI.md).
+Měď: [Core](docs/img/v740/core-top.svg) · [satelit ven](docs/img/v742/sat-front.svg) · [satelit zadek](docs/img/v742/sat-back.svg) · [silová](docs/img/v740/pwr-nn-top.svg). Maska venkovní strany satelitu: [SVG](docs/img/v742/sat-front-mask.svg). Schémata: [Core](docs/img/v740/core-sch.pdf) · [satelit](docs/img/v740/sat-sch.pdf) · [silová](docs/img/v740/pwr-nn-sch.pdf). Gerbery a nastavení formuláře: [`kicad/jlc/`](kicad/jlc/) · [NASTAVENI.md](kicad/jlc/NASTAVENI.md).
 
 ![Sestava v7.4.0](docs/img/v740/sestava.svg)
 
@@ -43,10 +43,10 @@ Na měď nejde 230 V / 22 kV / 110 kV. Gerbery z `kicad-cli` v `kicad/*/fab/`. T
 | Deska | Rozměr | ERC error | DRC | Objednat? |
 |---|---|---|---|---|
 | Core | 160 × 100 mm, 8L Faraday, ENIG | 0 | 0 zkratů, 0 mezer, 0 otevřených párů | měď ano; stroj osadí 111 součástek, dva LVDS přijímače ručně |
-| Satelit | 52 × 52 mm, 8L, ven jen LED | 0 | 0 zkratů, 36 mezer, 66 otevřených párů | měď ještě ne; chybí doroutování |
+| Satelit | 52 × 52 mm, 8L, ven jen LED | 0 | 0 zkratů, 0 mezer, 0 otevřených párů | měď ano |
 | Silová NN/VN/VVN | 140 × 80 mm, 6L, vnější měď 2 oz pokud kalkulace umí | 0 | 0 zkratů, 0 mezer, 0 otevřených párů | měď ano; stroj osadí 49 / 50 / 48 součástek z horní strany |
 
-Schémata jsou elektricky uzavřená (ERC 0 chyb). Core je 8vrstvá: mezi GND_L5 a GND_L7 je SIG_L6 pro páry LVDS. Prokov je 0,30/0,15 mm. Satelit je čtverec 52 mm, 8 vrstev, prokov 0,60/0,20 mm. Mikrofon je ve středu, RJ45 a režimové propojky jsou na zadní straně hned u něj. Část signálových sítí je po přesunu ještě otevřená. Silové desky jsou 6vrstvé: F.Cu / GND_L2 / SIG_L3 / SIG_L4 / GND_L5 / B.Cu. Silové stopy jsou na vnější mědi, I2C a sense na vnitřní vrstvě. Stitch prokov je 1,00/0,50 mm, únik z jemného rastru 0,80/0,40 mm.
+Schémata jsou elektricky uzavřená (ERC 0 chyb). Core je 8vrstvá: mezi GND_L5 a GND_L7 je SIG_L6 pro páry LVDS. Prokov je 0,30/0,15 mm. Satelit je čtverec 52 mm, 8 vrstev, prokov 0,60/0,20 mm. Mikrofon je ve středu, RJ45 a režimové propojky jsou na zadní straně hned u něj. Signálové sítě jsou spojené, delší spoje jdou po SIG_L6. Silové desky jsou 6vrstvé: F.Cu / GND_L2 / SIG_L3 / SIG_L4 / GND_L5 / B.Cu. Silové stopy jsou na vnější mědi, I2C a sense na vnitřní vrstvě. Stitch prokov je 1,00/0,50 mm, únik z jemného rastru 0,80/0,40 mm.
 
 ## VF / EMC (silné rušení)
 

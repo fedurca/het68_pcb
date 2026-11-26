@@ -30,7 +30,7 @@ Jen sekundár CT/Rogowski. GDT, TVS, LC, THT burden 100 Ω, crowbar ~25 V, USB-C
 
 ## Satelit
 
-Deska je čtverec 52 × 52 mm, 8 vrstev. RJ45 stojí ze zadní strany, osa zástrčky je kolmá k desce, tělo je hned u mikrofonu. Režim linky volí jedna vodorovná propojka na 2×3. Pin 1 je severovýchodní. Severní řádek je diferenciální LVDS, prostřední je 3,3 V přes `TXS0104E`, jižní je 1,8 V přímo na T5848. Tabulka a postup osazení jsou v [docs/SATELIT.md](../docs/SATELIT.md). T5848 zůstává na 1,62–1,98 V. Stínění RJ45 je na GND. Po přesunu na čtverec DRC nemá zkrat; zůstává 36 mezer a 66 otevřených párů. Náhled s tělem mikrofonu je v [`docs/img/v740/`](../docs/img/v740/). ENIG, ≥ 0603.
+Deska je čtverec 52 × 52 mm, 8 vrstev. RJ45 stojí ze zadní strany, osa zástrčky je kolmá k desce, tělo je hned u mikrofonu. Režim linky volí jedna vodorovná propojka na 2×3. Pin 1 je severovýchodní. Severní řádek je diferenciální LVDS, prostřední je 3,3 V přes `TXS0104E`, jižní je 1,8 V přímo na T5848. Tabulka a postup osazení jsou v [docs/SATELIT.md](../docs/SATELIT.md). T5848 zůstává na 1,62–1,98 V. Stínění RJ45 je na GND. DRC satelitu je 0 zkratů, 0 mezer a 0 otevřených párů. Náhled s tělem mikrofonu je v [`docs/img/v742/`](../docs/img/v742/). ENIG, ≥ 0603.
 
 ## Výroba
 

@@ -152,7 +152,9 @@ def pad_shape(pad, layer=F):
         kind = pad.GetShape(layer)
     except TypeError:
         kind = pad.GetShape()
-    ang = pad.GetOrientation().AsDegrees()
+    # KiCad stores a counterclockwise angle in a Y-up frame. These queries use
+    # board coordinates, where Y grows downward, so the angle is negated.
+    ang = -pad.GetOrientation().AsDegrees()
     a = math.radians(ang)
     if kind == pcbnew.PAD_SHAPE_CIRCLE:
         return ("disc", x, y, max(hx, hy))

@@ -2,7 +2,13 @@
 
 Formát podle [Keep a Changelog](https://keepachangelog.com/cs/1.1.0/), verze podle [SemVer](https://semver.org/lang/cs/).
 
-Tento soubor drží řadu **4.x** až **7.4.1**. Starší tagy `v1.1.1` … `v3.0.0` zůstávají v gitu.
+Tento soubor drží řadu **4.x** až **7.4.2**. Starší tagy `v1.1.1` … `v3.0.0` zůstávají v gitu.
+
+## [7.4.2] — 2026-11-26
+
+### Fixed
+
+- Satelit má všechny signálové sítě spojené. DRC je 0 zkratů, 0 mezer a 0 otevřených párů. Delší spoje jdou po SIG_L6 mezi GND_L5 a GND_L7, zemní a napájecí plochy zůstávají souvislé. Prokov je pořád 0,60/0,20 mm, stopa 0,15 mm. Náhled: [`docs/img/v742/`](docs/img/v742/).
 
 ## [7.4.1] — 2026-11-26
 

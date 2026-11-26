@@ -1,4 +1,4 @@
-# Satelit — propojky, osazení a kontrola v7.4.0
+# Satelit — propojky, osazení a kontrola v7.4.2
 
 Deska je čtverec 52 × 52 mm, 8 vrstev. Mikrofon T5848 je ve středu, kruh 8× SK6812 je na venkovní straně. Svislý RJ45, T5848 a všechny propojky jsou na zadní straně. Sever desky je hrana u RJ45.
 
@@ -73,9 +73,9 @@ Stroj osadí zbytek z obou stran. Rozpis LCSC je v [kicad/jlc/OSAZENI.md](../kic
 
 Rozměr 52 × 52 mm, 8 vrstev, ENIG, prokov 0,60/0,20 mm a tloušťka 1,6 mm jsou v běžné nabídce JLC. Otvor mikrofonu je nepokovený 0,8 mm. Oboustranné osazení je v nastavení zakázky.
 
-Měď v7.4.0 po přesunu součástek **není hotová k objednání**. DRC satelitu je 0 zkratů, 36 porušených mezer a 66 otevřených párů. Mezera je výrobní vada, otevřený pár znamená, že část ochrany a signálu v mědi chybí. Core a silové desky se tímto krokem neměnily.
+Měď v7.4.2 je dotažená. DRC satelitu je 0 zkratů, 0 mezer a 0 otevřených párů. Delší spoje jdou po SIG_L6 mezi dvěma zemními plochami. Core a silové desky se tímto krokem neměnily.
 
-Zapojení ve schématu je pro tři režimy soudržné, pokud je na každém 2×3 jen jeden řádek a T5848 zůstane na 1,8 V. Gerber z tohoto commitu tu měď ještě nemá dotaženou, takže deska jako celek nezapne.
+Zapojení ve schématu je pro tři režimy soudržné, pokud je na každém 2×3 jen jeden řádek a T5848 zůstane na 1,8 V.
 
 Odolnost proti indukci a vf rušení je v návrhu postavená takto:
 
@@ -83,6 +83,6 @@ Odolnost proti indukci a vf rušení je v návrhu postavená takto:
 - Diferenciální režim vozí hodiny a data po LVDS na STP. Stínění je GND na satelitu i na Core, jednostranný režim má kudy zpátky.
 - Společná tlumivka na SCK, WS i SD, TVS s malou kapacitou napříč párem, 100 Ω jen když je propojka zakončení nasazená.
 - 3,3 V do satelitu jde přes PPTC a ferit 600 Ω.
-- RJ45 je u mikrofonu, smyčka na desce je krátká. To indukci pomůže, až budou ty sítě spojené.
+- RJ45 je u mikrofonu, smyčka na desce je krátká. Signál mezi zemními plochami tu smyčku ještě zkracuje.
 
-Jednostranné režimy jsou proti indukci horší než LVDS. Režim 1,8 V se současným Core nepoužívá. Dokud není měď dotažená, tlumivky a TVS v obvodu nejsou.
+Jednostranné režimy jsou proti indukci horší než LVDS. Režim 1,8 V se současným Core nepoužívá.
