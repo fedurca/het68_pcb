@@ -1,4 +1,4 @@
-# Checklist — het68 PCB v4.1.0 (Core 6L + silová SKU)
+# Checklist — het68 PCB (Core 8L + silová SKU)
 
 ## Před kreslením
 
@@ -20,7 +20,7 @@
 - [x] `WAKE_DSP` = EN LDO `+3V3_DIG` a `+1V8_AUDIO` (Heltec GPIO7)
 - [x] `DSP_AWAKE` = GP22 (Heltec GPIO4)
 - [x] `+5V_ALWAYS` / `+3V3_RF` vždyživé; DIG/audio hradlované
-- [x] 6L Faraday: L2/L5 GND, L4 split, L3 nekřižuje mezery
+- [x] 8L Faraday na Core: L2/L5/L7 GND, L6 páry LVDS, L4 plocha `+3V3_DIG`
 - [x] Via stitching GND 1,5 mm po obvodu
 - [x] ≥ 0603; ne BGA; krystal C0G 15 pF
 - [x] Stamp land DNP, sdílí pin 1–6 s `J_MESH`

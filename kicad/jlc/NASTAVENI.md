@@ -2,7 +2,7 @@
 
 Každá deska je samostatná zakázka. Jeden gerber zip = jedno Different Design. Rozměr ber z obrysu, ne ze společné kalkulace 100 × 100 mm.
 
-Osazení nech vypnuté. V `*-bom.csv` je sloupec LCSC prázdný a bez něj JLC osazení nepřijme. RP2350B, ADXL355, T5848 a LVDS budou extended nebo consignment. RJ45 je svislý 8P8C bez magnetik (`RJ45-8P8C-VERT`), ne pravý úhel RJHSE-5380. Core má 43 otevřených párů, satelit 19 (zkrat ani mezera ne) a silové desky 30 / 36 / 26, takže osazená sada by se nezapnula. Satelit je oboustranný a nese propojky režimu, takže pozdější osazení musí být Both sides.
+Osazení nech vypnuté. V `*-bom.csv` je sloupec LCSC prázdný a bez něj JLC osazení nepřijme. RP2350B, ADXL355, T5848 a LVDS budou extended nebo consignment. RJ45 je svislý 8P8C bez magnetik (`RJ45-8P8C-VERT`), ne pravý úhel RJHSE-5380. Core má 6 otevřených párů, satelit 19 (zkrat ani mezera ne) a silové desky 30 / 36 / 26, takže osazená sada by se nezapnula. Satelit je oboustranný a nese propojky režimu, takže pozdější osazení musí být Both sides.
 
 Šablona (stencil) zůstane vypnutá, dokud se nepájí ručně.
 
@@ -10,13 +10,13 @@ Na měď nepatří 230 V, 22 kV ani 110 kV.
 
 ## Core — `het68-core-gerber.zip`
 
-160 × 100 mm, 6 vrstev. Počet kusů: 1.
+160 × 100 mm, 8 vrstev. Počet kusů: 1. Deska má 0 zkratů a 6 otevřených párů, takže se zatím neobjednává jako hotová.
 
 | Pole | Hodnota |
 |---|---|
 | Base Material | FR-4 |
 | Material Type | FR4 TG155 |
-| Layers | 6 |
+| Layers | 8 |
 | Dimensions | 160 × 100 mm |
 | PCB Qty | 1 |
 | Product Type | Industrial/Consumer electronics |
@@ -36,7 +36,7 @@ Na měď nepatří 230 V, 22 kV ani 110 kV.
 | Confirm Production file | Yes |
 | Mark on PCB | Remove Mark |
 | Electrical Test | Flying Probe Fully Test |
-| 4-Wire Kelvin Test | ne |
+| 4-Wire Kelvin Test | ano (od 8 vrstev ho JLC chce) |
 | Gold Fingers, Castellated Holes, Press-Fit, Edge Plating, Blind Slots, Backdrill, UL Marking, Humidity Indicator Card | No |
 | PCB Assembly | Off |
 | Stencil | Off |
@@ -45,11 +45,11 @@ Prokov je 0,30/0,15 mm. Průměr plošky je o 0,15 mm větší než vrtání, co
 
 L4 je jedna plocha `+3V3_DIG` pod procesorem. `+5V_ALWAYS` a `+1V8_AUDIO` jsou stopy, ne ostrůvky, do kterých by prokov 3,3 V netrefil.
 
-6 vrstev u JLC nemá HASL, proto ENIG. Impedance se neobjednává, Specify Stackup zůstává No. Kelvinův test měří miliohmy a tady není potřeba. Flying probe stačí.
+8 vrstev u JLC nemá HASL, proto ENIG. Impedance se neobjednává, Specify Stackup zůstává No. Čtyřbodový test je u 8 vrstev povinný. Flying probe stačí jako funkční test.
 
 ## Satelit — `het68-sat-gerber.zip`
 
-50 × 80 mm, 6 vrstev. Počet kusů: 6. Stejné vrstvy, měď, povrch, prokov a via covering jako Core.
+50 × 80 mm, 6 vrstev. Počet kusů: 6. Měď, povrch a tloušťka jako Core. Prokov satelitu zůstává 0,60/0,20 mm a via covering se bere z tabulky satelitu, ne z 8vrstvého Core.
 
 | Pole | Hodnota |
 |---|---|

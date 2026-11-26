@@ -32,8 +32,8 @@ import pcbnew
 BOARD = Path(__file__).resolve().parents[1] / "het68-core" / "het68-core.kicad_pcb"
 
 F, B = pcbnew.F_Cu, pcbnew.B_Cu
-L3, L6 = pcbnew.In2_Cu, pcbnew.In5_Cu
-SIGNAL = (F, L3, L6, B)
+L3, L4, L6 = pcbnew.In2_Cu, pcbnew.In3_Cu, pcbnew.In5_Cu
+SIGNAL = (F, L3, L4, L6, B)
 ALL = frozenset(SIGNAL)
 
 CLEAR = 0.10
@@ -1387,7 +1387,7 @@ def terminals(model, island, code):
         layer = next(iter(layers))
         pts = list(pos) if kind == "seg" else [pos]
         for px, py in pts:
-            for r in (0.45, 0.6, 0.8, 1.0, 1.3, 1.7, 2.2, 2.8, 3.5, 4.5):
+            for r in (0.45, 0.8, 1.2, 1.8, 2.6, 3.6, 5.0, 7.0, 9.0):
                 for k in range(16):
                     a = k * math.pi / 8
                     vx, vy = px + r * math.cos(a), py + r * math.sin(a)
@@ -1419,11 +1419,40 @@ def connect_net(model, board, name, layers=(L6, L3), extras=(0.0,)):
         for extra in extras:
             for layer in layers:
                 free = model.free(layer, (code,), HALF, extra)
-                goals = {cell_of(p): (p, via) for p, via in tb}
-                path = astar(free, [(*cell_of(p), None) for p, _ in ta], list(goals))
+
+                def snaps(p):
+                    """Free cells a straight stub away from a terminal whose own cell is walled in."""
+                    base = cell_of(p)
+                    found = []
+                    for rad in range(0, 16):
+                        for dy in range(-rad, rad + 1):
+                            for dx in range(-rad, rad + 1):
+                                if max(abs(dx), abs(dy)) != rad:
+                                    continue
+                                i, j = base[0] + dx, base[1] + dy
+                                if not (0 <= i < free.shape[1] and 0 <= j < free.shape[0]) or not free[j, i]:
+                                    continue
+                                xy = xy_of((i, j))
+                                if rad and not model.seg_ok(p[0], p[1], xy[0], xy[1], layer, (code,), HALF, extra):
+                                    continue
+                                found.append((i, j))
+                                if len(found) >= 4:
+                                    return found
+                    return found
+
+                starts, start_of = [], {}
+                for p, via in ta:
+                    for cell in snaps(p):
+                        starts.append((*cell, None))
+                        start_of.setdefault(cell, (p, via))
+                goals = {}
+                for p, via in tb:
+                    for cell in snaps(p):
+                        goals.setdefault(cell, (p, via))
+                path = astar(free, starts, list(goals))
                 if path is None:
                     continue
-                a = next((p, v) for p, v in ta if cell_of(p) == path[0])
+                a = start_of[path[0]]
                 b = goals[path[-1]]
                 pts = simplify([a[0]] + pull(free, [xy_of(c) for c in path]) + [b[0]])
                 if not model.poly_ok(pts, layer, (code,), HALF, extra):

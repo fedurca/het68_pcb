@@ -13,7 +13,7 @@ Dokument vychází z provozu prototypu, z firmware v `fedurca/het68` a z elektri
 
 | Sekce | Váha |
 |---|---|
-| §1 | **zmrazené** — nativní RP2350B, 6L Faraday Core, `J_MESH` na Heltec V3 (teď) / stamp (později), tři silové SKU, zákaz sítě na měď, LVDS k satelitům |
+| §1 | **zmrazené** — nativní RP2350B, 8L Faraday Core (dřív 6L; dvě vrstvy navíc jsou signál mezi zeměmi a druhá zem), `J_MESH` na Heltec V3 (teď) / stamp (později), tři silové SKU, zákaz sítě na měď, LVDS k satelitům |
 | §2 | omezení z firmware / fyziky — měnit jen s vědomím, že padne PIO, USB audio, DOA nebo piezo PHY |
 | §3+ | technický podklad; výběr konkrétního MPN (LVDS, GDT, MPPT) je na kusovníku, ne na vymýšlení LCSC kódů |
 
@@ -137,18 +137,20 @@ RJ45 je svislý 8P8C bez magnetik. Zástrčka míří kolmo z desky, ne do boku.
 
 110 kV satelity jako samostatné krabičky **nejsou**: MEMS uvnitř sféry, krátký vnitřní STP do stejných RJ45 na Core. Jacky zůstanou, kabely **neopustí** sféru.
 
-### 1.6 Faraday stackup Core (6L)
+### 1.6 Faraday stackup Core (8L)
 
 | Vrstva | Funkce |
 |---|---|
 | L1 F.Cu | SMT, krátké spoje, GND výplň |
 | L2 In1.Cu | souvislá GND, bez štěrbin pod I²S/SPI/RF |
-| L3 In2.Cu | stripline: I²S/PDM 1,8 V, SPI (ADXL355, flash), UART, LVDS páry |
-| L4 In3.Cu | split power: `+3V3_DIG` (hradlované), `+3V3_RF` / `+5V_ALWAYS` (vždyživé), `+1V8_AUDIO` (hradlované) |
+| L3 In2.Cu | stripline: I²S/PDM 1,8 V, SPI (ADXL355, flash), UART |
+| L4 In3.Cu | plocha `+3V3_DIG`; několik signálů, které mezi prokovy QFN jinde neprojdou |
 | L5 In4.Cu | souvislá GND |
-| L6 B.Cu | pomalé GPIO, GND výplň |
+| L6 In5.Cu | SIG_L6: páry LVDS mezi dvěma zeměmi |
+| L7 In6.Cu | souvislá GND |
+| L8 B.Cu | pomalé GPIO, GND výplň |
 
-Stopy na L3 **nekřižují** mezeru ostrovů na L4. Via stitching GND L1–L2–L5–L6 po obvodu, rozteč **1,5 mm**. Ostrov `+3V3_RF` **není** hradlovaný.
+Via stitching GND L1–L2–L5–L7–L8 po obvodu, rozteč **1,5 mm**. Ostrov `+3V3_RF` **není** hradlovaný. Počet vrstev se zvedl z 6, protože prstenec prokovů kolem QFN na třech signálových vrstvách páry a zbylé sítě nepropustil.
 
 ### 1.7 LVDS / EMC v silném rušení
 
@@ -296,7 +298,7 @@ Na Core jsou tři mikrospínače: **RESET** (`RUN` na GND), **BOOT** (`QSPI_SS` 
 
 | Deska | Vrstvy | Povrch | Kam |
 |---|---|---|---|
-| Core | 6L ENIG (QFN-80, LGA) | ENIG | JLC / standardní TPV |
+| Core | 8L ENIG (QFN-80, LGA) | ENIG | JLC / standardní TPV |
 | Satelit | 6L Faraday ENIG | ENIG | JLC / standardní TPV |
 | Silová | 2L, 70 µm | HASL nebo ENIG dle TPV | JLC / standardní TPV |
 

@@ -8,7 +8,7 @@ Firmware a geometrie pole: [fedurca/het68](https://github.com/fedurca/het68). Za
 
 ## Co to je
 
-v4 je sada **Core 6L + vyměnitelná silová deska + šest satelitů**. Na měď nepřijde 230 V, 22 kV ani 110 kV.
+v4 je sada **Core 8L + vyměnitelná silová deska + šest satelitů**. Na měď nepřijde 230 V, 22 kV ani 110 kV.
 
 **Core** (`kicad/het68-core`) nese nativní RP2350B, flash, PSRAM, USB-C, šest RJ45 s LVDS, piezo, env senzor, ADXL355, stavovou SK6812, tlačítka RESET / BOOT / USER a `J_MESH` na Heltec WiFi LoRa 32 V3 (868 MHz). MeshCore běží na Heltecu, takže uzel v síti žije, i když DSP spí. `WAKE_DSP` zapíná `+3V3_DIG`.
 
@@ -38,19 +38,19 @@ Měď: [Core](docs/img/v490/core-top.svg) · [satelit ven](docs/img/v490/sat-fro
 
 ## Vyrobitelnost
 
-Na měď nejde 230 V / 22 kV / 110 kV. Gerbery z `kicad-cli` v `kicad/*/fab/`. TPV: JLC / standardní výroba, ENIG na 6L, ≥ 0603, ne BGA. QFN-80 0,4 mm a LGA chtějí ENIG.
+Na měď nejde 230 V / 22 kV / 110 kV. Gerbery z `kicad-cli` v `kicad/*/fab/`. TPV: JLC / standardní výroba, ENIG na 6L a 8L, ≥ 0603, ne BGA. QFN-80 0,4 mm a LGA chtějí ENIG.
 
 | Deska | Rozměr | ERC error | DRC | Objednat? |
 |---|---|---|---|---|
-| Core | 160 × 100 mm, 6L Faraday, ENIG | 0 | 0 zkratů, 0 mezer, 43 otevřených párů | ne |
+| Core | 160 × 100 mm, 8L Faraday, ENIG | 0 | 0 zkratů, 0 mezer, 6 otevřených párů | ne, zbývá 6 párů u QFN |
 | Satelit | 50 × 80 mm, 6L, ven jen LED a port | 0 | 0 zkratů, 19 otevřených párů (dva jsou rohy zemních zón) | ne, dokud nejsou dotažené jack, WS a OE |
 | Silová NN/VN/VVN | 140 × 80 mm, 2L 70 µm | 0 | 0 zkratů, otevřené páry 30 / 36 / 26 | ne jako hotový zdroj |
 
-Schémata jsou elektricky uzavřená (ERC 0 chyb). Core vrtá prokov 0,30/0,15 mm, což se do rozteče QFN 0,40 mm vejde, a L4 pod procesorem je plocha `+3V3_DIG`. DRC Core nemá zkrat ani mezeru. Otevřených je 43 párů. Část z nich je původní únik z prstence QFN, zbytek jsou vývody svislého RJ45 a stopy, které nová rozteč pinů přerušila. Satelit nemá zkrat. Vzdušné zůstávají `LED` a část `SD` u jacku, `OE`, krátká mezera `SD_3V3` u `U5` a sítě slovního taktu (`WS_LVDS`, `WS_P`, `WS_T`, `WS_N`). Dva záznamy jsou rohy zemních zón.
+Schémata jsou elektricky uzavřená (ERC 0 chyb). Core je 8vrstvá: mezi GND_L5 a novou GND_L7 je SIG_L6 pro páry LVDS. Prokov je 0,30/0,15 mm. DRC Core nemá zkrat ani mezeru. Otevřených je 6 párů, všechny u vývodů QFN: `LED1_DIN`, `LED2_DIN`, `LED5_DIN`, `PIEZO_IN2`, `ADC_I`, `ADC_ROGO`. Smyčka páru mezi budičem a tlumivkou je do 50 mm² kromě `SD6` (59 mm²). Strana jacku `SD1` a `SD5` má smyčku 297 a 448 mm². Satelit nemá zkrat. Vzdušné zůstávají `LED` a část `SD` u jacku, `OE`, krátká mezera `SD_3V3` u `U5` a sítě slovního taktu (`WS_LVDS`, `WS_P`, `WS_T`, `WS_N`). Dva záznamy jsou rohy zemních zón.
 
 ## VF / EMC (silné rušení)
 
-- 6L Faraday: L2/L5 souvislá GND. Na Core je L4 jedna plocha `+3V3_DIG`. Silové desky mají L4 rozdělené. Stitch po obvodu.
+- Core je 8L Faraday: L2, L5 a L7 jsou souvislá GND, L4 je plocha `+3V3_DIG` a nese i několik signálů, které mezi prokovy QFN jinde neprošly. L6 je signál mezi dvěma zeměmi. Zem je prošitá po obvodu s roztečí 1,5 mm. Satelit zůstává 6L.
 - Diferenciální režim vozí I²S po LVDS (T568B páry). Propojka na satelitu umí i jednostranných 3,3 V a 1,8 V. Stínění je na GND na Core i na satelitu.
 - CMC na SCK, WS i SD na obou koncích; nízko-kapacitní TVS napříč párem; 100 Ω u přijímače (SN65LVDS2 / SN65LVDS32 nemají vnitřní zakončení).
 - Ferit 600 Ω na 3V3 každého jacku a na satelitu za PPTC.

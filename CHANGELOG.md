@@ -2,7 +2,16 @@
 
 Formát podle [Keep a Changelog](https://keepachangelog.com/cs/1.1.0/), verze podle [SemVer](https://semver.org/lang/cs/).
 
-Tento soubor drží řadu **4.x**. Starší tagy `v1.1.1` … `v3.0.0` zůstávají v gitu.
+Tento soubor drží řadu **4.x** a rozpracovanou 8vrstvou Core. Starší tagy `v1.1.1` … `v3.0.0` zůstávají v gitu. `v5.0.0` se nepřiřazuje, dokud Core nemá nulu otevřených párů.
+
+## [Unreleased]
+
+### Changed
+
+- Core má 8 měděných vrstev. Pod GND_L5 je SIG_L6 a pod ní GND_L7. SIG_L6 vede páry SCK, WS a SD mezi tlumivkou a budičem nebo přijímačem a dál k jacku. Pár leží mezi dvěma zemními plochami.
+- Smyčka mezi budičem a tlumivkou je do 50 mm² u 17 párů. `SD6` má 59 mm². Rozdíl délek P a N je do 2 mm kromě `WS3` (2,1 mm) a `SD6` (2,4 mm).
+- DRC Core: 0 zkratů a 0 mezer. Otevřených párů je 6: `LED1_DIN`, `LED2_DIN`, `LED5_DIN`, `PIEZO_IN2`, `ADC_I`, `ADC_ROGO`. Jejich vývod z QFN je uzavřený prstencem prokovů. `SD1` a `SD5` na straně jacku mají smyčku 297 a 448 mm².
+- Gerbery v `kicad/het68-core/fab/` obsahují SIG_L6 a GND_L7. Deska se zatím neobjednává.
 
 ## [4.9.0] — 2026-10-31
 
