@@ -8,7 +8,7 @@
     python3 kicad/tools/core_8l.py report  [board]
 
 Each step edits the board in place and saves it. Copper is removed only for
-the LVDS pairs being re-routed, vias whose drill collides with a same-net
+the LVDS nets being re-routed, vias whose drill collides with a same-net
 hole, and copper KiCad DRC reports as dangling.
 
 Lengths are millimetres. Clearances follow the board setup: 0.10 copper,
@@ -22,6 +22,7 @@ import math
 import subprocess
 import sys
 import tempfile
+import time
 from collections import defaultdict
 from pathlib import Path
 
@@ -44,6 +45,7 @@ TRACK = 0.15
 HALF = TRACK / 2
 VIA_D, VIA_DRILL = 0.30, 0.15
 VIA_R, HOLE_R = VIA_D / 2, VIA_DRILL / 2
+VIA_KEEP = HALF + max(VIA_R + CLEAR, HOLE_R + HOLE_CLEAR) + SLACK  # track centre to a foreign via
 PAIR_OFF = 0.15  # centre line to P or N: (track + gap) / 2
 PAIR_HALF = 0.30  # corridor half-width; leaves room for the mitred offset at a 90 degree corner
 LEAD = 0.6
@@ -51,9 +53,7 @@ GRID = 0.1
 CELL = 1.0
 REACH = 0.9  # largest query radius the spatial bins must cover
 
-# Pairs whose IC-to-CMC loop exceeded 50 mm2, and the four that were open.
-LVDS_PAIRS = ("SD5", "SD6", "SD2", "SD3", "SD4", "WS1", "SCK6", "SCK2", "WS2", "SCK3", "WS3")
-ALL_PAIRS = tuple(f"{k}{i}" for k in ("SCK", "WS", "SD") for i in range(1, 7))
+LVDS = tuple(f"{k}{i}" for k in ("SD", "SCK", "WS") for i in range(1, 7))
 ANALOG = ("ADC_I", "ADC_ROGO", "ADC_HARVEST")
 
 
@@ -62,7 +62,7 @@ def mm(v):
 
 
 def iu(v):
-    return pcbnew.FromMM(v)
+    return pcbnew.FromMM(float(v))
 
 
 def vec(x, y):
@@ -163,6 +163,11 @@ def pad_shape(pad, layer=F):
     return ("rect", x, y, hx, hy, ang, math.cos(a), math.sin(a))
 
 
+def pad_xy(pad):
+    p = pad.GetPosition()
+    return mm(p.x), mm(p.y)
+
+
 def poly_points(zone):
     ol = zone.Outline()
     return [(mm(ol.CVertex(i).x), mm(ol.CVertex(i).y)) for i in range(ol.TotalVertices())]
@@ -230,8 +235,7 @@ class Model:
     def add_pad(self, pad):
         attr = pad.GetAttribute()
         net = pad.GetNetCode() if pad.GetNetname() else None
-        p = pad.GetPosition()
-        x, y = mm(p.x), mm(p.y)
+        x, y = pad_xy(pad)
         if attr in (pcbnew.PAD_ATTRIB_PTH, pcbnew.PAD_ATTRIB_NPTH):
             d = pad.GetDrillSize()
             self.add_hole(x, y, max(mm(d.x), mm(d.y)) / 2, net if attr == pcbnew.PAD_ATTRIB_PTH else None)
@@ -276,7 +280,7 @@ class Model:
             self.bins[key].append(i)
         for (layer, h, extra), g in self.grids.items():
             if layer in layers:
-                self._raster(g, shape, h + CLEAR + extra + SLACK, 1)
+                self.raster(g, shape, h + CLEAR + extra + SLACK, 1)
 
     def add_hole(self, x, y, r, net):
         j = len(self.holes)
@@ -285,7 +289,7 @@ class Model:
         for key in self._cells((x - r, y - r, x + r, y + r)):
             self.hbins[key].append(j)
         for (layer, h, extra), g in self.grids.items():
-            self._raster(g, ("disc", x, y, r), h + HOLE_CLEAR + extra + SLACK, 1)
+            self.raster(g, ("disc", x, y, r), h + HOLE_CLEAR + extra + SLACK, 1)
 
     # --- exact queries -------------------------------------------------
     def inside(self, x, y, r):
@@ -348,7 +352,7 @@ class Model:
         return True
 
     # --- raster grids for A* ------------------------------------------
-    def _raster(self, g, s, R, val):
+    def raster(self, g, s, R, val):
         x0, y0, x1, y1 = shape_bbox(s)
         i0 = max(0, int(math.floor((x0 - R) / GRID)))
         i1 = min(self.nx - 1, int(math.ceil((x1 + R) / GRID)))
@@ -358,11 +362,11 @@ class Model:
             return
         X = (np.arange(i0, i1 + 1) * GRID)[None, :]
         Y = (np.arange(j0, j1 + 1) * GRID)[:, None]
-        hit = shape_dist_np(s, X, Y) < R
+        hit = (shape_dist_np(s, X, Y) < R).astype(g.dtype)
         if val > 0:
-            g[j0 : j1 + 1, i0 : i1 + 1] += hit.astype(np.int16)
+            g[j0 : j1 + 1, i0 : i1 + 1] += hit
         else:
-            g[j0 : j1 + 1, i0 : i1 + 1] -= hit.astype(np.int16)
+            g[j0 : j1 + 1, i0 : i1 + 1] -= hit
 
     def grid(self, layer, h, extra=0.0):
         key = (layer, round(h, 4), round(extra, 4))
@@ -377,16 +381,14 @@ class Model:
         g[(Y < self.ey0 + m) | (Y > self.ey1 - m), :] += 1
         for s, layers, net in self.items:
             if layer in layers:
-                self._raster(g, s, h + CLEAR + extra + SLACK, 1)
+                self.raster(g, s, h + CLEAR + extra + SLACK, 1)
         for x, y, r, net in self.holes:
-            self._raster(g, ("disc", x, y, r), h + HOLE_CLEAR + extra + SLACK, 1)
+            self.raster(g, ("disc", x, y, r), h + HOLE_CLEAR + extra + SLACK, 1)
         for layers, pts in self.keep_track:
             if layer in layers:
                 xs, ys = [p[0] for p in pts], [p[1] for p in pts]
-                i0, i1 = int((min(xs) - h) / GRID), int((max(xs) + h) / GRID) + 1
-                j0, j1 = int((min(ys) - h) / GRID), int((max(ys) + h) / GRID) + 1
-                for j in range(max(0, j0), min(self.ny, j1 + 1)):
-                    for i in range(max(0, i0), min(self.nx, i1 + 1)):
+                for j in range(max(0, int((min(ys) - h) / GRID)), min(self.ny, int((max(ys) + h) / GRID) + 2)):
+                    for i in range(max(0, int((min(xs) - h) / GRID)), min(self.nx, int((max(xs) + h) / GRID) + 2)):
                         if in_poly(i * GRID, j * GRID, pts) or poly_dist(i * GRID, j * GRID, pts) < h + SLACK:
                             g[j, i] += 1
         self.grids[key] = g
@@ -398,10 +400,10 @@ class Model:
             for i in self.net_items.get(net, ()):
                 s, layers, _ = self.items[i]
                 if layer in layers:
-                    self._raster(g, s, h + CLEAR + extra + SLACK, -1)
+                    self.raster(g, s, h + CLEAR + extra + SLACK, -1)
             for j in self.net_holes.get(net, ()):
                 x, y, r, _ = self.holes[j]
-                self._raster(g, ("disc", x, y, r), h + HOLE_CLEAR + extra + SLACK, -1)
+                self.raster(g, ("disc", x, y, r), h + HOLE_CLEAR + extra + SLACK, -1)
         return g == 0
 
 
@@ -443,6 +445,14 @@ def save(board, path):
     pcbnew.SaveBoard(str(path), board)
 
 
+def delete(board, items):
+    # BOARD.Remove() hands ownership to Python and corrupts the SWIG type table
+    # once the wrappers are collected; Delete() frees the item on the C++ side.
+    for it in items:
+        board.Delete(it)
+    return len(items)
+
+
 def drc(path, severity="error"):
     with tempfile.TemporaryDirectory() as tmp:
         out = Path(tmp) / "drc.json"
@@ -470,8 +480,24 @@ DIRS = ((1, 0), (1, 1), (0, 1), (-1, 1), (-1, 0), (-1, -1), (0, -1), (1, -1))
 SQ2 = math.sqrt(2.0)
 
 
-def astar(free, starts, goals, turn=0.4, weight=1.2, limit=4_000_000):
-    """8-connected A* on a boolean grid. Turns sharper than 90 degrees are not taken."""
+def turn_steps(a, b):
+    return min((a - b) % 8, (b - a) % 8)
+
+
+def dir_index(u):
+    best, bi = -9.0, 0
+    for i, (dx, dy) in enumerate(DIRS):
+        d = (u[0] * dx + u[1] * dy) / math.hypot(dx, dy)
+        if d > best:
+            best, bi = d, i
+    return bi
+
+
+def astar(free, starts, goals, goal_dir=None, turn=0.4, weight=1.25, limit=600_000):
+    """8-connected A* on a boolean grid without turns sharper than 90 degrees.
+
+    starts: (i, j, direction or None). With goal_dir the last step into a goal
+    must be within 90 degrees of it."""
     ny, nx = free.shape
     fb = free.astype(np.uint8).tobytes()
     goal_set = {g for g in goals if 0 <= g[0] < nx and 0 <= g[1] < ny and fb[g[1] * nx + g[0]]}
@@ -490,9 +516,7 @@ def astar(free, starts, goals, turn=0.4, weight=1.2, limit=4_000_000):
 
     openh = []
     gsc, parent, dirn = {}, {}, {}
-    for s in starts:
-        i, j = s[0], s[1]
-        d0 = s[2] if len(s) > 2 else None
+    for i, j, d0 in starts:
         if 0 <= i < nx and 0 <= j < ny and fb[j * nx + i]:
             gsc[(i, j)] = 0.0
             parent[(i, j)] = None
@@ -514,7 +538,7 @@ def astar(free, starts, goals, turn=0.4, weight=1.2, limit=4_000_000):
             return path[::-1]
         d0 = dirn[k]
         for di, (dx, dy) in enumerate(DIRS):
-            if d0 is not None and min((di - d0) % 8, (d0 - di) % 8) > 2:
+            if d0 is not None and turn_steps(di, d0) > 2:
                 continue
             ni, nj = i + dx, j + dy
             if not (0 <= ni < nx and 0 <= nj < ny) or not fb[nj * nx + ni]:
@@ -524,6 +548,8 @@ def astar(free, starts, goals, turn=0.4, weight=1.2, limit=4_000_000):
             nk = (ni, nj)
             if nk in closed:
                 continue
+            if goal_dir is not None and nk in goal_set and turn_steps(di, goal_dir) > 2:
+                continue
             ng = gc + (SQ2 if dx and dy else 1.0) + (turn if d0 is not None and d0 != di else 0.0)
             if ng < gsc.get(nk, 1e18):
                 gsc[nk] = ng
@@ -531,6 +557,52 @@ def astar(free, starts, goals, turn=0.4, weight=1.2, limit=4_000_000):
                 dirn[nk] = di
                 heapq.heappush(openh, (ng + weight * heur(ni, nj), ng, ni, nj))
     return None
+
+
+def regions(free):
+    """4-connected regions of a boolean grid, labelled run by run. Returns label(i, j), -1 if blocked.
+    A* only cuts a corner between two free cells, so it never connects what this separates."""
+    parent = []
+
+    def find(a):
+        while parent[a] != a:
+            parent[a] = parent[parent[a]]
+            a = parent[a]
+        return a
+
+    rows = []
+    prev = None
+    pad = np.zeros(1, np.int8)
+    for row in free.astype(np.int8):
+        d = np.diff(np.concatenate((pad, row, pad)))
+        starts, ends = np.flatnonzero(d == 1), np.flatnonzero(d == -1)
+        base = len(parent)
+        parent.extend(range(base, base + len(starts)))
+        if prev is not None:
+            ps, pe, pbase = prev
+            k = 0
+            for i in range(len(starts)):
+                s, e = starts[i], ends[i]
+                while k < len(ps) and pe[k] <= s:
+                    k += 1
+                kk = k
+                while kk < len(ps) and ps[kk] < e:
+                    ra, rb = find(base + i), find(pbase + kk)
+                    if ra != rb:
+                        parent[rb] = ra
+                    kk += 1
+        rows.append((starts, ends, base))
+        prev = (starts, ends, base)
+    roots = [find(i) for i in range(len(parent))]
+
+    def label(i, j):
+        if not (0 <= j < len(rows)):
+            return -1
+        starts, ends, base = rows[j]
+        k = int(np.searchsorted(starts, i, side="right")) - 1
+        return roots[base + k] if k >= 0 and i < ends[k] else -1
+
+    return label
 
 
 def simplify(pts):
@@ -560,28 +632,25 @@ def line_free(fb, nx, ny, a, b):
     return True
 
 
-def pull(free, pts, max_turn_deg=90.0):
-    """Drop vertices while the straight shortcut stays on free cells."""
+def pull(free, pts, u_in=None, u_out=None):
+    """Drop vertices while the shortcut stays on free cells and no turn exceeds 90 degrees."""
     ny, nx = free.shape
     fb = free.astype(np.uint8).tobytes()
     out = [pts[0]]
+    prev = u_in
     i = 0
     while i < len(pts) - 1:
         j = len(pts) - 1
         while j > i + 1:
             if line_free(fb, nx, ny, pts[i], pts[j]):
-                if len(out) >= 2:
-                    a, b, c = out[-2], out[-1], pts[j]
-                    u = (b[0] - a[0], b[1] - a[1])
-                    v = (c[0] - b[0], c[1] - b[1])
-                    nu, nv = math.hypot(*u), math.hypot(*v)
-                    if nu > 1e-9 and nv > 1e-9:
-                        cosang = (u[0] * v[0] + u[1] * v[1]) / (nu * nv)
-                        if cosang < math.cos(math.radians(max_turn_deg)) - 1e-9:
-                            j -= 1
-                            continue
-                break
+                d = unit(pts[j][0] - pts[i][0], pts[j][1] - pts[i][1])
+                ok = prev is None or d[0] * prev[0] + d[1] * prev[1] >= 0.0
+                if ok and j == len(pts) - 1 and u_out is not None:
+                    ok = d[0] * u_out[0] + d[1] * u_out[1] >= 0.0
+                if ok:
+                    break
             j -= 1
+        prev = unit(pts[j][0] - pts[i][0], pts[j][1] - pts[i][1])
         out.append(pts[j])
         i = j
     return simplify(out)
@@ -629,6 +698,42 @@ def offset(pts, off):
     return out
 
 
+TURN_COS = -0.1  # turns up to about 95 degrees; grid snapping tilts the leads a little
+
+
+def turns_ok(pts):
+    for a, b, c in zip(pts, pts[1:], pts[2:]):
+        u, v = unit(b[0] - a[0], b[1] - a[1]), unit(c[0] - b[0], c[1] - b[1])
+        if u[0] * v[0] + u[1] * v[1] < TURN_COS:
+            return False
+    return True
+
+
+def smooth(free, pts, min_seg=0.5):
+    """Drop vertices around centre-line segments shorter than min_seg; the inner
+    offset of such a segment folds back. The leads at both ends stay."""
+    ny, nx = free.shape
+    fb = free.astype(np.uint8).tobytes()
+    pts = list(pts)
+    changed = True
+    while changed:
+        changed = False
+        for i in range(1, len(pts) - 2):
+            if math.dist(pts[i], pts[i + 1]) >= min_seg:
+                continue
+            for drop in (i + 1, i):
+                if drop <= 1 or drop >= len(pts) - 2:
+                    continue
+                cand = pts[:drop] + pts[drop + 1 :]
+                if line_free(fb, nx, ny, cand[drop - 1], cand[drop]) and turns_ok(cand[max(0, drop - 2) : drop + 2]):
+                    pts = cand
+                    changed = True
+                    break
+            if changed:
+                break
+    return pts
+
+
 def poly_len(pts):
     return sum(math.hypot(b[0] - a[0], b[1] - a[1]) for a, b in zip(pts, pts[1:]))
 
@@ -641,64 +746,444 @@ def poly_gap(p1, p2):
     return best
 
 
-class End:
-    """One end of a pair: via positions, F.Cu stubs to the pads, lead axis."""
+def point_poly(p, pts):
+    return min(dist_seg(p[0], p[1], a[0], a[1], b[0], b[1]) for a, b in zip(pts, pts[1:]))
 
-    def __init__(self, vp, vn, stub_p, stub_n, axis):
+
+class End:
+    """Where a pair route lands: P and N copper points and the start of the centre line.
+
+    leads are the directions a route may leave in; it arrives against one of them."""
+
+    def __init__(self, vp, vn, mid=None, leads=None, stub_p=(), stub_n=(), new_vias=True, label="", layer=None):
+        self.layer = layer  # set when the fan-out to the pins exists only on that layer
         self.vp, self.vn = vp, vn
-        self.stub_p, self.stub_n = stub_p, stub_n
-        self.mid = ((vp[0] + vn[0]) / 2, (vp[1] + vn[1]) / 2)
-        self.axis = axis  # unit vector, leads run along +axis or -axis
+        self.mid = mid or ((vp[0] + vn[0]) / 2, (vp[1] + vn[1]) / 2)
+        if leads is None:
+            ax = unit(-(vp[1] - vn[1]), vp[0] - vn[0])
+            leads = [ax, (-ax[0], -ax[1])]
+        self.leads = leads
+        self.stub_p, self.stub_n = list(stub_p), list(stub_n)
+        self.stub_layer = F
+        self.new_vias = new_vias
+        self.label = label
+        self.drawn = False
 
     def side(self, u):
         n = left(u)
-        return 1 if (self.vp[0] - self.mid[0]) * n[0] + (self.vp[1] - self.mid[1]) * n[1] > 0 else -1
+        return 1 if (self.vp[0] - self.vn[0]) * n[0] + (self.vp[1] - self.vn[1]) * n[1] > 0 else -1
+
+
+class Route:
+    def __init__(self, start, end, u0, u1, p, n, layer):
+        self.start, self.end, self.u0, self.u1 = start, end, u0, u1
+        self.p, self.n, self.layer = p, n, layer
 
 
 def pad_info(pad):
-    p = pad.GetPosition()
+    x, y = pad_xy(pad)
     s = pad_size(pad, F)
     a = math.radians(pad.GetOrientation().AsDegrees())
     hx, hy = mm(s.x) / 2, mm(s.y) / 2
     long_axis = (math.cos(a), -math.sin(a)) if hx >= hy else (math.sin(a), math.cos(a))
-    return mm(p.x), mm(p.y), long_axis, max(hx, hy)
+    return x, y, long_axis, max(hx, hy)
 
 
 def outward(pad):
     x, y, ax, hl = pad_info(pad)
-    fp = pad.GetParentFootprint()
-    c = fp.GetPosition()
-    cx, cy = mm(c.x), mm(c.y)
-    if (x - cx) * ax[0] + (y - cy) * ax[1] < 0:
+    c = pad.GetParentFootprint().GetPosition()
+    if (x - mm(c.x)) * ax[0] + (y - mm(c.y)) * ax[1] < 0:
         ax = (-ax[0], -ax[1])
     return ax, hl
 
 
-def end_candidates(model, p_xy, n_xy, o, hl, netp, netn, pre_p=(), pre_n=(), inward=False, limit=2):
-    """Via pairs in line with two pads, outward along o (and under the body if inward)."""
-    found = []
-    sides = (1, -1) if inward else (1,)
-    for sgn in sides:
-        for k in (0.25, 0.45, 0.7, 1.0, 1.4, 1.9, 2.5, 3.2, 4.0):
-            d = hl + k if sgn > 0 else -(hl + 0.35 + k)
-            vp = (p_xy[0] + o[0] * d, p_xy[1] + o[1] * d)
-            vn = (n_xy[0] + o[0] * d, n_xy[1] + o[1] * d)
-            if math.hypot(vp[0] - vn[0], vp[1] - vn[1]) < 0.45:
+def smd_pair_ends(model, pad_p, pad_n, netp, netn, want=6, reach=3.0):
+    """Via pairs for two SMD pads: a via in each pad first, then vias on short stubs."""
+    xp, yp = pad_xy(pad_p)
+    xn, yn = pad_xy(pad_n)
+    o, hl = outward(pad_p)
+    out = []
+    lim = max(0.0, hl - VIA_R - 0.02)
+    for t in (0.0, 0.5, -0.5, 1.0, -1.0):
+        vp = (xp + o[0] * t * lim, yp + o[1] * t * lim)
+        vn = (xn + o[0] * t * lim, yn + o[1] * t * lim)
+        if math.dist(vp, vn) >= 0.45 and model.via_ok(*vp, netp) and model.via_ok(*vn, netn):
+            out.append(End(vp, vn, label="via in pad"))
+            break
+    cx, cy = (xp + xn) / 2, (yp + yn) / 2
+    cands = []
+    steps = np.arange(-reach, reach + 1e-9, 0.25)
+    for dx in steps:
+        for dy in steps:
+            for horiz in (True, False):
+                a = (cx + dx - 0.3, cy + dy) if horiz else (cx + dx, cy + dy - 0.3)
+                b = (cx + dx + 0.3, cy + dy) if horiz else (cx + dx, cy + dy + 0.3)
+                c1 = math.dist(a, (xp, yp)) + math.dist(b, (xn, yn))
+                c2 = math.dist(b, (xp, yp)) + math.dist(a, (xn, yn))
+                cands.append((c1, a, b) if c1 <= c2 else (c2, b, a))
+    cands.sort(key=lambda c: c[0])
+    for cost, vp, vn in cands:
+        if len(out) >= want or cost > 2 * reach + 1.0:
+            break
+        if not (model.via_ok(*vp, netp) and model.via_ok(*vn, netn)):
+            continue
+        sp, sn = [(xp, yp), vp], [(xn, yn), vn]
+        if not (model.poly_ok(sp, F, (netp,)) and model.poly_ok(sn, F, (netn,))):
+            continue
+        if poly_gap(sp, sn) < TRACK + CLEAR + SLACK:
+            continue
+        if point_poly(vn, sp) < VIA_KEEP or point_poly(vp, sn) < VIA_KEEP:
+            continue
+        out.append(End(vp, vn, stub_p=sp, stub_n=sn, label="vias beside"))
+    return out
+
+
+def pin_pair_ends(model, pin_p, pin_n, netp, netn, away=(0.0, 1.0), layer=L6, want=8):
+    """Junctions next to two through-hole pins, P and N fanning out to the pins on the
+    routing layer. The pair leaves roughly along `away`."""
+    xp, yp = pad_xy(pin_p)
+    xn, yn = pad_xy(pin_n)
+    m = ((xp + xn) / 2, (yp + yn) / 2)
+    cands = []
+    for r in (1.2, 1.6, 2.0, 2.5, 3.0, 3.6, 4.3, 5.0, 6.0):
+        for k in range(48):
+            a = 2 * math.pi * k / 48
+            u = (math.cos(a), math.sin(a))
+            facing = u[0] * away[0] + u[1] * away[1]
+            if facing < 0.3:
                 continue
-            if not (model.via_ok(*vp, netp) and model.via_ok(*vn, netn)):
+            j = (m[0] + r * u[0], m[1] + r * u[1])
+            cands.append((r - facing, j, u))
+    cands.sort(key=lambda c: c[0])
+    out = []
+    for _, j, u in cands:
+        e = End((xp, yp), (xn, yn), mid=j, leads=[u], new_vias=False, label="pins", layer=layer)
+        s = e.side(u)
+        n = left(u)
+        pj = (j[0] + n[0] * s * PAIR_OFF, j[1] + n[1] * s * PAIR_OFF)
+        nj = (j[0] - n[0] * s * PAIR_OFF, j[1] - n[1] * s * PAIR_OFF)
+        pl = [(xp, yp), pj, (pj[0] + u[0] * LEAD, pj[1] + u[1] * LEAD)]
+        nl = [(xn, yn), nj, (nj[0] + u[0] * LEAD, nj[1] + u[1] * LEAD)]
+        if not (model.poly_ok(pl, layer, (netp,)) and model.poly_ok(nl, layer, (netn,))):
+            continue
+        if poly_gap(pl, nl) < TRACK + CLEAR + SLACK:
+            continue
+        if any(math.dist(j, o.mid) < 0.4 for o in out):
+            continue
+        out.append(e)
+        if len(out) >= want:
+            break
+    return out
+
+
+def courtyard_box(fp):
+    try:
+        fp.BuildCourtyardCaches()
+    except Exception:
+        pass
+    try:
+        cy = fp.GetCourtyard(pcbnew.F_CrtYd)
+        if cy.OutlineCount() > 0:
+            bb = cy.BBox()
+            return mm(bb.GetX()), mm(bb.GetY()), mm(bb.GetRight()), mm(bb.GetBottom())
+    except Exception:
+        pass
+    bb = fp.GetBoundingBox(False)
+    return mm(bb.GetX()), mm(bb.GetY()), mm(bb.GetRight()), mm(bb.GetBottom())
+
+
+def boxes_overlap(a, b, gap=0.0):
+    return not (a[2] + gap <= b[0] or b[2] + gap <= a[0] or a[3] + gap <= b[1] or b[3] + gap <= a[1])
+
+
+def pad_clear(model, pad, net):
+    s = pad_shape(pad, F)
+    x0, y0, x1, y1 = shape_bbox(s)
+    for gx in np.linspace(x0, x1, 5):
+        for gy in np.linspace(y0, y1, 5):
+            if shape_dist(s, gx, gy) <= 1e-6 and not model.copper_ok(gx, gy, F, (net,), 0.0):
+                return False
+    return True
+
+
+def terminator_ends(board, model, rfp, ic_p, ic_n, from_xy, netp, netn, want=12):
+    """Spots for the 100 ohm resistor beside the receiver.
+
+    Each spot keeps a via in the resistor pads, a short F.Cu run from the receiver
+    pins, and a lead facing the choke so the pair arrives from that side.
+    Returns (End, (x, y, rotation)); the footprint is left where it was."""
+    pos0, rot0 = rfp.GetPosition(), rfp.GetOrientationDegrees()
+    rp = next(p for p in rfp.Pads() if p.GetNetCode() == netp)
+    rn = next(p for p in rfp.Pads() if p.GetNetCode() == netn)
+    near = tuple((a + b) / 2 for a, b in zip(pad_xy(ic_p), pad_xy(ic_n)))
+    others = [courtyard_box(f) for f in board.GetFootprints() if f.GetReference() != rfp.GetReference()]
+    out = []
+    try:
+        for r in (2.2, 2.8, 3.4, 4.2, 5.2, 6.4, 8.0):
+            for k in range(24):
+                a = 2 * math.pi * k / 24
+                centre = (near[0] + r * math.cos(a), near[1] + r * math.sin(a))
+                arrive = unit(from_xy[0] - centre[0], from_xy[1] - centre[1])
+                for rot in (0.0, 90.0, 180.0, 270.0):
+                    rfp.SetPosition(vec(*centre))
+                    rfp.SetOrientationDegrees(rot)
+                    box = courtyard_box(rfp)
+                    if not (model.inside(box[0], box[1], 0.0) and model.inside(box[2], box[3], 0.0)):
+                        continue
+                    if any(boxes_overlap(box, ob, 0.05) for ob in others):
+                        continue
+                    if not (pad_clear(model, rp, netp) and pad_clear(model, rn, netn)):
+                        continue
+                    vp, vn = pad_xy(rp), pad_xy(rn)
+                    across = unit(vp[0] - vn[0], vp[1] - vn[1])
+                    if abs(across[0] * arrive[0] + across[1] * arrive[1]) > 0.45:
+                        continue
+                    if not (model.via_ok(*vp, netp) and model.via_ok(*vn, netn)):
+                        continue
+                    sp, sn = [pad_xy(ic_p), vp], [pad_xy(ic_n), vn]
+                    if not (model.poly_ok(sp, F, (netp,)) and model.poly_ok(sn, F, (netn,))):
+                        continue
+                    if poly_gap(sp, sn) < TRACK + CLEAR + SLACK:
+                        continue
+                    out.append((End(vp, vn, leads=[arrive], stub_p=sp, stub_n=sn, label=rfp.GetReference()),
+                                (centre[0], centre[1], rot)))
+                    if len(out) >= want:
+                        return out
+        return out
+    finally:
+        rfp.SetPosition(pos0)
+        rfp.SetOrientationDegrees(rot0)
+
+
+def avoid_mask(model, polys, keep_clear_at, radius=1.0):
+    g = np.zeros((model.ny, model.nx), np.int16)
+    for poly in polys:
+        for a, b in zip(poly, poly[1:]):
+            model.raster(g, ("stad", a[0], a[1], b[0], b[1], HALF), PAIR_HALF + CLEAR + SLACK, 1)
+    x, y = keep_clear_at
+    i0, i1 = max(0, int((x - radius) / GRID)), min(model.nx - 1, int((x + radius) / GRID) + 1)
+    j0, j1 = max(0, int((y - radius) / GRID)), min(model.ny - 1, int((y + radius) / GRID) + 1)
+    X = (np.arange(i0, i1 + 1) * GRID)[None, :]
+    Y = (np.arange(j0, j1 + 1) * GRID)[:, None]
+    near = np.hypot(X - x, Y - y) < radius
+    g[j0 : j1 + 1, i0 : i1 + 1][near] = 0
+    return g > 0
+
+
+def pair_ok(model, codes, p, n, layer, ends, others):
+    if not (model.poly_ok(p, layer, (codes[0],)) and model.poly_ok(n, layer, (codes[1],))):
+        return False
+    if poly_gap(p, n) < TRACK + CLEAR + SLACK:
+        return False
+    for e in ends:
+        if e.new_vias and (point_poly(e.vn, p) < VIA_KEEP or point_poly(e.vp, n) < VIA_KEEP):
+            return False
+    for poly, code in others:
+        mine = n if code == codes[0] else p
+        if poly_gap(mine, poly) < TRACK + CLEAR + SLACK:
+            return False
+    return True
+
+
+def lead_cell(p, u, length=LEAD):
+    """Grid cell about `length` from p along u, never behind the requested length."""
+    c = cell_of((p[0] + u[0] * length, p[1] + u[1] * length))
+    q = xy_of(c)
+    while (q[0] - p[0]) * u[0] + (q[1] - p[1]) * u[1] < length - GRID / 2:
+        c = cell_of((q[0] + u[0] * GRID, q[1] + u[1] * GRID))
+        q = xy_of(c)
+    return c, q
+
+
+def route_pairs(model, codes, starts, ends, lead=None, others=(), layer=L6, tries=24, deadline=None, half=None):
+    """Yield routes between start and end candidates; P and N are offsets of one centre line.
+
+    The search corridor starts at 0.30 mm and narrows to 0.20 mm, so a pair can
+    pass a gap the wide corridor cannot enter. The drawn copper is checked exactly."""
+    if half is None:
+        produced = False
+        for h in (PAIR_HALF, 0.24, 0.20):
+            for route in route_pairs(model, codes, starts, ends, lead, others, layer, tries, deadline, h):
+                produced = True
+                yield route
+            if produced or (deadline and time.time() > deadline):
+                return
+        return
+    base = model.free(layer, codes, half)
+    base_label = None
+    n_try = 0
+    starts = [s for s in starts if s.layer in (None, layer)]
+    ends = [e for e in ends if e.layer in (None, layer)]
+    for s in starts:
+        for u0 in ([lead] if lead is not None else s.leads):
+            side = s.side(u0)
+            a0 = s.mid
+            c0, a1 = lead_cell(a0, u0)
+            if others:
+                free = base & ~avoid_mask(model, [poly for poly, _ in others], a0)
+                label = regions(free)
+            else:
+                free = base
+                base_label = base_label or regions(base)
+                label = base_label
+            if label(*c0) < 0:
                 continue
-            sp = list(pre_p) + [p_xy, vp]
-            sn = list(pre_n) + [n_xy, vn]
-            if not (model.poly_ok(sp, F, (netp,)) and model.poly_ok(sn, F, (netn,))):
-                continue
-            if poly_gap(sp, sn) < TRACK + CLEAR + SLACK:
-                continue
-            found.append(End(vp, vn, sp, sn, o))
-            if sum(1 for e in found if (e.mid[0] - p_xy[0]) * o[0] + (e.mid[1] - p_xy[1]) * o[1] > 0) >= limit and sgn > 0:
-                break
-            if sgn < 0 and len(found) >= 2 * limit:
-                break
-    return found
+            for e in ends:
+                for u1 in [(-l[0], -l[1]) for l in e.leads]:
+                    if e.side(u1) != side:
+                        continue
+                    b1 = e.mid
+                    c1, b0 = lead_cell(b1, (-u1[0], -u1[1]))
+                    if label(*c1) != label(*c0):
+                        continue
+                    n_try += 1
+                    if n_try > tries or (deadline and time.time() > deadline):
+                        return
+                    path = astar(free, [(c0[0], c0[1], dir_index(u0))], [c1], goal_dir=dir_index(u1))
+                    if path is None:
+                        continue
+                    mid = pull(free, [xy_of(c) for c in path], u0, u1)
+                    centre = smooth(free, simplify([a0, a1] + mid + [b0, b1]))
+                    if not turns_ok(centre):
+                        continue
+                    pl = offset(centre, side * PAIR_OFF)
+                    nl = offset(centre, -side * PAIR_OFF)
+                    p_full = simplify([s.vp] + pl + [e.vp])
+                    n_full = simplify([s.vn] + nl + [e.vn])
+                    if pair_ok(model, codes, p_full, n_full, layer, (s, e), others):
+                        yield Route(s, e, u0, u1, p_full, n_full, layer)
+
+
+def route_chain(model, codes, cand_lists, layers=(L6, L3), branch=3, budget=240.0):
+    """Route through a chain of nodes; a middle node is passed straight through.
+    Each leg tries SIG_L6 first, then SIG_L3; the nodes are vias or THT pins."""
+    deadline = time.time() + budget
+
+    def rec(idx, starts, lead, done, others):
+        if idx == len(cand_lists) - 1:
+            return done
+        for layer in layers:
+            same = [(poly, code) for poly, code, l in others if l == layer]
+            tried = set()
+            for r in route_pairs(model, codes, starts, cand_lists[idx + 1], lead, same, layer, deadline=deadline):
+                # What the next leg depends on: where this one lands and in which direction.
+                key = (id(r.end), round(r.u1[0], 2), round(r.u1[1], 2))
+                if key in tried:
+                    continue
+                tried.add(key)
+                if len(tried) > branch:
+                    break
+                res = rec(idx + 1, [r.end], r.u1, done + [r],
+                          others + [(r.p, codes[0], layer), (r.n, codes[1], layer)])
+                if res:
+                    return res
+        return None
+
+    return rec(0, cand_lists[0], None, [], [])
+
+
+def draw_route(board, model, r, netp, netn):
+    for e in (r.start, r.end):
+        if not e.drawn:
+            draw_poly(board, model, e.stub_p, e.stub_layer, netp)
+            draw_poly(board, model, e.stub_n, e.stub_layer, netn)
+            if e.new_vias:
+                draw_via(board, model, *e.vp, netp)
+                draw_via(board, model, *e.vn, netn)
+        e.drawn = True
+    draw_poly(board, model, r.p, r.layer, netp)
+    draw_poly(board, model, r.n, r.layer, netn)
+
+
+def gather_jack(model, pin_p, pin_n, netp, netn):
+    """Bring two far-apart jack pins together south of the connector, then run them as a pair.
+
+    WS pins sit four positions apart, so no coupled corridor fits between the holes."""
+    xp, yp = pad_xy(pin_p)
+    xn, yn = pad_xy(pin_n)
+    y0 = max(yp, yn)
+    out = []
+    # Start far enough south that the coupled pair is clear of the jack holes.
+    for layer in (F, L6, L3):
+        for extra in (5.0, 7.0, 9.5, 13.0):
+            y = y0 + extra
+            mid_x = (xp + xn) / 2
+            for x in (mid_x, mid_x - 1, mid_x + 1, mid_x - 2, mid_x + 2, xp, xn):
+                # Vias need 0.40 mm between centres; the running pair is only 0.30 mm.
+                vp, vn = (x - 0.25, y), (x + 0.25, y)
+                if layer == F and not (model.via_ok(*vp, netp) and model.via_ok(*vn, netn)):
+                    continue
+                sp = [(xp, yp), (xp, y), vp]
+                sn = [(xn, yn), (xn, y), vn]
+                if not (model.poly_ok(sp, layer, (netp,)) and model.poly_ok(sn, layer, (netn,))):
+                    continue
+                if poly_gap(sp, sn) < TRACK + CLEAR + SLACK:
+                    continue
+                # A surface escape needs vias. An inner escape is already on the pair layer.
+                end = End(vp, vn, leads=[(0.0, 1.0)], stub_p=sp, stub_n=sn, new_vias=(layer == F),
+                          layer=None if layer == F else layer, label="gathered")
+                end.stub_layer = layer
+                out.append(end)
+                if len(out) >= 6:
+                    return out
+    return out
+
+
+def connect_terminator(board, model, rfp, ic_p, ic_n, netp, netn):
+    """Park the 100 ohm resistor by the receiver and tie each pad to its pin on F.Cu."""
+    pos0, rot0 = rfp.GetPosition(), rfp.GetOrientationDegrees()
+    rp = next(p for p in rfp.Pads() if p.GetNetCode() == netp)
+    rn = next(p for p in rfp.Pads() if p.GetNetCode() == netn)
+    near = tuple((a + b) / 2 for a, b in zip(pad_xy(ic_p), pad_xy(ic_n)))
+    others = [courtyard_box(f) for f in board.GetFootprints() if f.GetReference() != rfp.GetReference()]
+    try:
+        for radius in (3.0, 4.0, 5.2, 6.6, 8.2, 10.0):
+            for k in range(24):
+                ang = 2 * math.pi * k / 24
+                centre = (near[0] + radius * math.cos(ang), near[1] + radius * math.sin(ang))
+                for rot in (0.0, 90.0, 180.0, 270.0):
+                    rfp.SetPosition(vec(*centre))
+                    rfp.SetOrientationDegrees(rot)
+                    box = courtyard_box(rfp)
+                    if not (model.inside(box[0], box[1], 0.0) and model.inside(box[2], box[3], 0.0)):
+                        continue
+                    if any(boxes_overlap(box, ob, 0.05) for ob in others):
+                        continue
+                    if not (pad_clear(model, rp, netp) and pad_clear(model, rn, netn)):
+                        continue
+                    vp, vn = pad_xy(rp), pad_xy(rn)
+                    stubs = []
+                    ok = True
+                    for src, dst, net in ((pad_xy(ic_p), vp, netp), (pad_xy(ic_n), vn, netn)):
+                        options = ([src, dst], [src, (dst[0], src[1]), dst], [src, (src[0], dst[1]), dst])
+                        chosen = next((p for p in options if model.poly_ok(p, F, (net,))), None)
+                        if chosen is None:
+                            ok = False
+                            break
+                        stubs.append(chosen)
+                    if not ok or poly_gap(stubs[0], stubs[1]) < TRACK + CLEAR + SLACK:
+                        continue
+                    draw_poly(board, model, stubs[0], F, rp.GetNet())
+                    draw_poly(board, model, stubs[1], F, rn.GetNet())
+                    return True
+        rfp.SetPosition(pos0)
+        rfp.SetOrientationDegrees(rot0)
+        return False
+    except Exception:
+        rfp.SetPosition(pos0)
+        rfp.SetOrientationDegrees(rot0)
+        raise
+
+
+def ground_near(model, board, gnd, x, y):
+    for r in (0.7, 0.9, 1.2, 1.5, 1.9):
+        for k in range(16):
+            a = k * math.pi / 8
+            gx, gy = x + r * math.cos(a), y + r * math.sin(a)
+            if model.via_ok(gx, gy, gnd.GetNetCode()):
+                draw_via(board, model, gx, gy, gnd)
+                return 1
+    return 0
 
 
 # --- stackup -------------------------------------------------------------
@@ -738,200 +1223,95 @@ def pads_by_net(board):
     return out
 
 
-def rip_up(board, names):
-    kill = [t for t in board.GetTracks() if t.GetNetname() in names]
-    for t in kill:
-        board.Remove(t)
-    return len(kill)
+def pick(pads, prefix):
+    return next(p for p in pads if p.GetParentFootprint().GetReference().startswith(prefix))
 
 
-def courtyard_box(fp):
-    try:
-        fp.BuildCourtyardCaches()
-    except Exception:
-        pass
-    try:
-        cy = fp.GetCourtyard(pcbnew.F_CrtYd)
-        if cy.OutlineCount() > 0:
-            bb = cy.BBox()
-            return mm(bb.GetX()), mm(bb.GetY()), mm(bb.GetRight()), mm(bb.GetBottom())
-    except Exception:
-        pass
-    bb = fp.GetBoundingBox(False)
-    return mm(bb.GetX()), mm(bb.GetY()), mm(bb.GetRight()), mm(bb.GetBottom())
-
-
-def boxes_overlap(a, b, gap=0.0):
-    return not (a[2] + gap <= b[0] or b[2] + gap <= a[0] or a[3] + gap <= b[1] or b[3] + gap <= a[1])
-
-
-def place_terminator(board, model, rfp, pin_p, pin_n, netp, netn):
-    """Move the 100 ohm resistor next to the receiver pins; returns the new End or None."""
-    o, hl = outward(pin_p)
-    row = (-o[1], o[0])
-    px, py = mm(pin_p.GetPosition().x), mm(pin_p.GetPosition().y)
-    nx_, ny_ = mm(pin_n.GetPosition().x), mm(pin_n.GetPosition().y)
-    mid = ((px + nx_) / 2, (py + ny_) / 2)
-    others = [(f, courtyard_box(f)) for f in board.GetFootprints() if f.GetReference() != rfp.GetReference()]
-    old_pos, old_rot = rfp.GetPosition(), rfp.GetOrientation().AsDegrees()
-    rpads = {p.GetNetCode(): p for p in rfp.Pads()}
-    for k in (hl + 0.95, hl + 1.2, hl + 1.5, hl + 1.9, hl + 2.4):
-        for shift in (0.0, 0.25, -0.25, 0.5, -0.5, 0.8, -0.8):
-            c = (mid[0] + o[0] * k + row[0] * shift, mid[1] + o[1] * k + row[1] * shift)
-            for rot in (90.0, 270.0, 0.0, 180.0):
-                rfp.SetPosition(vec(*c))
-                rfp.SetOrientationDegrees(rot)
-                rp, rn = rpads[netp], rpads[netn]
-                rpx, rpy = mm(rp.GetPosition().x), mm(rp.GetPosition().y)
-                rnx, rny = mm(rn.GetPosition().x), mm(rn.GetPosition().y)
-                # The resistor pads must sit in the same order as the pins, across the row.
-                if ((rpx - rnx) * row[0] + (rpy - rny) * row[1]) * ((px - nx_) * row[0] + (py - ny_) * row[1]) <= 0:
-                    continue
-                if abs((rpx - rnx) * o[0] + (rpy - rny) * o[1]) > 0.05:
-                    continue
-                box = courtyard_box(rfp)
-                if any(boxes_overlap(box, ob) for _, ob in others):
-                    continue
-                ok = True
-                for pad, net in ((rp, netp), (rn, netn)):
-                    s = pad_shape(pad, F)
-                    x0, y0, x1, y1 = shape_bbox(s)
-                    for gx in np.linspace(x0, x1, 5):
-                        for gy in np.linspace(y0, y1, 5):
-                            if shape_dist(s, gx, gy) <= 1e-6 and not model.copper_ok(gx, gy, F, (net,), 0.0):
-                                ok = False
-                                break
-                        if not ok:
-                            break
-                    if not ok:
-                        break
-                if not ok:
-                    continue
-                hl_r = pad_info(rp)[3] if abs(pad_info(rp)[2][0] * o[0] + pad_info(rp)[2][1] * o[1]) > 0.5 else min(
-                    mm(pad_size(rp, F).x), mm(pad_size(rp, F).y)) / 2
-                ends = end_candidates(model, (rpx, rpy), (rnx, rny), o, hl_r, netp, netn,
-                                      pre_p=[(px, py)], pre_n=[(nx_, ny_)], limit=2)
-                if ends:
-                    return ends
-    rfp.SetPosition(old_pos)
-    rfp.SetOrientationDegrees(old_rot)
-    return None
-
-
-def route_pair(model, board, netp, netn, starts, ends, log):
-    """Centre line on SIG_L6 between two via pairs; P and N are its offsets."""
-    codes = (netp.GetNetCode(), netn.GetNetCode())
-    free = model.free(L6, codes, PAIR_HALF)
-    tried = 0
-    for s in starts:
-        for lead_sign in (1, -1):
-            u0 = (s.axis[0] * lead_sign, s.axis[1] * lead_sign)
-            side = s.side(u0)
-            for e in ends:
-                # Arrive along the end axis with P on the same side as at the start.
-                u1 = None
-                for sg in (1, -1):
-                    cand = (e.axis[0] * sg, e.axis[1] * sg)
-                    if e.side(cand) == side:
-                        u1 = cand
-                if u1 is None:
-                    continue
-                a0 = s.mid
-                a1 = (a0[0] + u0[0] * LEAD, a0[1] + u0[1] * LEAD)
-                b1 = e.mid
-                b0 = (b1[0] - u1[0] * LEAD, b1[1] - u1[1] * LEAD)
-                c0, c1 = cell_of(a1), cell_of(b0)
-                tried += 1
-                path = astar(free, [(c0[0], c0[1])], [c1], turn=0.5, weight=1.3)
-                if path is None:
-                    continue
-                mid_pts = pull(free, [xy_of(c) for c in path])
-                centre = simplify([a0, a1] + mid_pts + [b0, b1])
-                pl = offset(centre, side * PAIR_OFF)
-                nl = offset(centre, -side * PAIR_OFF)
-                p_full = [s.vp] + pl + [e.vp]
-                n_full = [s.vn] + nl + [e.vn]
-                if not (model.poly_ok(p_full, L6, (codes[0],)) and model.poly_ok(n_full, L6, (codes[1],))):
-                    log(f"    exact check failed, try next ({tried})")
-                    continue
-                if poly_gap(p_full[1:-1], n_full[1:-1]) < TRACK + CLEAR + SLACK:
-                    log("    P/N too close")
-                    continue
-                if min(dist_seg(*e.vn, *a, *b) for a, b in zip(p_full, p_full[1:])) < HALF + VIA_R + HOLE_CLEAR - 0.05:
-                    continue
-                return s, e, p_full, n_full
-    return None
-
-
-def ground_near(model, board, gnd, x, y, count=1):
-    placed = 0
-    for r in (0.7, 0.9, 1.2, 1.5, 1.9):
-        for k in range(16):
-            a = k * math.pi / 8
-            gx, gy = x + r * math.cos(a), y + r * math.sin(a)
-            if model.via_ok(gx, gy, gnd.GetNetCode()):
-                draw_via(board, model, gx, gy, gnd)
-                placed += 1
-                if placed >= count:
-                    return placed
-    return placed
-
-
-def cmd_lvds(path, pairs=LVDS_PAIRS):
+def cmd_lvds(path, pairs=LVDS):
+    """Coupled pairs on SIG_L6: CMC to driver or receiver (and on to the terminator),
+    and RJ45 pins to CMC and TVS on the jack side."""
     board = pcbnew.LoadBoard(str(path))
     if board.GetCopperLayerCount() != 8:
         sys.exit("run stackup first")
-    names = {f"{p}_{s}" for p in pairs for s in ("P", "N")}
-    print(f"rip up {rip_up(board, names)} items of {len(pairs)} pairs", flush=True)
+    names = {f"{p}_{s}" for p in pairs for s in ("P", "N", "PJ", "NJ")}
+    print(f"rip up {delete(board, [t for t in board.GetTracks() if t.GetNetname() in names])} items "
+          f"of {len(pairs)} pairs", flush=True)
     model = Model(board)
     pads = pads_by_net(board)
     gnd = board.FindNet("GND")
-    done = []
+
+    def span(pair):
+        a = pad_xy(pick(pads[f"{pair}_P"], "FL"))
+        b = pad_xy(pick(pads[f"{pair}_P"], "U"))
+        return math.dist(a, b)
+
+    pairs = sorted(pairs, key=span)
+    failed = []
     for pair in pairs:
         netp, netn = board.FindNet(f"{pair}_P"), board.FindNet(f"{pair}_N")
+        codes = (netp.GetNetCode(), netn.GetNetCode())
         pp, pn = pads[f"{pair}_P"], pads[f"{pair}_N"]
-        cmc_p = next(p for p in pp if p.GetParentFootprint().GetReference().startswith("FL"))
-        cmc_n = next(p for p in pn if p.GetParentFootprint().GetReference().startswith("FL"))
-        ic_p = next(p for p in pp if p.GetParentFootprint().GetReference().startswith("U"))
-        ic_n = next(p for p in pn if p.GetParentFootprint().GetReference().startswith("U"))
+        cmc = smd_pair_ends(model, pick(pp, "FL"), pick(pn, "FL"), *codes)
+        ic_p, ic_n = pick(pp, "U"), pick(pn, "U")
         rterm = [p for p in pp if p.GetParentFootprint().GetReference().startswith("R_")]
-        cp, cn = netp.GetNetCode(), netn.GetNetCode()
-        o, hl = outward(cmc_p)
-        starts = end_candidates(model, pad_info(cmc_p)[:2], pad_info(cmc_n)[:2], o, hl, cp, cn, limit=2)
-        if rterm:
-            rfp = rterm[0].GetParentFootprint()
-            ends = place_terminator(board, model, rfp, ic_p, ic_n, cp, cn)
-            if ends:
-                print(f"  {pair}: {rfp.GetReference()} moved next to {ic_p.GetParentFootprint().GetReference()}", flush=True)
-                model = Model(board)
-                ends = place_terminator(board, model, rfp, ic_p, ic_n, cp, cn) or []
-            else:
-                ends = []
-                print(f"  {pair}: no room for {rfp.GetReference()} at the receiver", flush=True)
+        chain = [cmc, smd_pair_ends(model, ic_p, ic_n, *codes)]
+        legs = route_chain(model, codes, chain)
+        if legs is None:
+            print(f"  {pair}: driver/receiver side NOT ROUTED ({len(chain[0])}/{len(chain[1])} ends)", flush=True)
+            failed.append(pair)
         else:
-            o2, hl2 = outward(ic_p)
-            ends = end_candidates(model, pad_info(ic_p)[:2], pad_info(ic_n)[:2], o2, hl2, cp, cn, inward=True, limit=2)
-        print(f"  {pair}: {len(starts)} start and {len(ends)} end via pairs", flush=True)
-        res = route_pair(model, board, netp, netn, starts, ends, lambda m: print(m, flush=True))
-        if res is None:
-            print(f"  {pair}: NOT ROUTED", flush=True)
-            continue
-        s, e, p_full, n_full = res
-        for end in (s, e):
-            draw_poly(board, model, end.stub_p, F, netp)
-            draw_poly(board, model, end.stub_n, F, netn)
-            draw_via(board, model, *end.vp, netp)
-            draw_via(board, model, *end.vn, netn)
-        draw_poly(board, model, p_full, L6, netp)
-        draw_poly(board, model, n_full, L6, netn)
-        g = sum(ground_near(model, board, gnd, *end.mid) for end in (s, e))
-        lp, ln = poly_len(s.stub_p) + poly_len(p_full) + poly_len(e.stub_p), poly_len(s.stub_n) + poly_len(n_full) + poly_len(e.stub_n)
-        print(f"  {pair}: routed P {lp:.1f} N {ln:.1f} mm, {g} ground vias", flush=True)
-        done.append(pair)
+            for leg in legs:
+                draw_route(board, model, leg, netp, netn)
+            for e in {id(x): x for leg in legs for x in (leg.start, leg.end)}.values():
+                if e.new_vias:
+                    ground_near(model, board, gnd, *e.mid)
+            parked = ""
+            if rterm:
+                parked = " +R" if connect_terminator(
+                    board, model, rterm[0].GetParentFootprint(), ic_p, ic_n, *codes
+                ) else " R-unplaced"
+            lens = [poly_len(leg.p) for leg in legs], [poly_len(leg.n) for leg in legs]
+            print(f"  {pair}: {len(legs)} legs, P {sum(lens[0]):.1f} N {sum(lens[1]):.1f} mm{parked}", flush=True)
+        save(board, path)
+
+        jp, jn = board.FindNet(f"{pair}_PJ"), board.FindNet(f"{pair}_NJ")
+        jcodes = (jp.GetNetCode(), jn.GetNetCode())
+        qp, qn = pads[f"{pair}_PJ"], pads[f"{pair}_NJ"]
+        pin_p, pin_n = pick(qp, "J"), pick(qn, "J")
+        jack = [e for layer in (L6, L3) for e in pin_pair_ends(model, pin_p, pin_n, *jcodes, layer=layer)]
+        if not jack:
+            jack = gather_jack(model, pin_p, pin_n, *jcodes)
+        cmcj = smd_pair_ends(model, pick(qp, "FL"), pick(qn, "FL"), *jcodes)
+        tvs = smd_pair_ends(model, pick(qp, "DT"), pick(qn, "DT"), *jcodes)
+        # Visit the CMC and the TVS in the order they sit below the jack.
+        mids = sorted(((pad_xy(pick(qp, "FL"))[1], cmcj), (pad_xy(pick(qp, "DT"))[1], tvs)), key=lambda t: t[0])
+        legs = route_chain(model, jcodes, [jack, mids[0][1]], budget=90)
+        if legs is None and jack and jack[0].label != "gathered":
+            legs = route_chain(model, jcodes, [gather_jack(model, pin_p, pin_n, *jcodes), mids[0][1]], budget=90)
+        if legs is None:
+            print(f"  {pair}: jack side NOT ROUTED ({len(jack)}/{len(cmcj)}/{len(tvs)} ends)", flush=True)
+            failed.append(pair + "J")
+        else:
+            for leg in legs:
+                draw_route(board, model, leg, jp, jn)
+            # The second part leaves the node just reached and runs on to the remaining one.
+            landed = legs[-1].end
+            nxt = mids[1][1]
+            more = route_chain(model, jcodes, [[landed], nxt], budget=60)
+            if more:
+                for leg in more:
+                    leg.start.drawn = True
+                    draw_route(board, model, leg, jp, jn)
+                legs = legs + more
+            for e in {id(x): x for leg in legs for x in (leg.start, leg.end)}.values():
+                if e.new_vias:
+                    ground_near(model, board, gnd, *e.mid)
+            print(f"  {pair}J: P {sum(poly_len(l.p) for l in legs):.1f} N {sum(poly_len(l.n) for l in legs):.1f} mm",
+                  flush=True)
         save(board, path)
     fill_zones(board)
     save(board, path)
-    print(f"routed {len(done)}/{len(pairs)}: {' '.join(done)}", flush=True)
+    print(f"not routed: {' '.join(failed) if failed else 'none'}", flush=True)
 
 
 # --- islands and remaining opens -----------------------------------------
@@ -968,27 +1348,24 @@ def net_islands(board, name):
         for pad in fp.Pads():
             if pad.GetNetname() != name:
                 continue
-            p = pad.GetPosition()
             if pad.GetAttribute() == pcbnew.PAD_ATTRIB_PTH:
                 layers = ALL
             else:
                 layers = frozenset(l for l in (F, B) if pad.IsOnLayer(l))
-            items.append(("pad", (mm(p.x), mm(p.y)), layers, pad_shape(pad, F if F in layers else B), pad))
+            items.append(("pad", pad_xy(pad), layers, pad_shape(pad, F if F in layers else B), pad))
     uf = UF(len(items))
 
     def anchors(it):
-        if it[0] == "seg":
-            return list(it[1])
-        return [it[1]]
+        return list(it[1]) if it[0] == "seg" else [it[1]]
 
     for i, a in enumerate(items):
         for j in range(i + 1, len(items)):
             b = items[j]
             if not (a[2] & b[2]):
                 continue
-            hit = any(shape_dist(b[3], x, y) <= 0.002 for x, y in anchors(a)) or any(
-                shape_dist(a[3], x, y) <= 0.002 for x, y in anchors(b))
-            if hit:
+            if any(shape_dist(b[3], x, y) <= 0.002 for x, y in anchors(a)) or any(
+                shape_dist(a[3], x, y) <= 0.002 for x, y in anchors(b)
+            ):
                 uf.union(i, j)
     groups = defaultdict(list)
     for i, it in enumerate(items):
@@ -997,7 +1374,7 @@ def net_islands(board, name):
 
 
 def terminals(model, island, code):
-    """Points where SIG_L6/SIG_L3 copper can join the island: its vias and THT pads,
+    """Points where inner-layer copper can join the island: its vias and THT pads,
     else new via sites one straight outer-layer stub away."""
     out = []
     for kind, pos, layers, s, obj in island:
@@ -1042,29 +1419,27 @@ def connect_net(model, board, name, layers=(L6, L3), extras=(0.0,)):
         for extra in extras:
             for layer in layers:
                 free = model.free(layer, (code,), HALF, extra)
-                starts = [cell_of(p) for p, _ in ta]
                 goals = {cell_of(p): (p, via) for p, via in tb}
-                path = astar(free, starts, list(goals))
+                path = astar(free, [(*cell_of(p), None) for p, _ in ta], list(goals))
                 if path is None:
                     continue
                 a = next((p, v) for p, v in ta if cell_of(p) == path[0])
                 b = goals[path[-1]]
-                pts = simplify([a[0]] + pull(free, [xy_of(c) for c in path], 135.0) + [b[0]])
+                pts = simplify([a[0]] + pull(free, [xy_of(c) for c in path]) + [b[0]])
                 if not model.poly_ok(pts, layer, (code,), HALF, extra):
                     continue
+                if any(via is not None and not (model.via_ok(*p, code) and model.seg_ok(*via[1], *p, via[0], (code,)))
+                       for p, via in (a, b)):
+                    continue
                 for p, via in (a, b):
-                    if via is not None and not (model.via_ok(*p, code) and model.seg_ok(*via[1], *p, via[0], (code,))):
-                        break
-                else:
-                    for p, via in (a, b):
-                        if via is not None:
-                            draw_track(board, model, *via[1], *p, via[0], net)
-                            draw_via(board, model, *p, net)
-                    draw_poly(board, model, pts, layer, net)
-                    routed = True
-                    print(f"    {name}: {poly_len(pts):.1f} mm on {board.GetLayerName(layer)}"
-                          f"{f', clearance {CLEAR + extra:.2f}' if extra else ''}", flush=True)
-                    break
+                    if via is not None:
+                        draw_track(board, model, *via[1], *p, via[0], net)
+                        draw_via(board, model, *p, net)
+                draw_poly(board, model, pts, layer, net)
+                routed = True
+                print(f"    {name}: {poly_len(pts):.1f} mm on {board.GetLayerName(layer)}"
+                      f"{f', clearance {CLEAR + extra:.2f}' if extra else ''}", flush=True)
+                break
             if routed:
                 break
         if not routed:
@@ -1095,15 +1470,14 @@ def cmd_opens(path):
 
 
 # --- stitching and clean-up ----------------------------------------------
-def same_net_hole_clashes(board):
-    """Vias whose drill sits on or next to a same-net THT hole."""
+def hole_clashes(board):
+    """Vias whose drill sits on or next to a THT hole."""
     holes = []
     for fp in board.GetFootprints():
         for pad in fp.Pads():
             if pad.GetAttribute() == pcbnew.PAD_ATTRIB_PTH:
-                p = pad.GetPosition()
-                holes.append((mm(p.x), mm(p.y), max(mm(pad.GetDrillSize().x), mm(pad.GetDrillSize().y)) / 2,
-                              pad.GetNetCode(), pad))
+                x, y = pad_xy(pad)
+                holes.append((x, y, max(mm(pad.GetDrillSize().x), mm(pad.GetDrillSize().y)) / 2, pad.GetNetCode(), pad))
     out = []
     for v in board.GetTracks():
         if v.GetClass() != "PCB_VIA":
@@ -1117,24 +1491,23 @@ def same_net_hole_clashes(board):
 
 
 def fix_hole_clashes(board):
-    fixed = 0
-    for v, pad, same in same_net_hole_clashes(board):
+    """A same-net via next to a THT hole is redundant: its tracks move onto the pad."""
+    kill = []
+    for v, pad, same in hole_clashes(board):
         if not same:
             print(f"  via {v.GetNetname()} clashes with a foreign hole, left for DRC", flush=True)
             continue
-        vp = v.GetPosition()
-        pp = pad.GetPosition()
+        vp, pp = v.GetPosition(), pad.GetPosition()
+        r = v.GetWidth(F) // 2
         for t in board.GetTracks():
             if t.GetClass() == "PCB_VIA" or t.GetNetCode() != v.GetNetCode():
                 continue
-            r = v.GetWidth(F) // 2
             if (t.GetStart() - vp).EuclideanNorm() <= r:
                 t.SetStart(pp)
             if (t.GetEnd() - vp).EuclideanNorm() <= r:
                 t.SetEnd(pp)
-        board.Remove(v)
-        fixed += 1
-    return fixed
+        kill.append(v)
+    return delete(board, kill)
 
 
 def stitch_fence(board, model, gnd, pitch=1.5, inset=0.8):
@@ -1143,9 +1516,9 @@ def stitch_fence(board, model, gnd, pitch=1.5, inset=0.8):
                 if t.GetClass() == "PCB_VIA" and t.GetNetCode() == code]
     x0, y0, x1, y1 = model.ex0 + inset, model.ey0 + inset, model.ex1 - inset, model.ey1 - inset
     pts = []
-    for x, y, dx, dy, L in ((x0, y0, 1, 0, x1 - x0), (x1, y0, 0, 1, y1 - y0), (x1, y1, -1, 0, x1 - x0), (x0, y1, 0, -1, y1 - y0)):
-        n = int(L // pitch)
-        for k in range(n):
+    for x, y, dx, dy, length in ((x0, y0, 1, 0, x1 - x0), (x1, y0, 0, 1, y1 - y0),
+                                 (x1, y1, -1, 0, x1 - x0), (x0, y1, 0, -1, y1 - y0)):
+        for k in range(int(length // pitch)):
             pts.append((x + dx * k * pitch, y + dy * k * pitch))
     added = 0
     for x, y in pts:
@@ -1161,15 +1534,11 @@ def stitch_fence(board, model, gnd, pitch=1.5, inset=0.8):
 
 
 def stitch_islands(board, model, gnd, min_area=2.0):
-    """Give every unconnected pour island on the outer layers a ground via."""
+    """Give each unconnected pour island on the outer layers a ground via."""
     code = gnd.GetNetCode()
     vias = [(mm(t.GetPosition().x), mm(t.GetPosition().y)) for t in board.GetTracks()
             if t.GetClass() == "PCB_VIA" and t.GetNetCode() == code]
-    gpads = []
-    for fp in board.GetFootprints():
-        for pad in fp.Pads():
-            if pad.GetNetCode() == code:
-                gpads.append(pad)
+    gpads = [pad for fp in board.GetFootprints() for pad in fp.Pads() if pad.GetNetCode() == code]
     added = 0
     for z in board.Zones():
         if z.GetIsRuleArea() or z.GetNetCode() != code or z.GetLayer() not in (F, B):
@@ -1187,22 +1556,23 @@ def stitch_islands(board, model, gnd, min_area=2.0):
             xs, ys = [p[0] for p in pts], [p[1] for p in pts]
             if any(min(xs) <= vx <= max(xs) and min(ys) <= vy <= max(ys) and in_poly(vx, vy, pts) for vx, vy in vias):
                 continue
-            if any(pad.IsOnLayer(layer) and in_poly(mm(pad.GetPosition().x), mm(pad.GetPosition().y), pts) for pad in gpads):
+            if any(pad.IsOnLayer(layer) and in_poly(*pad_xy(pad), pts) for pad in gpads):
                 continue
-            placed = 0
-            step = 0.3
             gx = min(xs)
-            while gx <= max(xs) and placed < 2:
+            while gx <= max(xs):
                 gy = min(ys)
-                while gy <= max(ys) and placed < 2:
+                hit = False
+                while gy <= max(ys):
                     if in_poly(gx, gy, pts) and poly_dist(gx, gy, pts) > VIA_R + 0.05 and model.via_ok(gx, gy, code):
-                        if all(math.hypot(gx - a, gy - b) > 1.0 for a, b in vias[-placed:] if placed):
-                            draw_via(board, model, gx, gy, gnd)
-                            vias.append((gx, gy))
-                            placed += 1
-                    gy += step
-                gx += step
-            added += placed
+                        draw_via(board, model, gx, gy, gnd)
+                        vias.append((gx, gy))
+                        added += 1
+                        hit = True
+                        break
+                    gy += 0.3
+                if hit:
+                    break
+                gx += 0.3
     return added
 
 
@@ -1210,27 +1580,19 @@ def remove_dangling(board, path, rounds=8):
     removed = 0
     for _ in range(rounds):
         rep = drc(path, "all")
-        ids = set()
-        for v in rep.get("violations") or []:
-            if v["type"] in ("track_dangling", "via_dangling"):
-                for it in v["items"]:
-                    if it.get("uuid"):
-                        ids.add(it["uuid"])
+        ids = {it["uuid"] for v in rep.get("violations") or [] if v["type"] in ("track_dangling", "via_dangling")
+               for it in v["items"] if it.get("uuid")}
         if not ids:
             break
-        kill = [t for t in board.GetTracks() if t.m_Uuid.AsString() in ids]
-        for t in kill:
-            board.Remove(t)
-        removed += len(kill)
+        removed += delete(board, [t for t in board.GetTracks() if t.m_Uuid.AsString() in ids])
         fill_zones(board)
         save(board, path)
-        board = pcbnew.LoadBoard(str(path))
-    return removed, board
+    return removed
 
 
 def cmd_stitch(path):
     board = pcbnew.LoadBoard(str(path))
-    print(f"same-net hole clashes removed: {fix_hole_clashes(board)}", flush=True)
+    print(f"vias on a same-net THT hole removed: {fix_hole_clashes(board)}", flush=True)
     for zone in board.Zones():
         if not zone.GetIsRuleArea():
             zone.SetMinThickness(iu(0.2))
@@ -1238,7 +1600,7 @@ def cmd_stitch(path):
     model = Model(board)
     gnd = board.FindNet("GND")
     added, total = stitch_fence(board, model, gnd)
-    print(f"edge fence: {added} ground vias added along {total} sites", flush=True)
+    print(f"edge fence: {added} ground vias added for {total} sites at 1.5 mm", flush=True)
     fill_zones(board)
     print(f"pour islands stitched: {stitch_islands(board, model, gnd)} vias", flush=True)
     for zone in board.Zones():
@@ -1246,8 +1608,7 @@ def cmd_stitch(path):
             zone.SetIslandRemovalMode(pcbnew.ISLAND_REMOVAL_MODE_ALWAYS)
     fill_zones(board)
     save(board, path)
-    removed, board = remove_dangling(board, path)
-    print(f"dangling copper removed: {removed}", flush=True)
+    print(f"dangling copper removed: {remove_dangling(board, path)}", flush=True)
     fill_zones(board)
     save(board, path)
 
@@ -1265,8 +1626,9 @@ def shortest_path(board, name, is_src, is_dst):
     def key(x, y):
         return (round(x, 3), round(y, 3))
 
-    def link(a, b):
-        w = math.hypot(b[0] - a[0], b[1] - a[1]) if isinstance(a[0], float) and isinstance(b[0], float) else 0.0
+    def link(a, b, w=None):
+        if w is None:
+            w = math.hypot(b[0] - a[0], b[1] - a[1])
         g[a].append((b, w))
         g[b].append((a, w))
 
@@ -1283,30 +1645,30 @@ def shortest_path(board, name, is_src, is_dst):
                 link(p, a)
                 link(p, b)
     src = dst = None
+    coords = {}
     for fp in board.GetFootprints():
         ref = fp.GetReference()
         for pad in fp.Pads():
             if pad.GetNetname() != name:
                 continue
             s = pad_shape(pad, F if pad.IsOnLayer(F) else B)
-            px, py = mm(pad.GetPosition().x), mm(pad.GetPosition().y)
+            px, py = pad_xy(pad)
             node = ("pad", ref, pad.GetNumber())
+            coords[node] = (px, py)
             for p in pts:
                 if shape_dist(s, p[0], p[1]) <= 0.08:
-                    w = math.hypot(p[0] - px, p[1] - py)
-                    g[node].append((p, w))
-                    g[p].append((node, w))
+                    link(node, p, math.hypot(p[0] - px, p[1] - py))
             if src is None and is_src(ref):
-                src = (node, (px, py))
+                src = node
             elif dst is None and is_dst(ref):
-                dst = (node, (px, py))
+                dst = node
     if not src or not dst:
         return None
-    dist, prev, cnt = {src[0]: 0.0}, {}, 0
-    pq = [(0.0, cnt, src[0])]
+    dist, prev, cnt = {src: 0.0}, {}, 0
+    pq = [(0.0, cnt, src)]
     while pq:
         d, _, u = heapq.heappop(pq)
-        if u == dst[0]:
+        if u == dst:
             break
         if d > dist.get(u, 1e18):
             continue
@@ -1316,14 +1678,13 @@ def shortest_path(board, name, is_src, is_dst):
                 prev[v] = u
                 cnt += 1
                 heapq.heappush(pq, (d + w, cnt, v))
-    if dst[0] not in dist:
+    if dst not in dist:
         return None
-    seq = [dst[0]]
-    while seq[-1] != src[0]:
+    seq = [dst]
+    while seq[-1] != src:
         seq.append(prev[seq[-1]])
     seq.reverse()
-    coords = {src[0]: src[1], dst[0]: dst[1]}
-    return [coords.get(n, n) for n in seq], dist[dst[0]]
+    return [coords.get(n, n) for n in seq], dist[dst]
 
 
 def loop_between(board, name_p, name_n, is_src, is_dst):
@@ -1357,7 +1718,7 @@ def cmd_report(path):
     errors = sum(1 for v in rep.get("violations") or [] if v["severity"] == "error")
     print(f"DRC: {errors} errors, {unconn} unconnected; warnings {dict(sorted(counts.items()))}")
     print(f"{'pair':6} {'loop IC-CMC':>12} {'P':>7} {'N':>7} {'dP-N':>6} {'loop CMC-jack':>14}")
-    for pair in ALL_PAIRS:
+    for pair in sorted(LVDS, key=lambda s: (s.rstrip("0123456789") != "SCK", s.rstrip("0123456789") != "WS", s)):
         a = loop_between(board, f"{pair}_P", f"{pair}_N", is_cmc, is_ic)
         j = loop_between(board, f"{pair}_PJ", f"{pair}_NJ", is_cmc, is_jack)
         jt = f"{j[0]:10.1f} mm2" if j else "      open"
@@ -1374,11 +1735,68 @@ def cmd_report(path):
     print("vias:", sum(1 for t in board.GetTracks() if t.GetClass() == "PCB_VIA"))
 
 
+def cmd_repair(path):
+    """Route only the pair sides that are still open. Already drawn pairs stay."""
+    board = pcbnew.LoadBoard(str(path))
+    model = Model(board)
+    pads = pads_by_net(board)
+    gnd = board.FindNet("GND")
+    for pair in LVDS:
+        netp, netn = board.FindNet(f"{pair}_P"), board.FindNet(f"{pair}_N")
+        codes = (netp.GetNetCode(), netn.GetNetCode())
+        pp, pn = pads[f"{pair}_P"], pads[f"{pair}_N"]
+        if shortest_path(board, f"{pair}_P", is_cmc, is_ic) is None:
+            cmc = smd_pair_ends(model, pick(pp, "FL"), pick(pn, "FL"), *codes)
+            ic_p, ic_n = pick(pp, "U"), pick(pn, "U")
+            ic = smd_pair_ends(model, ic_p, ic_n, *codes)
+            legs = route_chain(model, codes, [cmc, ic], budget=90)
+            if legs is None:
+                print(f"  {pair}: driver/receiver still open", flush=True)
+            else:
+                for leg in legs:
+                    draw_route(board, model, leg, netp, netn)
+                for e in {id(x): x for leg in legs for x in (leg.start, leg.end)}.values():
+                    if e.new_vias:
+                        ground_near(model, board, gnd, *e.mid)
+                rterm = [p for p in pp if p.GetParentFootprint().GetReference().startswith("R_")]
+                parked = ""
+                if rterm:
+                    parked = " +R" if connect_terminator(
+                        board, model, rterm[0].GetParentFootprint(), ic_p, ic_n, *codes
+                    ) else " R-unplaced"
+                print(f"  {pair}: repaired P {sum(poly_len(l.p) for l in legs):.1f} "
+                      f"N {sum(poly_len(l.n) for l in legs):.1f} mm{parked}", flush=True)
+                save(board, path)
+        if shortest_path(board, f"{pair}_PJ", is_cmc, is_jack) is None:
+            jp, jn = board.FindNet(f"{pair}_PJ"), board.FindNet(f"{pair}_NJ")
+            jcodes = (jp.GetNetCode(), jn.GetNetCode())
+            qp, qn = pads[f"{pair}_PJ"], pads[f"{pair}_NJ"]
+            pin_p, pin_n = pick(qp, "J"), pick(qn, "J")
+            jack = [e for layer in (L6, L3) for e in pin_pair_ends(model, pin_p, pin_n, *jcodes, layer=layer)]
+            if not jack:
+                jack = gather_jack(model, pin_p, pin_n, *jcodes)
+            cmcj = smd_pair_ends(model, pick(qp, "FL"), pick(qn, "FL"), *jcodes)
+            tvs = smd_pair_ends(model, pick(qp, "DT"), pick(qn, "DT"), *jcodes)
+            mids = sorted(((pad_xy(pick(qp, "FL"))[1], cmcj), (pad_xy(pick(qp, "DT"))[1], tvs)), key=lambda t: t[0])
+            legs = route_chain(model, jcodes, [jack, mids[0][1], mids[1][1]], budget=90)
+            if legs is None:
+                print(f"  {pair}J: jack side still open ({len(jack)} gathered/pin ends)", flush=True)
+            else:
+                for leg in legs:
+                    draw_route(board, model, leg, jp, jn)
+                print(f"  {pair}J: repaired P {sum(poly_len(l.p) for l in legs):.1f} "
+                      f"N {sum(poly_len(l.n) for l in legs):.1f} mm", flush=True)
+                save(board, path)
+    fill_zones(board)
+    save(board, path)
+
+
 def main(argv):
-    if len(argv) < 2 or argv[1] not in ("stackup", "lvds", "opens", "stitch", "report"):
+    cmds = {"stackup": cmd_stackup, "lvds": cmd_lvds, "repair": cmd_repair, "opens": cmd_opens,
+            "stitch": cmd_stitch, "report": cmd_report}
+    if len(argv) < 2 or argv[1] not in cmds:
         sys.exit(__doc__)
-    path = Path(argv[2]) if len(argv) > 2 else BOARD
-    {"stackup": cmd_stackup, "lvds": cmd_lvds, "opens": cmd_opens, "stitch": cmd_stitch, "report": cmd_report}[argv[1]](path)
+    cmds[argv[1]](Path(argv[2]) if len(argv) > 2 else BOARD)
 
 
 if __name__ == "__main__":
