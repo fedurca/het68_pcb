@@ -6711,6 +6711,17 @@
 			(uuid "dfd7030d-279f-4bfc-a475-c18d53673c2b")
 		)
 		(embedded_fonts no)
+		(model "${KIPRJMOD}/../lib/het68.3dshapes/T5848.wrl"
+			(offset
+				(xyz 0 0 0)
+			)
+			(scale
+				(xyz 1 1 1)
+			)
+			(rotate
+				(xyz 0 0 0)
+			)
+		)
 	)
 	(footprint "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical"
 		(layer "B.Cu")

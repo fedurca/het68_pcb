@@ -1,0 +1,33 @@
+#VRML V2.0 utf8
+# T5848 body 2.65 x 3.50 x 0.98 mm, coordinates in millimetres.
+# Pin-1 dot is at the WS end (footprint +X, -Y). The sound port faces the board.
+DEF T5848 Transform {
+  children [
+    Transform {
+      translation 0 0 0.49
+      children [
+        Shape {
+          appearance Appearance {
+            material Material {
+              diffuseColor 0.10 0.10 0.11
+              specularColor 0.25 0.25 0.25
+              shininess 0.3
+            }
+          }
+          geometry Box { size 2.65 3.50 0.98 }
+        }
+        Transform {
+          translation 1.05 -1.35 0.50
+          children [
+            Shape {
+              appearance Appearance {
+                material Material { diffuseColor 0.75 0.75 0.70 }
+              }
+              geometry Sphere { radius 0.16 }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

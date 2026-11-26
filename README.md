@@ -14,7 +14,7 @@ v4 je sada **Core 8L + vyměnitelná silová deska + šest satelitů**. Na měď
 
 **Silová deska** má tři SKU se stejným interconnectem 2×10: NN (multiplex CT), VN (silnější GDT/TVS), VVN (harvest CT + Rogowski). Společný front-end je jen sekundár: GDT, TVS, LC, burden, crowbar, MPPT, článek 21700 (LiFePO4/LTO), 5 V a vždyživý `+3V3_RF`.
 
-**Satelit** je šest čtverců 52 × 52 mm, 8L. Mikrofon je uprostřed, kolem něj kruh **8× SK6812**. Svislý RJ45 a konfigurační propojky jsou na zadní straně co nejblíž středu. Režim linky volí propojka: diferenciální LVDS, jednostranných 3,3 V, nebo 1,8 V přímo na T5848. Mapa [`docs/PINOUT_SAT_v4.csv`](docs/PINOUT_SAT_v4.csv).
+**Satelit** je šest čtverců 52 × 52 mm, 8L. Mikrofon je uprostřed, kolem něj kruh **8× SK6812**. Svislý RJ45 a konfigurační propojky jsou na zadní straně co nejblíž středu. Režim linky volí propojka: diferenciální LVDS, jednostranných 3,3 V, nebo 1,8 V přímo na T5848. Význam propojek a postup osazení: [docs/SATELIT.md](docs/SATELIT.md). Mapa [`docs/PINOUT_SAT_v4.csv`](docs/PINOUT_SAT_v4.csv).
 
 ## Prototyp
 

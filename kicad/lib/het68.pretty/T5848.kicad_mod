@@ -25,4 +25,9 @@
   (pad "3" smd rect (at -0.85 0.708) (size 0.32 0.28) (layers "F.Cu" "F.Paste" "F.Mask") (uuid "eb9f54bd-3ed3-4d45-94bf-5b78fa266848"))
   (fp_circle (center 0.0 0.708) (end 0.55 0.708) (stroke (width 0.1) (type solid)) (fill no) (layer "F.CrtYd") (uuid "eea003be-5c20-4abd-a060-ad639ff91db8"))
   (pad "" np_thru_hole circle (at 0.0 0.708) (size 0.8 0.8) (drill 0.8) (layers "*.Cu" "*.Mask") (uuid "4fc787d9-1916-4559-b539-7fc387ac0e80"))
+  (model "${KIPRJMOD}/../lib/het68.3dshapes/T5848.wrl"
+    (offset (xyz 0 0 0))
+    (scale (xyz 1 1 1))
+    (rotate (xyz 0 0 0))
+  )
 )

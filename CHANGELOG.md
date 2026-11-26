@@ -2,7 +2,13 @@
 
 Formát podle [Keep a Changelog](https://keepachangelog.com/cs/1.1.0/), verze podle [SemVer](https://semver.org/lang/cs/).
 
-Tento soubor drží řadu **4.x** až **7.4.0**. Starší tagy `v1.1.1` … `v3.0.0` zůstávají v gitu.
+Tento soubor drží řadu **4.x** až **7.4.1**. Starší tagy `v1.1.1` … `v3.0.0` zůstávají v gitu.
+
+## [7.4.1] — 2026-11-26
+
+### Added
+
+- [docs/SATELIT.md](docs/SATELIT.md): význam propojek, tři režimy linky a postup osazení. 3D náhled satelitu má tělo T5848. Kontrola v7.4.0: rozměr je vyrobitelný, měď má 0 zkratů, 36 mezer a 66 otevřených párů, takže deska ještě není funkční ani objednatelná. Návrh LVDS, tlumivek, TVS a stínění na GND indukci míří, v mědi to ještě není spojené.
 
 ## [7.4.0] — 2026-11-26
 

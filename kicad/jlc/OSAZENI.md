@@ -16,9 +16,9 @@ Mimo stroj:
 
 ## Satelit
 
-40 součástek. Horní strana: `D4`–`D11` (SK6812). Dolní strana: ostatní, včetně `MK1` T5848 (`MMICT5848-00-012`, C20344623).
+40 součástek na čtverci 52 × 52 mm. Horní strana: `D4`–`D11` (SK6812). Dolní strana: ostatní, včetně `MK1` T5848 (`MMICT5848-00-012`, C20344623). Port mikrofonu jde proti desce, pasta na akustický otvor nepatří.
 
-Mimo stroj jsou svislý RJ45 `J1` a propojky `JP_SCK`, `JP_WS`, `JP_SD`, `JP_SDN`, `JP_TSCK`, `JP_TWS`, `JP_OE`. Propojka se připájí až podle režimu linky.
+Mimo stroj jsou svislý RJ45 `J1` a propojky `JP_SCK`, `JP_WS`, `JP_SD`, `JP_SDN`, `JP_TSCK`, `JP_TWS`, `JP_OE`. Pořadí pájení a který řádek propojky patří ke kterému režimu je v [docs/SATELIT.md](../../docs/SATELIT.md).
 
 Úpravy proti původnímu MPN, protože pouzdro na desce je jiné, nebo katalog ten řetězec nemá:
 
