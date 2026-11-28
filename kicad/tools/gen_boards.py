@@ -11,6 +11,7 @@ import math
 import heapq
 import os
 import re
+import shutil
 import uuid
 from array import array
 from pathlib import Path
@@ -19,7 +20,31 @@ import pcbnew
 import wx
 
 ROOT = Path(__file__).resolve().parents[1]
-LIB = Path("/Applications/KiCad/KiCad.app/Contents/SharedSupport")
+
+
+def kicad_share() -> Path:
+    """KiCad data directory. Mac app bundle first, then the Linux packages."""
+    mac = Path("/Applications/KiCad/KiCad.app/Contents/SharedSupport")
+    if (mac / "symbols").is_dir():
+        return mac
+    for candidate in (Path("/usr/share/kicad"), Path("/usr/local/share/kicad")):
+        if (candidate / "symbols").is_dir():
+            return candidate
+    return mac
+
+
+def kicad_cli_bin() -> str:
+    """kicad-cli executable. Mac app bundle first, then PATH."""
+    mac = "/Applications/KiCad/KiCad.app/Contents/MacOS/kicad-cli"
+    if os.path.isfile(mac) and os.access(mac, os.X_OK):
+        return mac
+    found = shutil.which("kicad-cli")
+    if found:
+        return found
+    return "/usr/bin/kicad-cli"
+
+
+LIB = kicad_share()
 FP = LIB / "footprints"
 SYM = LIB / "symbols"
 PRETTY = ROOT / "lib" / "het68.pretty"
