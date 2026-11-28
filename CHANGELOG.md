@@ -2,7 +2,13 @@
 
 Formát podle [Keep a Changelog](https://keepachangelog.com/cs/1.1.0/), verze podle [SemVer](https://semver.org/lang/cs/).
 
-Tento soubor drží řadu **4.x** až **7.4.2**. Starší tagy `v1.1.1` … `v3.0.0` zůstávají v gitu.
+Tento soubor drží řadu **4.x** až **7.4.3**. Starší tagy `v1.1.1` … `v3.0.0` zůstávají v gitu.
+
+## [7.4.3] — 2026-11-28
+
+### Added
+
+- [problems.md](problems.md): otevřené body před výrobou k tagu v7.4.2. Zastaralý gerber satelitu, SK6812 na 3,3 V, chybějící testovací plošky a fiducialy, řídký zemní prokov a data LED bez sériového odporu. Odkaz je na začátku [README.md](README.md).
 
 ## [7.4.2] — 2026-11-26
 
